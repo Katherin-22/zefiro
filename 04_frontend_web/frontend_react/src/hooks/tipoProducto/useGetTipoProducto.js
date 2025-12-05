@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTipoProductos } from "../../services/administrador/TipoProductoService";
+import { getTipoProductos } from "../../services/administrador/TipoProductoService.js";
 
 export const useGetTipoProducto = () => {
   const [TipoProducto, setStock] = useState([]);

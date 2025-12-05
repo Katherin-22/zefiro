@@ -1,0 +1,39 @@
+/* === Reset básico === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #E0B253;
+    --secondary-color: #000000;
+    --bg-body-dark: #000000;
+    --bg-body-light: #ffffff;
+    --text-light: #e4e9f7;
+    --text-dark: #000000;
+    --hover-color: #c89c3f;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
+}
+
+#footer-container{
+    width: 100% ;
+    display: flex;
+    background: var(--bg-body-light) !important;
+    color: var(--text-dark) !important;
+    font-size: 20px;
+    border-top: 1px solid var(--primary-color);
+}
+
+#sobre-nosotros, #contacto-footer
+, #redes-footer {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.footer-link, .footer-social-link{
+    color: var(--text-dark) !important;
+    font-size: 15px;
+}
