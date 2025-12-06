@@ -97,6 +97,7 @@ CREATE TABLE Marca (
 ) ;
 
 
+
 CREATE TABLE Material (
   idMaterial INT AUTO_INCREMENT NOT NULL,
   nombreMaterial VARCHAR(45) NOT NULL,
@@ -342,3 +343,22 @@ CREATE TABLE devoluciones_Cambios (
   PRIMARY KEY (id_devolucion),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
 ) ;
+
+-- -----------------------------------------------------
+-- MÓDULO DE FAVORITOS
+-- -----------------------------------------------------
+
+-- Tabla Favoritos
+CREATE TABLE Favoritos (
+  idFavorito INT AUTO_INCREMENT NOT NULL,
+  idUsuario INT NOT NULL,
+  idProducto INT NOT NULL,
+  fechaAgregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  
+  PRIMARY KEY (idFavorito),
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE,
+  FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE,
+  
+  -- Un usuario no puede agregar el mismo producto dos veces a favoritos
+  UNIQUE KEY unique_usuario_producto (idUsuario, idProducto)
+);
