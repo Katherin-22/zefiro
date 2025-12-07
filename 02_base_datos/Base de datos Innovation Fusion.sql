@@ -202,9 +202,10 @@ CREATE TABLE mensajes (
 -- -----------------------------------------------------
 -- Tabla carrito
 CREATE TABLE Carrito (
-  idCarrito INT AUTO_INCREMENT NOT NULL ,
-  fechaCreacion VARCHAR(45) NOT NULL,
-  idUsuario INT,
+  idCarrito INT AUTO_INCREMENT NOT NULL,
+  total double NOT NULL,
+  fechaCreacion DATE DEFAULT (CURRENT_DATE),
+  idUsuario INT NOT NULL,
   
   PRIMARY KEY (idCarrito),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
@@ -220,13 +221,15 @@ CREATE TABLE MetodoPago (
 
 -- Tabla DetalleCarrito 
 CREATE TABLE DetalleCarrito (
-  idProducto INT NOT NULL,
-  idCarrito INT NOT NULL,
+  idDetalleCarrito  INT AUTO_INCREMENT NOT NULL,
+  precioUnitario Double NOT NULL,
   cantidad INT NOT NULL,
-  idUsuario INT NOT NULL,
+  subtotal double GENERATED ALWAYS AS (cantidad * precioUnitario) STORED,
+  idCarrito INT NOT NULL,
+  idStock INT NOT NULL,
   
-  PRIMARY KEY (idProducto,idCarrito),
-  FOREIGN KEY (idProducto) REFERENCES producto(idProducto),
+  PRIMARY KEY (idDetalleCarrito),
+  FOREIGN KEY (idStock) REFERENCES Stock(idStock),
   FOREIGN KEY (idCarrito) REFERENCES Carrito(idCarrito)
 ) ;
 
