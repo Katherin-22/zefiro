@@ -5,6 +5,7 @@ public class DetalleCarritoDTO {
     private Integer idDetalleCarrito;  
     private Double precioUnitario;
     private Integer cantidad;
+    private Integer descuentoProd;
     private Double subtotal;
 
     private Integer idCarrito;
@@ -36,6 +37,12 @@ public class DetalleCarritoDTO {
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
     }
+    public Integer getDescuentoProd() {
+        return descuentoProd;
+    }
+    public void setDescuentoProd(Integer descuentoProd) {
+        this.descuentoProd = descuentoProd;
+    }    
     public Double getSubtotal() {
         return subtotal;
     }

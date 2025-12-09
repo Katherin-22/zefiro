@@ -2,9 +2,6 @@ package com.backend.proyect.model.carrito;
 
 import java.time.LocalDate;
 
-import com.backend.proyect.model.productos.Color;
-import com.backend.proyect.model.productos.Producto;
-import com.backend.proyect.model.productos.Variacion;
 import com.backend.proyect.model.usuario.Usuario;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

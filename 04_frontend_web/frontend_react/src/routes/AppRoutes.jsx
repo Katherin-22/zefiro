@@ -83,6 +83,11 @@ import Login from '../components/iniciosesion/Login'
 ----------------------------- */
 import PerfilUsuario from '../pages/usuario/PerfilUsuario'
 
+/* -----------------------------
+   carrito
+----------------------------- */
+import GetCarrito from '../pages/carrito/GetCarrito'
+
 
 function AppRoutes() {
    return (
@@ -150,6 +155,7 @@ function AppRoutes() {
             {/* Ruta para el perfil*/}
             <Route  path='/perfilUsuario' element={<PerfilUsuario/>}/>
 
+            <Route path ='/carrito' element={<GetCarrito/>}/>
 
 
          </Routes>

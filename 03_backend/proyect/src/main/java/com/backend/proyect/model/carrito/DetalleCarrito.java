@@ -34,8 +34,11 @@ public class DetalleCarrito {
     @Column(name = "cantidad", nullable = false)
     private Integer cantidad;
 
+    @Column(name = "descuentoProd", nullable = false)
+    private Integer descuentoProd;
+
     @Column(name = "subtotal", nullable = false)
-    private Double subtotal;    
+    private Double subtotal;
 
     // Relación muchos a uno con carrito
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,22 +50,22 @@ public class DetalleCarrito {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idStock", nullable = true)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Stock stock;    
+    private Stock stock;
 
     public DetalleCarrito() {
     }
 
-    public DetalleCarrito(Double precioUnitario, Integer cantidad, 
-    Double subtotal, Carrito carrito, Stock stock) {
+    public DetalleCarrito(Double precioUnitario, Integer cantidad,
+            Integer descuentoProd, Double subtotal, Carrito carrito, Stock stock) {
         this.precioUnitario = precioUnitario;
         this.cantidad = cantidad;
+        this.descuentoProd = descuentoProd;
         this.subtotal = subtotal;
         this.carrito = carrito;
         this.stock = stock;
     }
 
     // getters y setters    
-
     public Integer getIdDetalleCarrito() {
         return idDetalleCarrito;
     }
@@ -85,6 +88,14 @@ public class DetalleCarrito {
 
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
+    }
+
+    public Integer getDescuentoProd() {
+        return descuentoProd;
+    }
+
+    public void setDescuentoProd(Integer descuentoProd) {
+        this.descuentoProd = descuentoProd;
     }
 
     public Double getSubtotal() {
@@ -112,4 +123,3 @@ public class DetalleCarrito {
     }
 
 }
-
