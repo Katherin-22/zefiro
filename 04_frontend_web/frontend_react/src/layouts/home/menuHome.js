@@ -202,8 +202,6 @@ const MenuHome = () => {
         </div>
       </nav>
 
-
-
       {/* Barra inferior móvil con 5 iconos Bootstrap */}
       <nav className="mobile-bottom-nav">
         <div className="mobile-nav-container">
