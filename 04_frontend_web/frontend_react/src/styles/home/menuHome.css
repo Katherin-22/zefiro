@@ -10,6 +10,10 @@
     --tran-03: all 0.3s ease;
     --tran-04: all 0.4s ease;
     --tran-05: all 0.5s ease;
+
+        --primary-color-80: rgba(224, 178, 83, 0.8);    /* 80% opaco */
+    --primary-color-50: rgba(224, 178, 83, 0.5);    /* 50% opaco */
+    --primary-color-20: rgba(224, 178, 83, 0.2);    /* 20% opaco */
 }
 
 /* ===== NAVBAR DESKTOP ===== */
@@ -44,6 +48,20 @@
     padding-left: 15px;
     padding-right: 25px;
     border-radius: 25px;
+}
+
+#navBarhome-calzado-menu ,.dropdown-menu, .dropdown-item{
+    background: var(--bg-body-light) !important;
+}
+.dropdown-menu{
+    border: 1px solid var(--primary-color) !important;
+    margin-top:15% !important;
+    box-shadow: 0 0 10px rgba(224, 178, 83, 0.5) !important;
+}
+
+.dropdown-item:hover{   
+    background: rgba(--primary-color-80) !important;
+    width: 100% !important;
 }
 
 #navBarHome-cart-icon,

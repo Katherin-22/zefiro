@@ -1,5 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { FiltroProvider } from "../utils/FiltroContextx";
+import ProtectedRoute from "../components/ProtectedRoute";
+import AccessDenied from "../pages/usuario/denied/accesDenied";
 /* -----------------------------
    Páginas públicas
 ----------------------------- */
@@ -92,53 +94,174 @@ function AppRoutes() {
             {/* Páginas públicas */}
             <Route path="/" element={<Home />} />
             <Route path="/Catalogo" element={<Catalogo />} />
-            <Route path="/home/:codigoReferencia" element={<ProductoGen />} />
-
+            <Route path="/home/:codigoReferencia" element={
+                  <ProductoGen />
+            } />
             {/* Administración general */}
-            <Route path="/Administrador/Inbox" element={<Inbox />} />
-            <Route path="/Administrador/Gestion_Devoluciones" element={<AdminDevoluciones />} />
-            <Route path="/Administrador/Gestion_Pagina" element={<GestionPagina />} />
-            <Route path="/Administrador/Gestion_Pedido" element={<GestionPedido />} />
-            <Route path="/Administrador/Usuarios" element={<AdminUserManagement />} />
-            <Route path="/Administrador/Gestion_Cambios" element={<GestionCambios />} />
-            <Route path="/Administrador/stock" element={<Stock />} />
+            <Route path="/Administrador/Inbox" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            }  />
+            <Route path="/Administrador/Gestion_Devoluciones" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/Administrador/Gestion_Pagina" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/Administrador/Gestion_Pedido" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/Administrador/Usuarios" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/Administrador/Gestion_Cambios" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/Administrador/stock" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
 
             {/* Producto */}
-            <Route path="/ver_producto" element={<GetProducto />} />
-            <Route path="/crear_producto" element={<CreateProducto />} />
-            <Route path="/producto/:idProducto" element={<UpdateProducto />} />
-            <Route path="/producto/:idProducto/imagenes" element={<CreateImagen />} />
-            <Route path="/producto/:idProducto/imagen/:idImagen" element={<UpdateImagen />} />
+            <Route path="/ver_producto" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/crear_producto" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/producto/:idProducto" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/producto/:idProducto/imagenes" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/producto/:idProducto/imagen/:idImagen" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
 
             {/* Categoría */}
-            <Route path="/ver_categoria" element={<GetCategoria />} />
-            <Route path="/categoria" element={<CreateCategoria />} />
-            <Route path="/categoria/:idCategoria" element={<UpdateCategoria />} />
+            <Route path="/ver_categoria" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/categoria" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/categoria/:idCategoria" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
 
             {/* Stock */}
-            <Route path="/stock/:idProducto" element={<CreateStock />} />
-            <Route path="/stock/producto/:idProducto" element={<GetIDStock />} />
-            <Route path="/producto/:idProducto/stock/:idStock" element={<UpdateStock />} />
+            <Route path="/stock/:idProducto"element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/stock/producto/:idProducto" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/producto/:idProducto/stock/:idStock" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
 
             {/* Promoción */}
-            <Route path="/ver_promocion" element={<GetPromocion />} />
-            <Route path="/crear_promocion" element={<CreatePromocion />} />
-            <Route path="/promocion/:idPromocion" element={<UpdatePromocion />} />
+            <Route path="/ver_promocion" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/crear_promocion" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/promocion/:idPromocion" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
 
             {/* Color */}
-            <Route path="/ver_color" element={<GetColor />} />
-            <Route path="/crear_color" element={<CreateColor />} />
-            <Route path="/color/:idColor" element={<UpdateColor />} />
+            <Route path="/ver_color" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/crear_color" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/color/:idColor" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
 
             {/* Marca */}
-            <Route path="/ver_marca" element={<GetMarca />} />
-            <Route path="/crear_marca" element={<CreateMarca />} />
-            <Route path="/marca/:idMarca" element={<UpdateMarca />} />
+            <Route path="/ver_marca" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/crear_marca" eelement={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/marca/:idMarca" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
 
             {/* Material */}
-            <Route path="/ver_material" element={<GetMaterial />} />
-            <Route path="/crear_material" element={<CreateMaterial />} />
-            <Route path="/material/:idMaterial" element={<UpdateMaterial />} />
+            <Route path="/ver_material" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/crear_material" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            <Route path="/material/:idMaterial" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
 
             {/* Autenticación */}
             {/* Ruta para el collage y el login */}
@@ -150,6 +273,10 @@ function AppRoutes() {
             {/* Ruta para el perfil*/}
             <Route  path='/perfilUsuario' element={<PerfilUsuario/>}/>
 
+            <Route path="/acceso-denegado" element={<AccessDenied />} />
+            
+            <Route path="*" element={<div>Página no encontrada</div>} />
+            
 
 
          </Routes>

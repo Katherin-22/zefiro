@@ -150,7 +150,10 @@ const MenuHome = () => {
                 <li><Link className="dropdown-item" id="navBarHome-profile" to="/profile">Perfil</Link></li>
                 <li><Link className="dropdown-item" id="navBarHome-orders" to="/profile">Pedidos</Link></li>
                 <li><hr className="dropdown-divider" id="navBarHome-profile-divider" /></li>
-                <li><Link className="dropdown-item" id="navBarHome-logout" to="/logout">Cerrar sesión</Link></li>
+                <li><Link className="dropdown-item" id="navBarHome-logout" onClick={() => {
+              localStorage.clear()
+              window.location.href = '/loginpage';
+             }}>Cerrar sesión</Link></li>
               </ul>
             </li>
 
@@ -199,10 +202,7 @@ const MenuHome = () => {
         </div>
       </nav>
 
-      {/* Contenido principal con padding para la barra inferior */}
-      <div className="mobile-content-wrapper">
-        <Outlet />
-      </div>
+
 
       {/* Barra inferior móvil con 5 iconos Bootstrap */}
       <nav className="mobile-bottom-nav">
