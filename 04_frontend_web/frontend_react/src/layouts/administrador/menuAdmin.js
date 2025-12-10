@@ -95,6 +95,14 @@ const MenuAdmin = () => {
         </div>
 
         <div id="admin-bottom-menu" className="botton-content">
+
+          <li id="admin-menu-logout" className="nav link">
+            <Link to={"/"} className="admin-menu-link admin-home-link">
+              <i className="bi bi-house admin-menu-icon"></i>
+              <span className="text nav-text admin-menu-text">Página Principal</span>
+            </Link>
+          </li>
+
           <li id="admin-menu-logout" className="nav link">
             <Link onClick={() => {
               localStorage.clear()
@@ -204,6 +212,19 @@ const MenuAdmin = () => {
               
               <hr id="dropdown-divider" className="dropdown-divider" />
               
+                            <Link 
+                id="dropdown-devoluciones"
+                to="/" 
+                className="dropdown-item"
+                onClick={() => {
+                  setActiveTab("devoluciones");
+                  document.querySelector('.admin-mobile-dropdown')?.classList.remove('show');
+                }}
+              >
+                <i className="bi bi-house dropdown-icon"></i>
+                <span className="dropdown-text">Página Principal</span>
+              </Link>
+
               <Link 
                 id="dropdown-logout"
                 to="/" 

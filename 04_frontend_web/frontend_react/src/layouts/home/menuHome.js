@@ -12,7 +12,7 @@ const MenuHome = () => {
   const { isMobile } = useResponsive();
   
   const [activeMobileNav, setActiveMobileNav] = useState('home');
-  const [cartItems, setCartItems] = useState(0);
+  const [cartItems] = useState(0); // agregar  setCartItems
   const [notification, setNotification] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,10 +41,10 @@ const MenuHome = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const addToCart = () => {
-    setCartItems(prev => prev + 1);
-    showNotification('Producto añadido al carrito!');
-  };
+  // const addToCart = () => {
+  //  setCartItems(prev => prev + 1);
+  //  showNotification('Producto añadido al carrito!');
+  //};
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -94,8 +94,8 @@ const MenuHome = () => {
               <ul className="dropdown-menu" id="navBarHome-calzado-menu">
                 <li><button className="dropdown-item" onClick={() => handleFiltro('calzado')}>Todo el Calzado</button></li>
                 <li><hr className="dropdown-divider" /></li>
-                <li><button className="dropdown-item" onClick={() => handleFiltro('mujer')}>Para Mujer</button></li>
-                <li><button className="dropdown-item" onClick={() => handleFiltro('hombre')}>Para Hombre</button></li>
+                <li><button className="dropdown-item" onClick={() => handleFiltro('Mujer')}>Para Mujer</button></li>
+                <li><button className="dropdown-item" onClick={() => handleFiltro('Hombre')}>Para Hombre</button></li>
                 <li><button className="dropdown-item" onClick={() => handleFiltro('nino')}>Para Niño</button></li>
               </ul>
             </li>
@@ -149,6 +149,7 @@ const MenuHome = () => {
                 <li><Link className="dropdown-item" id="navBarHome-login" to="/loginpage">Iniciar sesión</Link></li>
                 <li><Link className="dropdown-item" id="navBarHome-profile" to="/profile">Perfil</Link></li>
                 <li><Link className="dropdown-item" id="navBarHome-orders" to="/profile">Pedidos</Link></li>
+                <li><Link className="dropdown-item" id="navBarHome-orders" to="/Administrador/stock">Dashboard</Link></li>
                 <li><hr className="dropdown-divider" id="navBarHome-profile-divider" /></li>
                 <li><Link className="dropdown-item" id="navBarHome-logout" onClick={() => {
               localStorage.clear()

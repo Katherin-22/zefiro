@@ -50,6 +50,7 @@ export default function GetMaterial() {
     <nav>
         <MenuAdmin />
     </nav>
+    <div className="container-fluid" id='container-admin'>
     <div className="header">    
         <div className="row custom-header">
             <div className="col-3 d-flex align-items-center justify-content-between">
@@ -91,6 +92,7 @@ export default function GetMaterial() {
                 </table>
             </div>
         </div>
+</div>
 </div>
   )
 }

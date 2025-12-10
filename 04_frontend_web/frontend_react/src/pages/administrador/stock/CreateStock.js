@@ -68,6 +68,7 @@ export default function CreateStock() {
     <nav>
         <MenuAdmin />
     </nav>
+      <div className="container-fluid" id='container-admin'>
     <div className="header">    
         <div className="row custom-header">
             <div className="col-12 d-flex align-items-center justify-content-between px-4 w-100">
@@ -143,6 +144,7 @@ export default function CreateStock() {
             </Link>
         </div>
     </form>
+</div>
 </div>
 
   )

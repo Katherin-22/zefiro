@@ -6,6 +6,7 @@ const GestionCambios = () => {
     return (
     <div className="all">
       <MenuAdmin />
+      <div className="container-fluid" id='container-admin'></div>
       <div className="main-content">
         <div className="container">
         <div className="row border-bottom pb-2 mb-4">
@@ -16,6 +17,7 @@ const GestionCambios = () => {
         </div>
       </div>
     </div>
+    
     )
 }
 

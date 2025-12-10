@@ -8,6 +8,7 @@ const GestionPedido = () => {
     return (
 <div className="all">
       <MenuAdmin />
+      <div className="container-fluid" id='container-admin'>
       <div className="main-content">
         <div className="container">
 
@@ -89,7 +90,7 @@ const GestionPedido = () => {
 </div>
 
         </div>
-
+    </div>
 
     )
 }

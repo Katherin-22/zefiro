@@ -62,6 +62,7 @@ console.log("idProducto desde URL:", idProducto);
     <nav>
         <MenuAdmin />
     </nav>
+      <div className="container-fluid" id='container-admin'>
     <div className="header">    
         <div className="row custom-header">
             <div className="col-3 d-flex align-items-center justify-content-between">
@@ -108,6 +109,7 @@ console.log("idProducto desde URL:", idProducto);
                 </table>
             </div>
         </div>
+</div>
 </div>
   )
 }
