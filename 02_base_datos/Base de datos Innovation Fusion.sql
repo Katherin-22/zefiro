@@ -243,6 +243,7 @@ CREATE TABLE Pedido (
   idCarrito INT NOT NULL,
   idPromocion INT NOT NULL,
   idMetodoPago INT NOT NULL,
+  total int not null, 
   
   PRIMARY KEY(idPedido),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
