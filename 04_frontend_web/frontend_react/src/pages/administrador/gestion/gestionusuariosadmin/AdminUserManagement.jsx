@@ -4,7 +4,9 @@ import { PencilIcon, TrashIcon, UserPlusIcon, Search } from "lucide-react";
 import "../../../../styles/gestionusuarios/adminUsuarios.css";
 
 // 🔑 Importamos los subcomponentes y las constantes
+import MenuAdmin from "../../../../layouts/administrador/menuAdmin";
 import UserFormModal from "../../../../components/gestionusuarios/modals/UserFormModal";
+import '../../../../styles/administrador/inventario.css';
 import DeleteConfirmModal from "../../../../components/gestionusuarios/modals/DeleteConfirmModal";
 
 const AdminUserManagement = () => {
@@ -143,7 +145,12 @@ const AdminUserManagement = () => {
   // --------------------------------------------------------------------
 
   return (
+
     <div className="admin-theme">
+          <nav>
+      <MenuAdmin />
+    </nav>
+    <div className="container-fluid" id='container-admin'>
       <div className="admin-container">
         <div className="admin-header">
           <h2>Panel de Gestión de Usuarios</h2>
@@ -264,6 +271,7 @@ const AdminUserManagement = () => {
           onConfirm={handleDeleteUser}
         />
       </div>
+    </div>
     </div>
   );
 };

@@ -1,166 +1,365 @@
 import { Routes, Route } from "react-router-dom";
 import { FiltroProvider } from "../utils/FiltroContextx";
-/* -----------------------------
-   Páginas públicas
------------------------------ */
-import Home from "../pages/home/home";
-import Catalogo from "../pages/home/category/catalogo";
-import ProductoGen from "../pages/home/productoGen";
+import ProtectedRoute from "../components/ProtectedRoute";
+import AccessDenied from "../pages/usuario/denied/accesDenied";
 
-/* -----------------------------
-   Administración - General
------------------------------ */
-import Inbox from "../pages/administrador/inbox";
-import AdminDevoluciones from "../pages/administrador/gestion/gestiondevoluciones/AdminDevoluciones";
-import GestionCambios from "../pages/administrador/gestion/gestionCambios";
-import GestionPagina from "../pages/administrador/gestion/gestionPagina";
-import GestionPedido from "../pages/administrador/gestion/gestionPedido";
-import AdminUserManagement from "../pages/administrador/gestion/gestionusuariosadmin/AdminUserManagement";
-/* -----------------------------
-   Administración - Stock
------------------------------ */
-import Stock from "../pages/administrador/stock/Stock";
-import GetIDStock from "../pages/administrador/stock/GetIDStock";
-import CreateStock from "../pages/administrador/stock/CreateStock";
-import UpdateStock from "../pages/administrador/stock/UpdateStock";
+/* ==============================
+   IMPORTACIÓN DE PÁGINAS PÚBLICAS
+   (Acceso sin login)
+============================== */
+import Home from "../pages/home/home";                      // Página principal
+import Catalogo from "../pages/home/category/catalogo";     // Catálogo de productos
+import ProductoGen from "../pages/home/productoGen";        // Detalle de producto
 
-/* -----------------------------
-   Administración - Producto
------------------------------ */
-import GetProducto from "../pages/administrador/producto/GetProducto";
-import CreateProducto from "../pages/administrador/producto/CreateProducto";
-import UpdateProducto from "../pages/administrador/producto/UpdateProducto";
-import CreateImagen from "../pages/administrador/imagen/CreateImagen";
-import UpdateImagen from "../pages/administrador/imagen/UpdateImagen";
+/* ==============================
+   ADMINISTRACIÓN - GENERAL
+   (Dashboard principal)
+============================== */
+import Inbox from "../pages/administrador/inbox";                           // Bandeja de entrada
+import AdminDevoluciones from "../pages/administrador/gestion/gestiondevoluciones/AdminDevoluciones"; // Devoluciones
+import GestionCambios from "../pages/administrador/gestion/gestionCambios"; // Cambios de productos
+import GestionPagina from "../pages/administrador/gestion/gestionPagina";   // Configuración web
+import GestionPedido from "../pages/administrador/gestion/gestionPedido";   // Pedidos
+import AdminUserManagement from "../pages/administrador/gestion/gestionusuariosadmin/AdminUserManagement"; // Usuarios
 
-/* -----------------------------
-   Administración - Categoría
------------------------------ */
-import GetCategoria from "../pages/administrador/categoria/GetCategoria";
-import CreateCategoria from "../pages/administrador/categoria/CreateCategoria";
-import UpdateCategoria from "../pages/administrador/categoria/UpdateCategoria";
+/* ==============================
+   ADMINISTRACIÓN - STOCK
+   (Gestión de inventario)
+============================== */
+import Stock from "../pages/administrador/stock/Stock";                     // Vista general stock
+import GetIDStock from "../pages/administrador/stock/GetIDStock";           // Stock por producto
+import CreateStock from "../pages/administrador/stock/CreateStock";         // Crear stock
+import UpdateStock from "../pages/administrador/stock/UpdateStock";         // Actualizar stock
 
-/* -----------------------------
-   Administración - Promoción
------------------------------ */
-import GetPromocion from "../pages/administrador/promocion/GetPromocion";
-import CreatePromocion from "../pages/administrador/promocion/CreatePromocion";
-import UpdatePromocion from "../pages/administrador/promocion/UpdatePromocion";
+/* ==============================
+   ADMINISTRACIÓN - PRODUCTO
+   (CRUD de productos)
+============================== */
+import GetProducto from "../pages/administrador/producto/GetProducto";      // Listar productos
+import CreateProducto from "../pages/administrador/producto/CreateProducto"; // Crear producto
+import UpdateProducto from "../pages/administrador/producto/UpdateProducto"; // Editar producto
+import CreateImagen from "../pages/administrador/imagen/CreateImagen";       // Añadir imagen
+import UpdateImagen from "../pages/administrador/imagen/UpdateImagen";       // Editar imagen
 
-/* -----------------------------
-   Administración - Color
------------------------------ */
-import GetColor from "../pages/administrador/color/GetColor";
-import CreateColor from "../pages/administrador/color/CreateColor";
-import UpdateColor from "../pages/administrador/color/UpdateColor";
+/* ==============================
+   ADMINISTRACIÓN - CATEGORÍA
+   (Gestión de categorías)
+============================== */
+import GetCategoria from "../pages/administrador/categoria/GetCategoria";   // Listar categorías
+import CreateCategoria from "../pages/administrador/categoria/CreateCategoria"; // Crear categoría
+import UpdateCategoria from "../pages/administrador/categoria/UpdateCategoria"; // Editar categoría
 
-/* -----------------------------
-   Administración - Marca
------------------------------ */
-import GetMarca from "../pages/administrador/marca/GetMarca";
-import CreateMarca from "../pages/administrador/marca/CreateMarca";
-import UpdateMarca from "../pages/administrador/marca/UpdateMarca";
+/* ==============================
+   ADMINISTRACIÓN - PROMOCIÓN
+   (Gestión de descuentos)
+============================== */
+import GetPromocion from "../pages/administrador/promocion/GetPromocion";   // Listar promociones
+import CreatePromocion from "../pages/administrador/promocion/CreatePromocion"; // Crear promoción
+import UpdatePromocion from "../pages/administrador/promocion/UpdatePromocion"; // Editar promoción
 
-/* -----------------------------
-   Administración - Material
------------------------------ */
-import GetMaterial from "../pages/administrador/material/GetMaterial";
-import CreateMaterial from "../pages/administrador/material/CreateMaterial";
-import UpdateMaterial from "../pages/administrador/material/UpdateMaterial";
+/* ==============================
+   ADMINISTRACIÓN - COLOR
+   (Gestión de colores)
+============================== */
+import GetColor from "../pages/administrador/color/GetColor";               // Listar colores
+import CreateColor from "../pages/administrador/color/CreateColor";         // Crear color
+import UpdateColor from "../pages/administrador/color/UpdateColor";         // Editar color
 
-/* -----------------------------
-   Componentes de autenticación
------------------------------ */
-import LoginPage from '../pages/usuario/LoginPage'
-import RegistrarUsuarios from '../pages/usuario/RegistrarUsuarios'
-import RecuperarContraseña from '../pages/usuario/RecuperarContraseña'
-import Login from '../components/iniciosesion/Login'
+/* ==============================
+   ADMINISTRACIÓN - MARCA
+   (Gestión de marcas)
+============================== */
+import GetMarca from "../pages/administrador/marca/GetMarca";               // Listar marcas
+import CreateMarca from "../pages/administrador/marca/CreateMarca";         // Crear marca
+import UpdateMarca from "../pages/administrador/marca/UpdateMarca";         // Editar marca
 
+/* ==============================
+   ADMINISTRACIÓN - MATERIAL
+   (Gestión de materiales)
+============================== */
+import GetMaterial from "../pages/administrador/material/GetMaterial";      // Listar materiales
+import CreateMaterial from "../pages/administrador/material/CreateMaterial"; // Crear material
+import UpdateMaterial from "../pages/administrador/material/UpdateMaterial"; // Editar material
 
+/* ==============================
+   COMPONENTES DE AUTENTICACIÓN
+   (Login, registro, recuperación)
+============================== */
+import LoginPage from '../pages/usuario/LoginPage'                          // Página de login
+import RegistrarUsuarios from '../pages/usuario/RegistrarUsuarios'          // Registro
+import RecuperarContraseña from '../pages/usuario/RecuperarContraseña'      // Recuperar contraseña
+import Login from '../components/iniciosesion/Login'                        // Componente login
 
-/* -----------------------------
-   perfil - usuario
------------------------------ */
-import PerfilUsuario from '../pages/usuario/PerfilUsuario'
-
-/* -----------------------------
-   carrito
------------------------------ */
-import GetCarrito from '../pages/carrito/GetCarrito'
-
+/* ==============================
+   PERFIL USUARIO
+   (Área personal)
+============================== */
+import PerfilUsuario from '../pages/usuario/PerfilUsuario'                  // Perfil usuario
 
 function AppRoutes() {
    return (
-
       <FiltroProvider>
          <Routes>
-            {/* Páginas públicas */}
+            
+            {/* ========== RUTAS PÚBLICAS ========== */}
+            {/* 🏠 Página principal - Acceso libre */}
             <Route path="/" element={<Home />} />
+            
+            {/* 📚 Catálogo de productos - Acceso libre */}
             <Route path="/Catalogo" element={<Catalogo />} />
+            
+            {/* 👟 Detalle de producto - Acceso libre */}
             <Route path="/home/:codigoReferencia" element={<ProductoGen />} />
-
-            {/* Administración general */}
-            <Route path="/Administrador/Inbox" element={<Inbox />} />
-            <Route path="/Administrador/Gestion_Devoluciones" element={<AdminDevoluciones />} />
-            <Route path="/Administrador/Gestion_Pagina" element={<GestionPagina />} />
-            <Route path="/Administrador/Gestion_Pedido" element={<GestionPedido />} />
-            <Route path="/Administrador/Usuarios" element={<AdminUserManagement />} />
-            <Route path="/Administrador/Gestion_Cambios" element={<GestionCambios />} />
-            <Route path="/Administrador/stock" element={<Stock />} />
-
-            {/* Producto */}
-            <Route path="/ver_producto" element={<GetProducto />} />
-            <Route path="/crear_producto" element={<CreateProducto />} />
-            <Route path="/producto/:idProducto" element={<UpdateProducto />} />
-            <Route path="/producto/:idProducto/imagenes" element={<CreateImagen />} />
-            <Route path="/producto/:idProducto/imagen/:idImagen" element={<UpdateImagen />} />
-
-            {/* Categoría */}
-            <Route path="/ver_categoria" element={<GetCategoria />} />
-            <Route path="/categoria" element={<CreateCategoria />} />
-            <Route path="/categoria/:idCategoria" element={<UpdateCategoria />} />
-
-            {/* Stock */}
-            <Route path="/stock/:idProducto" element={<CreateStock />} />
-            <Route path="/stock/producto/:idProducto" element={<GetIDStock />} />
-            <Route path="/producto/:idProducto/stock/:idStock" element={<UpdateStock />} />
-
-            {/* Promoción */}
-            <Route path="/ver_promocion" element={<GetPromocion />} />
-            <Route path="/crear_promocion" element={<CreatePromocion />} />
-            <Route path="/promocion/:idPromocion" element={<UpdatePromocion />} />
-
-            {/* Color */}
-            <Route path="/ver_color" element={<GetColor />} />
-            <Route path="/crear_color" element={<CreateColor />} />
-            <Route path="/color/:idColor" element={<UpdateColor />} />
-
-            {/* Marca */}
-            <Route path="/ver_marca" element={<GetMarca />} />
-            <Route path="/crear_marca" element={<CreateMarca />} />
-            <Route path="/marca/:idMarca" element={<UpdateMarca />} />
-
-            {/* Material */}
-            <Route path="/ver_material" element={<GetMaterial />} />
-            <Route path="/crear_material" element={<CreateMaterial />} />
-            <Route path="/material/:idMaterial" element={<UpdateMaterial />} />
-
-            {/* Autenticación */}
-            {/* Ruta para el collage y el login */}
-            <Route  path='/loginpage' element={<LoginPage/>}/>
-            <Route  path='/registrarUsuarios' element={<RegistrarUsuarios/>}/>
-            <Route  path='/recuperarContraseña' element={<RecuperarContraseña/>}/>
-            <Route  path='/login' element={<Login/>}/>
-
-            {/* Ruta para el perfil*/}
-            <Route  path='/perfilUsuario' element={<PerfilUsuario/>}/>
-
-            <Route path ='/carrito' element={<GetCarrito/>}/>
-
-
+            
+            {/* ========== RUTAS DE ADMINISTRACIÓN ========== */}
+            {/* ✉️ Bandeja de entrada admin */}
+            <Route path="/Administrador/Inbox" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <Inbox />
+               </ProtectedRoute>
+            } />
+            
+            {/* 🔄 Gestión de devoluciones */}
+            <Route path="/Administrador/Gestion_Devoluciones" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminDevoluciones />
+               </ProtectedRoute>
+            } />
+            
+            {/* ⚙️ Configuración de página web */}
+            <Route path="/Administrador/Gestion_Pagina" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <GestionPagina />
+               </ProtectedRoute>
+            } />
+            
+            {/* 📦 Gestión de pedidos */}
+            <Route path="/Administrador/Gestion_Pedido" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <GestionPedido />
+               </ProtectedRoute>
+            } />
+            
+            {/* 👥 Gestión de usuarios (CRUD) */}
+            <Route path="/Administrador/Usuarios" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <AdminUserManagement />
+               </ProtectedRoute>
+            } />
+            
+            {/* 🔀 Gestión de cambios */}
+            <Route path="/Administrador/Gestion_Cambios" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <GestionCambios />
+               </ProtectedRoute>
+            } />
+            
+            {/* ========== CRUD PRODUCTOS ========== */}
+            {/* 📋 Listar todos los productos */}
+            <Route path="/ver_producto" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <GetProducto /> {/* CORREGIDO: antes tenía GetIDStock */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ➕ Crear nuevo producto */}
+            <Route path="/crear_producto" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <CreateProducto /> {/* CORREGIDO: antes tenía CreateStock */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ✏️ Editar producto existente */}
+            <Route path="/producto/:idProducto" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <UpdateProducto /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* 🖼️ Añadir imágenes a producto */}
+            <Route path="/producto/:idProducto/imagenes" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <CreateImagen /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* 🖋️ Editar imagen específica */}
+            <Route path="/producto/:idProducto/imagen/:idImagen" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <UpdateImagen /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ========== CRUD CATEGORÍAS ========== */}
+            {/* 📋 Listar categorías */}
+            <Route path="/ver_categoria" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <GetCategoria /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ➕ Crear nueva categoría */}
+            <Route path="/categoria" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <CreateCategoria /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ✏️ Editar categoría existente */}
+            <Route path="/categoria/:idCategoria" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <UpdateCategoria /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ========== CRUD STOCK ========== */}
+            {/* ➕ Crear stock para producto */}
+            <Route path="/stock/:idProducto" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <CreateStock /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* 👀 Ver stock de producto */}
+            <Route path="/stock/producto/:idProducto" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <GetIDStock /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ✏️ Actualizar stock específico */}
+            <Route path="/producto/:idProducto/stock/:idStock" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <UpdateStock /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ========== CRUD PROMOCIONES ========== */}
+            {/* 🏷️ Listar promociones */}
+            <Route path="/ver_promocion" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <GetPromocion /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ➕ Crear nueva promoción */}
+            <Route path="/crear_promocion" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <CreatePromocion /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ✏️ Editar promoción existente */}
+            <Route path="/promocion/:idPromocion" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <UpdatePromocion /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ========== CRUD COLORES ========== */}
+            {/* 🎨 Listar colores */}
+            <Route path="/ver_color" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <GetColor /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ➕ Crear nuevo color */}
+            <Route path="/crear_color" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <CreateColor /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ✏️ Editar color existente */}
+            <Route path="/color/:idColor" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <UpdateColor /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ========== CRUD MARCAS ========== */}
+            {/* 🏭 Listar marcas */}
+            <Route path="/ver_marca" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <GetMarca /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ➕ Crear nueva marca */}
+            <Route path="/crear_marca" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <CreateMarca /> {/* CORREGIDO: tenía typo "eelement" */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ✏️ Editar marca existente */}
+            <Route path="/marca/:idMarca" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <UpdateMarca /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ========== CRUD MATERIALES ========== */}
+            {/* 🧵 Listar materiales */}
+            <Route path="/ver_material" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <GetMaterial /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ➕ Crear nuevo material */}
+            <Route path="/crear_material" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <CreateMaterial /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ✏️ Editar material existente */}
+            <Route path="/material/:idMaterial" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <UpdateMaterial /> {/* CORREGIDO: antes tenía AdminUserManagement */}
+               </ProtectedRoute>
+            } />
+            
+            {/* ========== PANEL STOCK GENERAL ========== */}
+            {/* 📊 Vista general de stock */}
+            <Route path="/Administrador/stock" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <Stock />
+               </ProtectedRoute>
+            } />
+            
+            {/* ========== AUTENTICACIÓN ========== */}
+            {/* 🔐 Página de login principal */}
+            <Route path='/loginpage' element={<LoginPage/>}/>
+            
+            {/* 📝 Formulario de registro */}
+            <Route path='/registrarUsuarios' element={<RegistrarUsuarios/>}/>
+            
+            {/* 🔓 Recuperación de contraseña */}
+            <Route path='/recuperarContraseña' element={<RecuperarContraseña/>}/>
+            
+            {/* 👤 Componente de login */}
+            <Route path='/login' element={<Login/>}/>
+            
+            {/* ========== PERFIL USUARIO ========== */}
+            {/* 👤 Perfil protegido (requiere login) */}
+            <Route path='/perfilUsuario' element={
+               <ProtectedRoute>
+                  <PerfilUsuario />
+               </ProtectedRoute>
+            }/>
+            
+            {/* ========== PÁGINAS DE ERROR ========== */}
+            {/* 🚫 Acceso denegado */}
+            <Route path="/acceso-denigado" element={<AccessDenied />} />
+            
+            {/* ❌ Página no encontrada (404) */}
+            <Route path="*" element={<div>Página no encontrada</div>} />
+            
          </Routes>
       </FiltroProvider>
-
    );
 }
 

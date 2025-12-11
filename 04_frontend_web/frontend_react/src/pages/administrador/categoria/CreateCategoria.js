@@ -9,8 +9,8 @@ import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
 
 export default function CreateCategoria() {
-{/*navigate=useNavigate():Sirve para moverte entre páginas desde el código */}
-{/*navigate("/"); // me lleva a la página principal */}
+// navigate=useNavigate():Sirve para moverte entre páginas desde el código 
+//navigate("/"); // me lleva a la página principal 
     
     let navigate=useNavigate();
 
@@ -20,7 +20,7 @@ export default function CreateCategoria() {
     });
 
     const [loading, setLoad] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const [ setSuccess] = useState(false);
     
     const { nombreCategoria } = categoria;
 
@@ -62,6 +62,7 @@ export default function CreateCategoria() {
     <nav>
         <MenuAdmin />
     </nav>
+    <div className="container-fluid" id='container-admin'>
     <div className="header">    
         <div className="row custom-header">
             <div className="col-12 d-flex align-items-center justify-content-between px-4 w-100">
@@ -115,6 +116,6 @@ export default function CreateCategoria() {
         </div>
     </form>
 </div>
-
+</div>
   )
 }

@@ -4,6 +4,8 @@ import { PencilIcon, TrashIcon, UserPlusIcon, Search } from "lucide-react";
 import "../../../../styles/gestionardevoluciones/adminDevoluciones.css";
 import DevolucionFormModal from "../../../../components/gestiondevoluciones/modals/DevolucionFormModal";
 import DeleteConfirmModal from "../../../../components/gestiondevoluciones/modals/DeleteConfirmModal";
+import '../../../../styles/administrador/inventario.css';
+import MenuAdmin from "../../../../layouts/administrador/menuAdmin";
 
 const AdminDevoluciones = () => {
   const [devoluciones, setDevoluciones] = useState([]);
@@ -69,6 +71,10 @@ const AdminDevoluciones = () => {
 
   return (
     <div className="admin2-theme">
+          <nav>
+      <MenuAdmin />
+    </nav>
+    <div className="container-fluid" id='container-admin'>
       <div className="admin-container">
         <div className="admin-header">
           <h2>Panel de Gestión de Devoluciones</h2>
@@ -120,6 +126,7 @@ const AdminDevoluciones = () => {
         <DevolucionFormModal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setDevolucionToEdit(null); }} onSave={handleSaveDevolucion} devolucionToEdit={devolucionToEdit} />
         <DeleteConfirmModal isOpen={!!devolucionToDelete} onClose={() => setDevolucionToDelete(null)} devolucionName={devolucionToDelete?.id_devolucion || ""} onConfirm={handleDeleteDevolucion} />
       </div>
+    </div>
     </div>
   );
 };

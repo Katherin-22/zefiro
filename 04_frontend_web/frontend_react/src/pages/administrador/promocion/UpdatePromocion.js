@@ -7,8 +7,8 @@ import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
 
 export default function UpdatePromocion() {
-{/*navigate=useNavigate():Sirve para moverte entre páginas desde el código */}
-{/*navigate("/"); // me lleva a la página principal */}
+// navigate=useNavigate():Sirve para moverte entre páginas desde el código 
+// avigate("/"); // me lleva a la página principal 
     
     let navigate=useNavigate();
 
@@ -17,7 +17,7 @@ export default function UpdatePromocion() {
     const { idPromocion } = useParams(); // esto se usa cuando se va a editar
 
     const [loading, setLoading] = useState(true);
-    const [success, setSuccess] = useState(false);
+    const [ setSuccess] = useState(false);
 
     const [promocion,setPromocion]=useState({ 
         nombrePromocion:"",
@@ -94,6 +94,7 @@ export default function UpdatePromocion() {
     <nav>
         <MenuAdmin />
     </nav>
+    <div className="container-fluid" id='container-admin'>
     <div className="header">    
         <div className="row custom-header">
             <div className="col-12 d-flex align-items-center justify-content-between px-4 w-100">
@@ -192,6 +193,6 @@ export default function UpdatePromocion() {
         </div>
     </form>
 </div>
-
+</div>
   )
 }

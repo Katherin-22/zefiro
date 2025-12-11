@@ -24,6 +24,7 @@ const GestionPagina = () => {
   return (
     <div className="all">
       <MenuAdmin />
+      <div className="container-fluid" id='container-admin'>
       <div className="main-content">
         <div className="container py-4">
           <h2 className="text-center mb-4">Gestión de Banners</h2>
@@ -35,6 +36,7 @@ const GestionPagina = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

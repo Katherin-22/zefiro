@@ -103,7 +103,7 @@ export default function Home() {
     if (producto.idProducto && imagenesProductos[producto.idProducto]) {
       return imagenesProductos[producto.idProducto];
     }
-    return producto.imagen || "/imagenes_prueba/default.jpg";
+    return producto.imagen || "/iamgenes_prueba/zapato/im6.jpg"; // Imagen por defecto
   };
 
   // Función para manejar favoritos

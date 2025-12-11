@@ -1,0 +1,602 @@
+/* ===== VARIABLES GLOBALES ADMIN - DISEÑO BLANCO ELEGANTE ===== */
+:root {
+    /* Sidebar Desktop - Blanco Puro */
+    --sidebar-bg: #ffffff;
+    --sidebar-bg-hover: #f8f9fa;
+    --sidebar-primary: #E0B253;
+    --sidebar-primary-light: rgba(224, 178, 83, 0.1);
+    --sidebar-primary-dark: #c89c3f;
+    --sidebar-text: #2c3e50;
+    --sidebar-text-light: #7f8c8d;
+    --sidebar-text-muted: #95a5a6;
+    --sidebar-border: #e8e8e8;
+    --sidebar-border-light: #f0f0f0;
+    --sidebar-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --sidebar-shadow-hover: 0 4px 12px rgba(224, 178, 83, 0.12);
+    
+    /* Mobile Bottom Nav - WhatsApp Blanco */
+    --mobile-bg: #ffffff;
+    --mobile-border: #e0e0e0;
+    --mobile-inactive: #8a8a8f;
+    --mobile-active: #E0B253;
+    --mobile-active-light: rgba(224, 178, 83, 0.08);
+    --mobile-text: #1a1a1a;
+    --mobile-text-light: #666666;
+    --mobile-hover: #f9f9f9;
+    
+    /* Transiciones Suaves */
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: all 0.35s ease;
+    
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-full: 50%;
+}
+
+/* ===== SLIDEBAR DESKTOP - DISEÑO BLANCO PURISTA ===== */
+#admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    background: var(--sidebar-bg);
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04);
+    transition: var(--transition-slow);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-right: 1px solid var(--sidebar-border);
+}
+
+#admin-sidebar.close {
+    width: 70px;
+}
+
+/* Header Limpio */
+#admin-sidebar-header {
+    padding: 24px 20px;
+    position: relative;
+    background: var(--sidebar-bg);
+    border-bottom: 1px solid var(--sidebar-border-light);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#admin-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#admin-logo-image {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, 
+        var(--sidebar-primary) 0%,
+        var(--sidebar-primary-dark) 100%);
+    flex-shrink: 0;
+}
+
+#admin-logo {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+#admin-title-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#admin-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--sidebar-text);
+    letter-spacing: 0.3px;
+}
+
+#admin-subtitle {
+    font-size: 11px;
+    color: var(--sidebar-text-light);
+    font-weight: 400;
+    margin-top: 2px;
+}
+
+/* Botón Toggle - Siempre visible y elegante */
+#admin-toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: -16px;
+    transform: translateY(-50%);
+    height: 32px;
+    width: 32px;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
+    border: 1px solid var(--sidebar-border);
+    z-index: 1001;
+}
+
+#admin-toggle-btn:hover {
+    background: var(--sidebar-primary);
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 12px rgba(224, 178, 83, 0.2);
+    border-color: var(--sidebar-primary);
+}
+
+#admin-sidebar.close #admin-toggle-btn {
+    transform: translateY(-50%) rotate(180deg);
+    right: -14px;
+}
+
+#admin-sidebar.close #admin-toggle-btn:hover {
+    transform: translateY(-50%) rotate(180deg) scale(1.1);
+}
+
+/* Ocultar título cuando está cerrado */
+#admin-sidebar.close #admin-title-container {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+/* Menu Container */
+#admin-menu-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 12px;
+    overflow-y: auto;
+}
+
+#admin-main-menu {
+    flex: 1;
+}
+
+#admin-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Menu Items - Minimalistas */
+.admin-nav-link {
+    margin-bottom: 4px;
+}
+
+.admin-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    text-decoration: none;
+    color: var(--sidebar-text-light);
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+    position: relative;
+    border: 1px solid transparent;
+}
+
+.admin-menu-link:hover {
+    background: var(--sidebar-bg-hover);
+    color: var(--sidebar-text);
+    transform: translateX(4px);
+}
+
+/* Estado Activo - Sutil pero distinguible */
+.admin-nav-link.active .admin-menu-link {
+    background: var(--sidebar-primary-light);
+    color: var(--sidebar-primary);
+    border-left: 3px solid var(--sidebar-primary);
+    font-weight: 500;
+}
+
+.admin-nav-link.active .admin-menu-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 24px;
+    background: var(--sidebar-primary);
+    border-radius: 0 2px 2px 0;
+}
+
+/* Icons */
+.admin-menu-icon {
+    font-size: 20px;
+    min-width: 24px;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.admin-menu-link:hover .admin-menu-icon {
+    transform: scale(1.1);
+}
+
+.admin-nav-link.active .admin-menu-icon {
+    color: var(--sidebar-primary);
+}
+
+/* Menu Text */
+.admin-menu-text {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: var(--transition);
+}
+
+#admin-sidebar.close .admin-menu-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+}
+
+/* Tooltip cuando está cerrado - Blanco y limpio */
+#admin-sidebar.close .admin-menu-link:hover .admin-menu-text {
+    opacity: 1;
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    color: var(--sidebar-text);
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    margin-left: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: auto;
+    min-width: max-content;
+    border: 1px solid var(--sidebar-border);
+    font-size: 13px;
+    font-weight: 500;
+    animation: fadeInTooltip 0.2s ease-out;
+}
+
+@keyframes fadeInTooltip {
+    from {
+        opacity: 0;
+        transform: translateY(-50%) translateX(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+/* Bottom Menu */
+#admin-bottom-menu {
+    padding: 16px 12px;
+    border-top: 1px solid var(--sidebar-border-light);
+    margin-top: auto;
+}
+
+.admin-logout-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    text-decoration: none;
+    color: #e74c3c;
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+    border: 1px solid rgba(231, 76, 60, 0.1);
+    background: rgba(231, 76, 60, 0.03);
+}
+
+.admin-logout-link:hover {
+    background: rgba(231, 76, 60, 0.08);
+    color: #c0392b;
+    transform: translateX(4px);
+}
+
+.admin-logout-link .admin-menu-icon {
+    color: #e74c3c;
+}
+
+/* ===== MENÚ MÓVIL WHATSAPP-STYLE - BLANCO Y LIMPIO ===== */
+#admin-mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--mobile-bg);
+    border-top: 1px solid var(--mobile-border);
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+#admin-mobile-nav-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+    padding: 0 8px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Items estilo WhatsApp moderno */
+.admin-mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-decoration: none;
+    color: var(--mobile-inactive);
+    transition: var(--transition);
+    position: relative;
+    min-width: 0;
+    padding: 8px 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* Icono */
+.mobile-nav-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+    transition: var(--transition);
+    position: relative;
+}
+
+/* Texto debajo del icono */
+.mobile-nav-text {
+    font-size: 10px;
+    font-weight: 500;
+    transition: var(--transition);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Efecto hover sutil */
+.admin-mobile-nav-item:hover {
+    color: var(--mobile-active);
+    background: var(--mobile-hover);
+}
+
+/* Estado activo */
+.admin-mobile-nav-item.active {
+    color: var(--mobile-active);
+}
+
+/* Indicador de activo (línea superior) */
+.admin-mobile-nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background: var(--mobile-active);
+    border-radius: 2px;
+}
+
+/* Icono activo */
+.admin-mobile-nav-item.active .mobile-nav-icon {
+    color: var(--mobile-active);
+    transform: scale(1.1);
+}
+
+/* Texto activo */
+.admin-mobile-nav-item.active .mobile-nav-text {
+    color: var(--mobile-active);
+    font-weight: 600;
+}
+
+/* Dropdown */
+.admin-mobile-dropdown {
+    position: relative;
+}
+
+.admin-mobile-dropdown-btn {
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--mobile-inactive);
+    transition: var(--transition);
+    padding: 8px 2px;
+    border-radius: var(--radius-sm);
+}
+
+.admin-mobile-dropdown-btn:hover {
+    color: var(--mobile-active);
+}
+
+/* Menú dropdown */
+.admin-mobile-dropdown-menu {
+    position: absolute;
+    bottom: 100%;
+    right: 8px;
+    width: 180px;
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: var(--transition);
+    z-index: 1001;
+    margin-bottom: 12px;
+    border: 1px solid var(--mobile-border);
+}
+
+.admin-mobile-dropdown.show .admin-mobile-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Items del dropdown */
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    text-decoration: none;
+    color: var(--mobile-text);
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    margin-bottom: 2px;
+}
+
+.dropdown-item:hover {
+    background: var(--mobile-hover);
+    color: var(--mobile-active);
+}
+
+.dropdown-icon {
+    font-size: 16px;
+    width: 20px;
+}
+
+.dropdown-text {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Divider */
+.dropdown-divider {
+    height: 1px;
+    background: var(--mobile-border);
+    margin: 6px 0;
+    border: none;
+}
+
+/* Cerrar sesión en dropdown */
+.dropdown-item.logout {
+    color: #e74c3c;
+}
+
+.dropdown-item.logout:hover {
+    background: rgba(231, 76, 60, 0.08);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 767.98px) {
+    #admin-sidebar {
+        display: none !important;
+    }
+    
+    #admin-mobile-nav {
+        display: block !important;
+    }
+}
+
+@media (min-width: 768px) {
+    #admin-mobile-nav {
+        display: none !important;
+    }
+    
+    #admin-sidebar {
+        display: flex !important;
+    }
+}
+
+/* iPhone X+ support */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    #admin-mobile-nav {
+        height: calc(60px + env(safe-area-inset-bottom));
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+/* Scrollbar personalizado sutil */
+#admin-menu-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+#admin-menu-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#admin-menu-container::-webkit-scrollbar-thumb {
+    background: var(--sidebar-border);
+    border-radius: 4px;
+}
+
+#admin-menu-container::-webkit-scrollbar-thumb:hover {
+    background: var(--sidebar-text-muted);
+}
+
+/* Animación de entrada suave */
+#admin-sidebar {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Efecto de separación entre items */
+.admin-nav-link:not(:last-child) {
+    margin-bottom: 2px;
+}
+
+/* Efecto de hover más sutil en móvil */
+@media (hover: hover) and (pointer: fine) {
+    .admin-mobile-nav-item:hover {
+        background: var(--mobile-hover);
+    }
+}
+
+/* Asegurar que los textos no se rompan */
+.admin-menu-text,
+.mobile-nav-text,
+.dropdown-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Estados focus para accesibilidad */
+.admin-menu-link:focus-visible,
+.admin-mobile-dropdown-btn:focus-visible,
+.dropdown-item:focus-visible {
+    outline: 2px solid var(--sidebar-primary);
+    outline-offset: 2px;
+}

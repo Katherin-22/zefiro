@@ -7,8 +7,9 @@ import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
 
 export default function CreateColor() {
-{/*navigate=useNavigate():Sirve para moverte entre páginas desde el código */}
-{/*navigate("/"); // me lleva a la página principal */}
+// navigate=useNavigate():Sirve para moverte entre páginas desde el código 
+// navigate("/"); 
+// me lleva a la página principal 
     
     let navigate=useNavigate();
 
@@ -19,7 +20,7 @@ export default function CreateColor() {
     const { nombreColor } = colores;    
 
     const [loading, setLoad] = useState(false);
-    const [success, setSuccess] = useState(false)
+    const [ setSuccess] = useState(false)
 
     const handleCreateColores = async (data) => {
         setLoad(true); // paso 1: activar "cargando"
@@ -58,6 +59,7 @@ export default function CreateColor() {
     <nav>
         <MenuAdmin />
     </nav>
+    <div className="container-fluid" id='container-admin'>
     <div className="header">    
         <div className="row custom-header">
             <div className="col-12 d-flex align-items-center justify-content-between px-4 w-100">
@@ -99,6 +101,6 @@ export default function CreateColor() {
         </div>
     </form>
 </div>
-
+</div>
   )
 }

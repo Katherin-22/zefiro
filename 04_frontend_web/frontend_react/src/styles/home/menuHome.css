@@ -1,3 +1,4 @@
+/* ===== VARIABLES GLOBALES ===== */
 :root {
     --primary-color: #E0B253;
     --secondary-color: #000000;
@@ -9,12 +10,17 @@
     --tran-03: all 0.3s ease;
     --tran-04: all 0.4s ease;
     --tran-05: all 0.5s ease;
+
+        --primary-color-80: rgba(224, 178, 83, 0.8);    /* 80% opaco */
+    --primary-color-50: rgba(224, 178, 83, 0.5);    /* 50% opaco */
+    --primary-color-20: rgba(224, 178, 83, 0.2);    /* 20% opaco */
 }
 
+/* ===== NAVBAR DESKTOP ===== */
 #navBarHome {
     background: var(--bg-body-light);
     font-size: 18px;
-    position: sticky; /* Necesario para el pseudo-elemento */
+    position: sticky;
     margin-top: -46px;
 }
 
@@ -22,20 +28,21 @@
     content: '';
     position: absolute;
     bottom: 0;
-    left: 20px; /* No empieza desde el borde izquierdo */
-    right: 20px; /* No llega al borde derecho */
+    left: 20px;
+    right: 20px;
     height: 1px;
     background: var(--primary-color);
 }
 
-#navBarHome-container{
+#navBarHome-container {
     padding: 2px !important;
     margin: 0 10px !important;
 }
 
-#navBarHome-calzado-btn , #navBarHome-bolsos-btn ,
-#navBarHome-novedades-btn 
-{
+/* Botones de navegación */
+#navBarHome-calzado-btn,
+#navBarHome-bolsos-btn,
+#navBarHome-novedades-btn {
     color: var(--primary-color) !important;
     margin-left: 5px;
     padding-left: 15px;
@@ -43,24 +50,37 @@
     border-radius: 25px;
 }
 
- #navBarHome-cart-icon ,
-#navBarHome-favorites-icon , #navBarHome-profile-icon ,
-#navBarHome-profile-btn{
-        color: var(--primary-color) !important;
+#navBarhome-calzado-menu ,.dropdown-menu, .dropdown-item{
+    background: var(--bg-body-light) !important;
+}
+.dropdown-menu{
+    border: 1px solid var(--primary-color) !important;
+    margin-top:15% !important;
+    box-shadow: 0 0 10px rgba(224, 178, 83, 0.5) !important;
+}
+
+.dropdown-item:hover{   
+    background: rgba(--primary-color-80) !important;
+    width: 100% !important;
+}
+
+#navBarHome-cart-icon,
+#navBarHome-favorites-icon,
+#navBarHome-profile-icon,
+#navBarHome-profile-btn {
+    color: var(--primary-color) !important;
     margin-left: 5px;
     padding-left: 15px;
     padding-right: 15px;
     border-radius: 25px;
 }
 
-
-
-#navBarHome-calzado-btn:hover, 
+/* Hover effects */
+#navBarHome-calzado-btn:hover,
 #navBarHome-bolsos-btn:hover,
 #navBarHome-novedades-btn:hover {
     background-color: rgba(224, 178, 83, 0.2) !important;
-    /* Convertir #E0B253 a rgba(224, 178, 83) */
-     transition: all 0.5s ease;
+    transition: var(--tran-05);
 }
 
 #navBarHome-cart-icon:hover,
@@ -69,57 +89,65 @@
     color: var(--hover-color) !important;
     filter: drop-shadow(0 0 10px rgba(224, 178, 83, 0.8));
     transform: scale(1.9);
-     transition: all 0.3s ease;
+    transition: var(--tran-03);
 }
-  
-#navBarHome-cart-icon{
+
+/* Posicionamiento específico */
+#navBarHome-cart-icon {
     margin-right: 25px;
 }
 
-#navBarHome-calzado-btn{
+#navBarHome-calzado-btn {
     margin-left: 25px;
 }
 
-#navBarHome-brand{
+/* Logo */
+#navBarHome-brand {
     font-weight: bold;
     color: var(--primary-color);
     margin-left: 15px;
 }
 
-#navBarHome-brand:hover{
+#navBarHome-brand:hover {
     transform: scale(1.1);
     margin-top: -5px;
-     transition: all 0.5s ease;
+    transition: var(--tran-05);
 }
 
-#navBarHome-search-input{
+/* Buscador */
+#navBarHome-search-input {
     border: 2px solid var(--primary-color);
     border-radius: 12px;
     color: var(--text-dark) !important;
     background: var(--bg-body-light);
 }
 
-#navBarHome-search-input::placeholder{
+#navBarHome-search-input::placeholder {
     color: var(--text-dark) !important;
 }
 
-#navBarHome-search-input:focus{
+#navBarHome-search-input:focus {
     box-shadow: 0 0 15px rgba(224, 178, 83, 0.6);
     border: 2px solid var(--primary-color);
 }
 
-#navBarHome-search-btn{
+#navBarHome-search-btn {
     background: var(--primary-color);
     border: 1px solid var(--primary-color);
     border-radius: 12px;
 }
 
-#navBarHome-search-btn:hover{
+#navBarHome-search-btn:hover {
     background: var(--secondary-color);
     border: 1px solid var(--hover-color);
     box-shadow: 0 0 15px rgba(224, 178, 83, 0.6);
     color: var(--primary-color);
-     transition: all 0.4s ease;
+    transition: var(--tran-04);
 }
 
-
+/* ===== RESPONSIVE: OCULTAR DESKTOP EN MÓVIL ===== */
+@media (max-width: 767.98px) {
+    #navBarHome {
+        display: none !important;
+    }
+}
