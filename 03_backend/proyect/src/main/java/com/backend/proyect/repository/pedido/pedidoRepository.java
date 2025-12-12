@@ -2,6 +2,8 @@ package com.backend.proyect.repository.pedido;
 
 import com.backend.proyect.model.pedido.Pedido;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -10,7 +12,9 @@ import java.util.List;
 @Repository
 public interface pedidoRepository extends JpaRepository<Pedido, Integer> {
     
-    List<Pedido> findByUsuarioId(Integer idUsuario);
+    // OPCIÓN ALTERNATIVA con @Query (mantiene el nombre findByUsuarioId)
+    @Query("SELECT p FROM Pedido p WHERE p.usuario.idUsuario = :idUsuario")
+    List<Pedido> findByUsuarioId(@Param("idUsuario") Integer idUsuario);
     
     List<Pedido> findByEstado(String estado);
     

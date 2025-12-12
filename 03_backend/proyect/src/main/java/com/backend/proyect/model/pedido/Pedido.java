@@ -1,7 +1,6 @@
 package com.backend.proyect.model.pedido;
 
 import com.backend.proyect.model.usuario.Usuario;
-import com.backend.proyect.model.carrito.Carrito;
 import com.backend.proyect.model.promociones.Promocion;
 import com.backend.proyect.model.metodosPago.MetodoPago;
 import jakarta.persistence.*;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.time.LocalDate;
 
-@Entity
+@Entity 
 @Table(name = "Pedido")
 @Data
 @NoArgsConstructor
@@ -27,9 +26,9 @@ public class Pedido {
     @JoinColumn(name = "idUsuario")
     private Usuario usuario;
     
-    @OneToOne
-    @JoinColumn(name = "idCarrito")
-    private Carrito carrito;
+  //  @OneToOne
+   // @JoinColumn(name = "idCarrito")
+   // private Carrito carrito;  // DESCOMENTA ESTO cuando crees la clase Carrito
     
     @ManyToOne
     @JoinColumn(name = "idPromocion")
@@ -39,12 +38,14 @@ public class Pedido {
     @JoinColumn(name = "idMetodoPago")
     private MetodoPago metodoPago;
     
+    // ¡CORREGIDO! Agrega la definición de columna
+    @Column(columnDefinition = "ENUM('Pendiente', 'Enviado', 'Entregado')")
     private String estado;
     
     @PrePersist
     public void prePersist() {
         if (fechaPedido == null) fechaPedido = LocalDate.now();
-        if (estado == null) estado = "PENDIENTE";
+        if (estado == null) estado = "Pendiente";  // Cambia a "Pendiente" con mayúscula inicial
     }
 
     @Column(name = "total")

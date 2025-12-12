@@ -10,7 +10,7 @@ import AccessDenied from "../pages/usuario/denied/accesDenied";
 import Home from "../pages/home/home";                      // Página principal
 import Catalogo from "../pages/home/category/catalogo";     // Catálogo de productos
 import ProductoGen from "../pages/home/productoGen";        // Detalle de producto
-
+import CategoriasMobilePage from "../pages/home/category/categorias";
 /* ==============================
    ADMINISTRACIÓN - GENERAL
    (Dashboard principal)
@@ -336,6 +336,7 @@ function AppRoutes() {
             
             {/* 📝 Formulario de registro */}
             <Route path='/registrarUsuarios' element={<RegistrarUsuarios/>}/>
+            <Route path="/categorias-mobile" element={<CategoriasMobilePage />} />
             
             {/* 🔓 Recuperación de contraseña */}
             <Route path='/recuperarContraseña' element={<RecuperarContraseña/>}/>

@@ -1,0 +1,310 @@
+/* categoriasMobilePage.css - PÁGINA COMPLETA PARA MÓVIL */
+:root {
+  --primary-color: #E0B253;
+  --secondary-color: #000000;
+  --bg-body-dark: #000000;
+  --bg-body-light: #ffffff;
+  --text-light: #e4e9f7;
+  --text-dark: #000000;
+  --hover-color: #c89c3f;
+  --tran-03: all 0.3s ease;
+  --tran-04: all 0.4s ease;
+  --tran-05: all 0.5s ease;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.categorias-page-container {
+  min-height: 100vh;
+  background: var(--bg-body-light);
+}
+
+.categorias-page-content {
+  padding-top: 20px;
+}
+
+/* HEADER DE PÁGINA */
+.categorias-page-header {
+    background: var(--primary-color);
+  padding: 18px 25px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  margin-top: 8% !important;
+  margin: 15px;
+  border-radius: 15px;
+  box-shadow: 0 0 5px  rgba(0, 0, 0, 0.8) ;
+}
+
+.categorias-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.categorias-back-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-dark);
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: var(--tran-03);
+}
+
+.categorias-back-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.categorias-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--secondary-color);
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.categorias-header-spacer {
+  width: 40px; /* Igual al botón de volver */
+}
+
+.categorias-page-subtitle {
+  font-size: 14px;
+  color: var(--text-dark);
+  opacity: 0.7;
+  text-align: center;
+  margin: 0;
+  padding: 0 15px;
+}
+
+/* GRID DE CATEGORÍAS - DISEÑO MÓVIL */
+.categorias-grid-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+  padding: 0 20px;
+  padding-bottom: 100px; /* Espacio para el footer */
+}
+
+/* TARJETA DE CATEGORÍA */
+.categoria-card-mobile {
+  background: var(--bg-body-light);
+  border-radius: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: var(--tran-03);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.categoria-card-mobile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-color);
+}
+
+.categoria-card-content {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  gap: 20px;
+}
+
+.categoria-icon-container {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--categoria-color, var(--primary-color)) 20%, white 80%),
+    color-mix(in srgb, var(--categoria-color, var(--primary-color)) 5%, white 95%)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid color-mix(in srgb, var(--categoria-color, var(--primary-color)) 30%, transparent 70%);
+}
+
+.categoria-icon-large {
+  font-size: 28px;
+  color: var(--categoria-color, var(--primary-color));
+}
+
+.categoria-text-container {
+  flex: 1;
+  min-width: 0; /* Para que el texto no desborde */
+}
+
+.categoria-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--secondary-color);
+  margin: 0 0 5px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.categoria-card-desc {
+  font-size: 12px;
+  color: var(--text-dark);
+  opacity: 0.7;
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.categoria-arrow {
+  color: rgba(0, 0, 0, 0.3);
+  font-size: 20px;
+  font-weight: bold;
+  transition: var(--tran-03);
+}
+
+.categoria-card-mobile:hover .categoria-arrow {
+  color: var(--primary-color);
+  transform: translateX(3px);
+}
+
+/* FOOTER DE PÁGINA */
+.categorias-page-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.03);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 15px 20px;
+  backdrop-filter: blur(10px);
+}
+
+.categorias-footer-text {
+  font-size: 12px;
+  color: var(--text-dark);
+  opacity: 0.6;
+  margin: 0;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.categorias-footer-icon {
+  font-size: 14px;
+}
+
+/* MEDIA QUERIES - SOLO VISIBLE EN MÓVIL */
+/* OCULTAR EN TABLET Y DESKTOP */
+@media (min-width: 768px) {
+  .categorias-page-container {
+    display: none !important;
+  }
+}
+
+/* MEJORAS PARA MÓVIL PEQUEÑO */
+@media (max-width: 480px) {
+  .categorias-grid-container {
+    gap: 12px;
+    padding: 0 15px;
+  }
+  
+  .categoria-card-content {
+    padding: 15px;
+    gap: 15px;
+  }
+  
+  .categoria-icon-container {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .categoria-icon-large {
+    font-size: 24px;
+  }
+  
+  .categoria-card-title {
+    font-size: 16px;
+  }
+  
+  .categoria-card-desc {
+    font-size: 11px;
+  }
+}
+
+/* MEJORAS PARA MÓVIL GRANDE */
+@media (min-width: 481px) and (max-width: 767px) {
+  .categorias-grid-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .categoria-card-title {
+    font-size: 17px;
+  }
+}
+
+/* Estilos adicionales para estados de carga y error */
+.categorias-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 20px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(224, 178, 83, 0.2);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.categorias-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 20px;
+  text-align: center;
+  padding: 20px;
+}
+
+.categorias-error button {
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--tran-03);
+}
+
+.categorias-error button:hover {
+  background: var(--hover-color);
+}
+
+/* Badge para tipo de producto */
+.categoria-tipo-badge {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.07);
+  color: var(--text-dark);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-bottom: 5px;
+  font-weight: 500;
+}

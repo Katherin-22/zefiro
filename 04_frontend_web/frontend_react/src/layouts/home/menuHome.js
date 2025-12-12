@@ -221,12 +221,12 @@ const MenuHome = () => {
 
           {/* Catálogo */}
           <Link 
-            to="/Catalogo" 
+            to="/categorias-mobile" 
             className={`mobile-nav-item ${activeMobileNav === 'catalog' ? 'active' : ''}`}
             onClick={() => setActiveMobileNav('catalog')}
           >
             <i className="bi bi-grid-3x3-gap"></i>
-            <span>Catálogo</span>
+            <span>categorias</span>
           </Link>
 
           {/* Favoritos */}
