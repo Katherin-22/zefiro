@@ -203,13 +203,25 @@ CREATE TABLE mensajes (
 -- -----------------------------------------------------
 -- Tabla carrito
 CREATE TABLE Carrito (
-  idCarrito INT AUTO_INCREMENT NOT NULL,
-  total double NOT NULL,
-  fechaCreacion DATE DEFAULT (CURRENT_DATE),
-  idUsuario INT NOT NULL,
-  
+  idCarrito INT AUTO_INCREMENT NOT NULL ,
+  fechaCreacion DATETIME NOT NULL ,
+  estadoCarrito ENUM('Activo','Procesado','Cancelado') NOT NULL DEFAULT 'Activo',
+  idUsuario INT NOT NULL ,
   PRIMARY KEY (idCarrito),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
+) ;
+
+-- Tabla DetalleCarrito 
+CREATE TABLE DetalleCarrito (
+  idDetalleCarrito INT AUTO_INCREMENT NOT NULL,
+  idCarrito INT NOT NULL,
+  idStock  INT NOT NULL,
+  cantidad INT NOT NULL CHECK (cantidad > 0),
+  precioUnitario DOUBLE NOT NULL,
+  
+  PRIMARY KEY (idDetalleCarrito),
+  FOREIGN KEY (idCarrito) REFERENCES Carrito(idCarrito),
+  FOREIGN KEY (idStock) REFERENCES Stock(idStock)
 ) ;
 
 -- Tabla MetodoPago
@@ -220,19 +232,26 @@ CREATE TABLE MetodoPago (
     PRIMARY KEY (idMetodoPago)
 );
 
--- Tabla DetalleCarrito 
-CREATE TABLE DetalleCarrito (
-  idDetalleCarrito  INT AUTO_INCREMENT NOT NULL,
-  precioUnitario Double NOT NULL,
-  cantidad INT NOT NULL,
-  subtotal double GENERATED ALWAYS AS (cantidad * precioUnitario) STORED,
-  idCarrito INT NOT NULL,
-  idStock INT NOT NULL,
-  
-  PRIMARY KEY (idDetalleCarrito),
-  FOREIGN KEY (idStock) REFERENCES Stock(idStock),
-  FOREIGN KEY (idCarrito) REFERENCES Carrito(idCarrito)
-) ;
+-- Esta tabla guarda lo que tú envías al sistema de pagos: monto, moneda, descripción.
+
+CREATE TABLE SolicitudPago (
+	idSolicitudPago INT AUTO_INCREMENT NOT NULL,
+	amount BIGINT NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    description VARCHAR(200) NULL,
+    
+	PRIMARY KEY (idSolicitudPago)
+);
+
+CREATE TABLE RespuestaPago (
+    id VARCHAR(255) NOT NULL,          
+    amount BIGINT NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    status VARCHAR(200) NOT NULL,
+    clientSecret VARCHAR(200) NOT NULL,
+    
+	PRIMARY KEY (id)
+);
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
@@ -244,8 +263,9 @@ CREATE TABLE Pedido (
   fechaPedido DATE NOT NULL, 
   idUsuario INT NOT NULL,
   idCarrito INT NOT NULL,
-  idPromocion INT NOT NULL,
+  idPromocion INT  NULL,
   idMetodoPago INT NOT NULL,
+  total_final INT NOT NULL,
   
   PRIMARY KEY(idPedido),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),

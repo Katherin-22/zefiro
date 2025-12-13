@@ -137,18 +137,18 @@ VALUES (2, 10, 2, 3, 2);
 -- MÓDULO DE GESTION DE COMPRAS								PARTE 1.1
 -- -----------------------------------------------------
 -- Tabla carrito
-INSERT INTO Carrito (total, fechaCreacion, idUsuario) 
+INSERT INTO Carrito (fechaCreacion, idUsuario)
 VALUES
-(3,"2025-11-02",4),
-(4,"2025-12-03",5),
-(2,"2025-04-03",6),
-(5,"2025-01-04",7),
-(2,"2025-02-04",8),
-(3,"2025-04-05",9),
-(4,"2025-02-05",10),
-(3,"2025-03-01",11),
-(3,"2025-10-01",12),
-(4,"2025-08-01",13);
+("2025-11-02 10:00:00", 4),
+("2025-12-03 11:20:00", 5),
+("2025-04-03 09:30:00", 6),
+("2025-01-04 14:15:00", 7),
+("2025-02-04 16:40:00", 8),
+("2025-04-05 12:10:00", 9),
+("2025-02-05 18:55:00", 10),
+("2025-03-01 08:05:00", 11),
+("2025-10-01 20:30:00", 12),
+("2025-08-01 07:50:00", 13);
 
 -- Tabla MetodoPago
 INSERT INTO MetodoPago (nombreMetodoPago)
@@ -159,36 +159,38 @@ INSERT INTO MetodoPago (nombreMetodoPago)
 -- RECORDATORIO: Para que el precio unitario tenga el precio del producto, hay que crea primero el trigger para eso
 
 -- Tabla DetalleCarrito 
-INSERT INTO DetalleCarrito (precioUnitario, cantidad, idCarrito, idStock) 
+INSERT INTO DetalleCarrito ( idCarrito, idStock, cantidad, precioUnitario) 
 VALUES
-(10000, 1, 2, 1),
-(10000, 2, 3, 2),
-(10000, 3, 1, 3),
-(10000, 4, 2, 2),
-(10000, 5, 2, 1),
-(10000, 6, 3, 3),
-(10000, 7, 1, 1),
-(10000, 8, 2, 2),
-(10000, 9, 3, 3),
-(10000,10, 2, 3);
+(1, 1, 2, 4.00),
+(2, 2, 3, 5.00),
+(1, 3, 1, 6.00),
+(2, 1, 2, 7.00),
+(1, 2, 2, 8.00),
+(1, 3, 3, 9.00),
+(2, 1, 1, 10.00),
+(1, 2, 2, 11.00),
+(2, 3, 3, 12.00),
+(1, 1, 2, 13.00);
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
 -- -----------------------------------------------------
 
 -- Tabla Pedido
-INSERT INTO Pedido (fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago)
+INSERT INTO Pedido 
+(fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago, total_final)
  VALUES
-("2025-07-01", 4, 1, 1, 1),
-("2025-07-01", 5, 2, 2, 1),
-("2025-07-02", 6, 3, 1, 1),
-("2025-07-02", 7, 4, 2, 1),
-("2025-07-03", 8, 5, 1, 1),
-("2025-07-03", 9, 6, 2, 1),
-("2025-07-04", 10, 7, 1, 1),
-("2025-07-04", 11, 8, 2, 1),
-("2025-07-05", 12, 9, 1, 1),
-("2025-07-05", 13, 10, 2, 1);
+("2025-07-01", 4, 1, 1, 1, 120000),
+("2025-07-01", 5, 2, 2, 1, 85000),
+("2025-07-02", 6, 3, 1, 1, 99000),
+("2025-07-02", 7, 4, 2, 1, 130000),
+("2025-07-03", 8, 5, 1, 1, 115000),
+("2025-07-03", 9, 6, 2, 1, 78000),
+("2025-07-04", 10, 7, 1, 1, 145000),
+("2025-07-04", 11, 8, 2, 1, 92000),
+("2025-07-05", 12, 9, 1, 1, 160000),
+("2025-07-05", 13, 10, 2, 1, 110000);
+
 
 -- Tabla detallePedido
 INSERT INTO DetallePedido (idPedido , talla, cantidad, precioUnitario) 

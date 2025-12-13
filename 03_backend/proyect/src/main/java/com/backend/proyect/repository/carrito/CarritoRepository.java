@@ -1,11 +1,18 @@
-package com.backend.proyect.repository.carrito;
+/*package com.backend.proyect.repository.carrito;
 
+import  com.backend.proyect.model.carrito.Carrito;
+import  com.backend.proyect.model.usuario.Usuario;
+import com.backend.proyect.model.carrito.EstadoCarritoEnum;
+import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+public interface CarritoRepository extends JpaRepository<Carrito, Integer> {
 
-import com.backend.proyect.model.carrito.Carrito;
-
-public interface CarritoRepository extends JpaRepository<Carrito,Integer>{
-    Optional<Carrito> findByUsuario_IdUsuario(Integer idUsuario);
+    // Busca el carrito activo de un usuario específico
+    Optional<Carrito> findByUsuarioAndEstadoCarrito(Usuario usuario, EstadoCarritoEnum estadoCarrito);
 }
+
+
+
+
+*/

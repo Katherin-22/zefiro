@@ -2,6 +2,7 @@ package com.backend.proyect.config.usuario;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -13,7 +14,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.backend.proyect.security.usuario.JwtFilter;
-
 
 @Configuration
 @EnableMethodSecurity
@@ -31,50 +31,45 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // desactiva CSRF
 
                 .cors(Customizer.withDefaults())
-
                 .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() // swagger
 
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()  // swagger
+                .requestMatchers("/api/auth/**").permitAll() // login y registro públicos
 
-                        .requestMatchers("/api/auth/**").permitAll() // login y registro públicos
+                .requestMatchers("/publico/**", "/api/payments/**").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
+                .requestMatchers(
+                        "/categoria",
+                        "/categoria/*",
+                        "/promocion",
+                        "/stock/*",
+                        "/stock/variaciones/*",
+                        "/stock/*",
+                        "/producto/*/stock/*",
+                        "/promocion/*",
+                        "/productos",
+                        "/producto",
+                        "/producto/*",
+                        "/producto/*/imagenes",
+                        "/producto/*/imagen/*",
+                        "/color",
+                        "/color/*",
+                        "/imagen/*",
+                        "/marca",
+                        "/marca/*",
+                        "/material/*",
+                        "/material",
+                        "/api/banners/*"
+                ).permitAll() // ajustar
 
-                        .requestMatchers("/publico/**").permitAll()
+                .requestMatchers("/api/usuarios/perfil").authenticated()
+                .requestMatchers("/api/usuarios", "/api/usuarios/{id}").hasAuthority("ROLE_ADMINISTRADOR") //Rutas de Administración (Requieren el rol explícito)
 
-                        .requestMatchers("/uploads/**").permitAll()
-
-                        .requestMatchers(
-                                "/categoria",
-                                "/categoria/*",
-                                "/promocion",
-                                "/stock/*",
-                                "/stock/variaciones/*",
-                                "/stock/*",
-                                "/producto/*/stock/*",
-                                "/promocion/*",
-                                "/productos",
-                                "/producto",
-                                "/producto/*",
-                                "/producto/*/imagenes",
-                                "/producto/*/imagen/*",
-                                "/color",
-                                "/color/*",
-                                "/imagen/*",
-                                "/marca",
-                                "/marca/*",
-                                "/material/*",
-                                "/material",
-                                "/api/banners/*"
-                        ).permitAll() // ajustar
-
-
-                        .requestMatchers("/api/usuarios/perfil").authenticated()
-
-                        .requestMatchers("/api/usuarios", "/api/usuarios/{id}").hasAuthority("ROLE_ADMINISTRADOR") //Rutas de Administración (Requieren el rol explícito)
-
-                        .anyRequest().authenticated() // lo demás requiere autenticación
+                .anyRequest().authenticated() // lo demás requiere autenticación
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // sin sesiones
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // sin sesiones
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -89,5 +84,5 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
-
+    
 }

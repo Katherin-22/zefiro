@@ -1,61 +1,73 @@
-package com.backend.proyect.controller.carrito;
+/*package com.backend.proyect.controller.carrito;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.backend.proyect.dto.carrito.AgregarItemDTO;
+import com.backend.proyect.model.carrito.Carrito;
+import com.backend.proyect.entity.Pedido;
+import com.backend.proyect.service.carrito.CarritoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.backend.proyect.dto.carrito.CarritoDTO;
-import com.backend.proyect.exception.productos.ResourceNotFoundException;
-import com.backend.proyect.model.carrito.Carrito;
-import com.backend.proyect.model.usuario.Usuario;
-import com.backend.proyect.repository.carrito.CarritoRepository;
-import com.backend.proyect.repository.usuario.UsuarioRepository;
-
+import org.springframework.web.bind.annotation.*;
+import java.util.NoSuchElementException;
 
 @RestController
-
+@RequestMapping("/api/carrito")
 public class CarritoController {
 
-    @Autowired
-    private CarritoRepository carritoRepository;
+    private final CarritoService carritoService;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;    
-
-    //@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
-    @PostMapping("/carrito/{idUsuario}")
-    ResponseEntity<Carrito> newCarrito(@RequestBody CarritoDTO carritoDTO, @PathVariable Integer idUsuario) {
-    // Convertir el DTO a entidad Carrito
-    Carrito carrito = new Carrito();
-
-    Usuario usuario = usuarioRepository.findById(idUsuario)
-        .orElseThrow(()->new ResourceNotFoundException("Usuario",idUsuario));    
-    
-    carrito.setTotal(carritoDTO.getTotal());
-    carrito.setFechaCreacion(carritoDTO.getFechaCreacion());
-    carrito.setUsuario(usuario);
-
-    // Guardar en BD
-    Carrito saved = carritoRepository.save(carrito);
-
-    return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-}
-
-    @GetMapping("/carrito/{idUsuario}")
-    public ResponseEntity<Carrito> getCarritoByUsuario(@PathVariable Integer idUsuario) {
-
-        Usuario usuario = usuarioRepository.findById(idUsuario)
-            .orElseThrow(() -> new ResourceNotFoundException("Usuario", idUsuario));
-
-        Carrito carrito = carritoRepository.findByUsuario_IdUsuario(idUsuario)
-            .orElseThrow(() -> new ResourceNotFoundException("Carrito", idUsuario));
-
-        return ResponseEntity.ok(carrito);
+    public CarritoController(CarritoService carritoService) {
+        this.carritoService = carritoService;
     }
 
+    // Endpoint: /api/carrito/{idUsuario}
+    @GetMapping("/{idUsuario}")
+    public ResponseEntity<Carrito> obtenerCarrito(@PathVariable Integer idUsuario) {
+        try {
+            Carrito carrito = carritoService.obtenerCarritoActivo(idUsuario);
+            return ResponseEntity.ok(carrito);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // Endpoint: /api/carrito/agregar/{idUsuario}
+    @PostMapping("/agregar/{idUsuario}")
+    public ResponseEntity<Carrito> agregarItem(
+            @PathVariable Integer idUsuario,
+            @Valid @RequestBody AgregarItemDTO itemDTO) {
+        try {
+            Carrito carritoActualizado = carritoService.agregarOActualizarItem(idUsuario, itemDTO);
+            return ResponseEntity.ok(carritoActualizado);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // o manejar errores más específicos
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // Conflict por stock insuficiente
+        }
+    }
+
+    // Endpoint : /api/carrito/checkout/{idUsuario}/{idMetodoPago}
+    @PostMapping("/checkout/{idUsuario}/{idMetodoPago}")
+    public ResponseEntity<?> finalizarCheckout(
+            @PathVariable Integer idUsuario,
+            @PathVariable Integer idMetodoPago) {
+        try {
+            Pedido pedido = carritoService.finalizarCheckout(idUsuario, idMetodoPago);
+            // Retorna el ID del pedido y la confirmación
+            return ResponseEntity.ok(pedido);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // Carrito vacío
+        } catch (IllegalArgumentException e) {
+            // Stock insuficiente
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error de datos: " + e.getMessage());
+        } catch (Exception e) {
+            // Cualquier otro error de transacción
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al procesar el pago: " + e.getMessage());
+        }
+    }
 }
+
+
+*/
