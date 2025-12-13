@@ -1,23 +1,26 @@
 package com.backend.proyect.model.metodosPago;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 
-    @Entity
-    @Table(name = "MetodoPago")
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public class MetodoPago {
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Integer idMetodoPago;
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Entity
+@Table(name = "MetodoPago")
 
-        @Column(name = "nombreMetodoPago")
-        private String nombreMetodoPago;
+public class MetodoPago {
 
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idMetodoPago")
+    private Integer idMetodoPago;
+
+    @Column(name = "nombreMetodoPago")
+    private String nombreMetodoPago;
+
+}
 

@@ -1,53 +1,61 @@
 package com.backend.proyect.model.pedido;
 
 import com.backend.proyect.model.usuario.Usuario;
+import com.backend.proyect.model.carrito.Carrito;
 import com.backend.proyect.model.promociones.Promocion;
 import com.backend.proyect.model.metodosPago.MetodoPago;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Entity 
-@Table(name = "Pedido")
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class Pedido {
+@NoArgsConstructor
+@Data
+@Entity
+@Table(name = "Pedido")
+
+public class  Pedido {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idPedido")
     private Integer idPedido;
-    
+
+    @Column(name = "fechaPedido", nullable = false)
     private LocalDate fechaPedido;
+
     
     @ManyToOne
-    @JoinColumn(name = "idUsuario")
+    @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
     
-  //  @OneToOne
-   // @JoinColumn(name = "idCarrito")
-   // private Carrito carrito;  // DESCOMENTA ESTO cuando crees la clase Carrito
+    @OneToOne
+    @JoinColumn(name = "idCarrito", nullable = false)
+    private Carrito carrito;
     
     @ManyToOne
     @JoinColumn(name = "idPromocion")
     private Promocion promocion;
     
     @ManyToOne
-    @JoinColumn(name = "idMetodoPago")
+    @JoinColumn(name = "idMetodoPago", nullable = false)
     private MetodoPago metodoPago;
-    
-    // ¡CORREGIDO! Agrega la definición de columna
-    @Column(columnDefinition = "ENUM('Pendiente', 'Enviado', 'Entregado')")
-    private String estado;
+
+    @ManyToOne
+    @JoinColumn(name = "idEstadoPedido", nullable = false)
+    private EstadoPedido estadoPedido;
+
+    @Column(name = "total_final", nullable = false)
+    private BigDecimal totalFinal;
+
     
     @PrePersist
     public void prePersist() {
         if (fechaPedido == null) fechaPedido = LocalDate.now();
-        if (estado == null) estado = "Pendiente";  // Cambia a "Pendiente" con mayúscula inicial
     }
 
-    @Column(name = "total")
-    private Integer total;
 }
