@@ -11,6 +11,7 @@ import Home from "../pages/home/home";                      // Página principal
 import Catalogo from "../pages/home/category/catalogo";     // Catálogo de productos
 import ProductoGen from "../pages/home/productoGen";        // Detalle de producto
 import CategoriasMobilePage from "../pages/home/category/categorias";
+import FavoritosPage  from "../pages/home/favoritos";
 /* ==============================
    ADMINISTRACIÓN - GENERAL
    (Dashboard principal)
@@ -118,6 +119,12 @@ function AppRoutes() {
                   <Inbox />
                </ProtectedRoute>
             } />
+
+            <Route path="/favoritos" element={
+               <ProtectedRoute >
+                  <FavoritosPage />
+               </ProtectedRoute>
+            }/>
             
             {/* 🔄 Gestión de devoluciones */}
             <Route path="/Administrador/Gestion_Devoluciones" element={

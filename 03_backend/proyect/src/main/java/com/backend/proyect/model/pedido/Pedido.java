@@ -26,10 +26,6 @@ public class Pedido {
     @JoinColumn(name = "idUsuario")
     private Usuario usuario;
     
-  //  @OneToOne
-   // @JoinColumn(name = "idCarrito")
-   // private Carrito carrito;  // DESCOMENTA ESTO cuando crees la clase Carrito
-    
     @ManyToOne
     @JoinColumn(name = "idPromocion")
     private Promocion promocion;
@@ -37,17 +33,22 @@ public class Pedido {
     @ManyToOne
     @JoinColumn(name = "idMetodoPago")
     private MetodoPago metodoPago;
-    
-    // ¡CORREGIDO! Agrega la definición de columna
-    @Column(columnDefinition = "ENUM('Pendiente', 'Enviado', 'Entregado')")
+ 
+    @Column(columnDefinition = "ENUM('Pendiente', 'En proceso', 'Entregado')")
     private String estado;
     
     @PrePersist
     public void prePersist() {
         if (fechaPedido == null) fechaPedido = LocalDate.now();
-        if (estado == null) estado = "Pendiente";  // Cambia a "Pendiente" con mayúscula inicial
+        if (estado == null) estado = "Pendiente";
     }
 
     @Column(name = "total")
     private Integer total;
+    
+    // IMPORTANTE: base de datos tiene idCarrito 
+    // ,
+    // @ManyToOne
+    // @JoinColumn(name = "idCarrito")
+    // private Carrito carrito;
 }

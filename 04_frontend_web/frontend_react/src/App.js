@@ -10,12 +10,17 @@ import './App.css';
 import AppRoutes from "./routes/AppRoutes"; 
 import { BrowserRouter as Router } from 'react-router-dom';
 
+// Importa AuthProvider para manejar la autenticación en toda la app
+import { AuthProvider } from "./hooks/AuthContextx"; // Asegúrate de crear este archivo
 
 /*--- esto es para el manejo de rutas ---*/
 function App() {
   return (
     <Router>
-      <AppRoutes />
+      {/* Envuelve toda la app con AuthProvider para que todos los componentes tengan acceso a la autenticación */}
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
     </Router>
   );
 }

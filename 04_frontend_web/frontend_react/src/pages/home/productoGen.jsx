@@ -1,19 +1,49 @@
+// pages/home/productoGen.jsx
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useGetStock } from "../../hooks/stock/useGetStock";
 import MenuHome from "../../layouts/home/menuHome";
-import "../../styles/home/productGen.css"
+import "../../styles/home/productGen.css";
+import "../../styles/administrador/inventario.css";
+import "../../styles/administrador/gestion_producto.css";
 import api_url from "../../services/administrador/api";
 import { getImagenById } from "../../services/administrador/ImagenService.js";
+import { useFavoritos } from "../../hooks/favorito/useFavorito";
+import useAuth from "../../hooks/token/useAuth";
+import { getStockByProducto, deleteStock } from "../../services/administrador/StockService";
 
 const ProductoGen = () => {
   const { stock } = useGetStock();
-  const { codigoReferencia } = useParams();
+  const { codigoReferencia, idProducto } = useParams();
+  const navigate = useNavigate();
+  
+  // Usa tu hook useAuth
+  const { isAuthenticated, userData } = useAuth();
+  const userId = userData?.idUsuario;
+  
+  console.log('ProductoGen - isAuthenticated:', isAuthenticated);
+  console.log('ProductoGen - userData:', userData);
+  console.log('ProductoGen - userId:', userId);
+  
+  // Usar hook de favoritos
+  const { 
+    agregarFavorito, 
+    eliminarFavorito, 
+    verificarProductoEnFavoritos,
+    loading: loadingFavoritos 
+  } = useFavoritos();
 
   // Buscar producto por códigoReferencia
   const producto = stock.find(p => p.codigoReferencia === codigoReferencia);
 
-  const [favorito, setFavorito] = useState(false);
+  // Estados para el stock específico
+  const [stockEspecifico, setStockEspecifico] = useState([]);
+  const [loadingStock, setLoadingStock] = useState(false);
+  const [nombreProductoStock, setNombreProductoStock] = useState("");
+  const [cantidad, setCantidad] = useState(1);
+
+  const [esFavorito, setEsFavorito] = useState(false);
+  const [verificandoFavorito, setVerificandoFavorito] = useState(false);
   const [imagenModal, setImagenModal] = useState(null);
   const [imagenesProducto, setImagenesProducto] = useState([]);
   const [imagenPrincipal, setImagenPrincipal] = useState("");
@@ -78,23 +108,148 @@ const ProductoGen = () => {
   }, [producto, colorSeleccionado]);
 
   // ============================
-  // 4️⃣ Obtener stock disponible para la combinación seleccionada
+  // 4️⃣ Cargar stock específico cuando se tiene idProducto
   // ============================
-  const obtenerStockDisponible = () => {
-    if (!colorSeleccionado || !tallaSeleccionada) return null;
-    
-    const stockItem = stock.find(item => {
-      const itemColorId = parseInt(item.idColor);
-      const selectedColorId = parseInt(colorSeleccionado);
+  useEffect(() => {
+    const fetchStockEspecifico = async () => {
+      if (!idProducto && !producto?.idProducto) return;
       
-      return (
-        item.idProducto === producto.idProducto &&
-        itemColorId === selectedColorId &&
-        item.nombre === tallaSeleccionada
-      );
-    });
+      const productId = idProducto || producto?.idProducto;
+      
+      try {
+        setLoadingStock(true);
+        const response = await getStockByProducto(productId);
+        setStockEspecifico(response.data);
+        if (response.data.length > 0) {
+          setNombreProductoStock(response.data[0].nombreProducto);
+        }
+      } catch (error) {
+        console.error("Error al cargar stock específico", error);
+      } finally {
+        setLoadingStock(false);
+      }
+    };
+
+    fetchStockEspecifico();
+  }, [idProducto, producto?.idProducto]);
+
+  // ============================
+  // 5️⃣ VERIFICAR SI EL PRODUCTO ES FAVORITO
+  // ============================
+  useEffect(() => {
+    const verificarEstadoFavorito = async () => {
+      if (!isAuthenticated || !userId || !producto?.idProducto) {
+        setEsFavorito(false);
+        return;
+      }
+      
+      try {
+        setVerificandoFavorito(true);
+        const resultado = await verificarProductoEnFavoritos(userId, producto.idProducto);
+        setEsFavorito(resultado);
+      } catch (error) {
+        console.error("Error verificando favorito:", error);
+        setEsFavorito(false);
+      } finally {
+        setVerificandoFavorito(false);
+      }
+    };
     
-    return stockItem ? stockItem.stockActual : 0;
+    verificarEstadoFavorito();
+  }, [isAuthenticated, userId, producto, verificarProductoEnFavoritos]);
+
+  // ============================
+  // 6️⃣ MANEJAR CLIC EN BOTÓN DE FAVORITOS
+  // ============================
+  const handleFavoritoClick = async () => {
+    if (!isAuthenticated || !userId) {
+      alert("Por favor inicia sesión para agregar productos a favoritos");
+      navigate('/loginpage');
+      return;
+    }
+    
+    if (!producto?.idProducto) {
+      console.error("No se pudo obtener el ID del producto");
+      return;
+    }
+    
+    try {
+      if (esFavorito) {
+        // Eliminar de favoritos
+        await eliminarFavorito(userId, producto.idProducto);
+        setEsFavorito(false);
+        alert("Producto eliminado de favoritos");
+      } else {
+        // Agregar a favoritos
+        const requestData = { idProducto: producto.idProducto };
+        await agregarFavorito(userId, requestData);
+        setEsFavorito(true);
+        alert("Producto agregado a favoritos");
+      }
+    } catch (error) {
+      console.error("Error al cambiar estado de favorito:", error);
+      alert(error.message || "Error al actualizar favoritos");
+    }
+  };
+
+  // ============================
+  // 7️⃣ Función para eliminar stock (solo si estamos en modo admin)
+  // ============================
+  const handleDeleteStock = async (idStock) => {
+    if (!window.confirm("¿Estás seguro de eliminar este stock?")) return;
+
+    try {
+      await deleteStock(idStock);
+      setStockEspecifico(stockEspecifico.filter(s => s.idStock !== idStock));
+      alert("Stock eliminado");
+    } catch (error) {
+      console.error("Error al eliminar stock", error);
+      alert("No se pudo eliminar el stock. Revisa si tiene relaciones activas.");
+    }
+  };
+
+  // ============================
+  // 8️⃣ Manejar cambios en cantidad (SIN VERIFICACIÓN DE STOCK)
+  // ============================
+  const handleCantidadChange = (e) => {
+    const value = parseInt(e.target.value);
+    
+    if (value < 1) {
+      setCantidad(1);
+    } else {
+      setCantidad(value);
+    }
+  };
+
+  const incrementarCantidad = () => {
+    setCantidad(cantidad + 1);
+  };
+
+  const decrementarCantidad = () => {
+    if (cantidad > 1) {
+      setCantidad(cantidad - 1);
+    }
+  };
+
+  // ============================
+  // 9️⃣ Función para manejar compra
+  // ============================
+  const handleComprar = () => {
+    if (!colorSeleccionado || !tallaSeleccionada) {
+      alert("Por favor selecciona color y talla");
+      return;
+    }
+
+    // Aquí iría la lógica para agregar al carrito o procesar la compra
+    console.log("Comprar:", {
+      producto: producto.nombreProducto,
+      color: colorSeleccionado,
+      talla: tallaSeleccionada,
+      cantidad: cantidad,
+      precioTotal: producto.precio * cantidad
+    });
+
+    alert(`¡Agregado al carrito! ${cantidad} unidad(es) de ${producto.nombreProducto}`);
   };
 
   const abrirModalImagen = (imagenUrl = null) => {
@@ -113,21 +268,145 @@ const ProductoGen = () => {
     setImagenPrincipal(nuevaImagenUrl);
   };
 
-  const stockDisponible = obtenerStockDisponible();
-
   if (!producto) {
     return <h2 className="text-center mt-5" id="producto-no-encontrado">Producto no encontrado</h2>;
   }
+
+  // Verificar si estamos en modo administrador (si hay idProducto en params)
+  const esModoAdmin = !!idProducto;
+  
+  // ============================
+  // RENDER DEL BOTÓN DE FAVORITOS
+  // ============================
+  const renderBotonFavorito = () => {
+    if (!isAuthenticated) {
+      return (
+        <button
+          className="btn producto-btn-favorito btn-outline-danger"
+          onClick={() => navigate('/loginpage')}
+          title="Inicia sesión para agregar a favoritos"
+          id="producto-btn-favorito"
+        >
+          <i className="bi bi-heart producto-icono-favorito" id="producto-icono-favorito"></i>
+          Iniciar sesión para favoritos
+        </button>
+      );
+    }
+
+    if (verificandoFavorito) {
+      return (
+        <button
+          className="btn producto-btn-favorito btn-outline-danger"
+          disabled
+          id="producto-btn-favorito"
+        >
+          <div className="spinner-border spinner-border-sm me-2" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+          Verificando...
+        </button>
+      );
+    }
+
+    if (loadingFavoritos) {
+      return (
+        <button
+          className="btn producto-btn-favorito btn-outline-danger"
+          disabled
+          id="producto-btn-favorito"
+        >
+          <div className="spinner-border spinner-border-sm me-2" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+          Procesando...
+        </button>
+      );
+    }
+
+    return (
+      <button
+        className={`btn producto-btn-favorito ${esFavorito ? "btn-danger" : "btn-outline-danger"}`}
+        onClick={handleFavoritoClick}
+        id="producto-btn-favorito"
+      >
+        <i className={`bi ${esFavorito ? "bi-heart-fill" : "bi-heart"} producto-icono-favorito`} 
+           id="producto-icono-favorito"></i>
+        {esFavorito ? " Quitar favorito" : " Agregar a favoritos"}
+      </button>
+    );
+  };
 
   return (
     <div className="producto-detalle-container" id="producto-detalle-container">
       <MenuHome />
       <div className="producto-body-background" id="producto-body-background">
         <div className="container-fluid" id="producto-main-container">
+          
+          {/* HEADER PARA MODO ADMINISTRADOR */}
+          {esModoAdmin && (
+            <div className="header mb-4">    
+              <div className="row custom-header">
+                <div className="col-3 d-flex align-items-center justify-content-between">
+                  <h1 className="mb-0">Stock - {nombreProductoStock || producto?.nombreProducto}</h1>
+                </div>
+                <div className="col-9 d-flex align-items-end px-1 gap-2 w-50">
+                  <Link to={`/stock/${idProducto || producto?.idProducto}`} className="btn custom-btn btn-light">Registrar Stock</Link>
+                  <Link to="/ver_color" className="btn custom-btn btn-light">Color</Link>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="row justify-content-center" id="producto-main-row">
             <div className="col-md-10 col-lg-8" id="producto-content-col">
               <div className="producto-card-detalle shadow-sm" id="producto-card-detalle">
                 <div className="producto-card-body-detalle" id="producto-card-body-detalle">
+
+                  {/* TABLA DE STOCK PARA ADMINISTRADOR */}
+                  {esModoAdmin && !loadingStock && stockEspecifico.length > 0 && (
+                    <div className="row mb-5">
+                      <div className="col">
+                        <div className="table-responsive">
+                          <table className="table table-striped table-hover">
+                            <thead>
+                              <tr>
+                                <th>Talla Disponible</th>
+                                <th>Color Disponible</th>
+                                <th>Stock Actual</th>
+                                <th>Stock Mínimo</th>
+                                <th>Acciones</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {stockEspecifico.map((s) => (
+                                <tr key={s.idStock}>
+                                  <td>{s.nombre}</td>
+                                  <td>{s.nombreColor}</td>
+                                  <td>{s.stockActual}</td>
+                                  <td>{s.stockMinimo}</td>
+                                  <td>
+                                    <Link 
+                                      to={`/producto/${s.idProducto}/stock/${s.idStock}`} 
+                                      id="boton_agregar" 
+                                      className="btn btn-light me-2"
+                                    >
+                                      Editar
+                                    </Link>
+                                    <button
+                                      className="btn btn-light"
+                                      onClick={() => handleDeleteStock(s.idStock)}
+                                    >
+                                      Eliminar
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* INFO PRINCIPAL */}
                   <div className="row producto-info-principal" id="producto-info-principal">  
@@ -246,27 +525,67 @@ const ProductoGen = () => {
                     </div>
                   </div>
 
+                  {/* SELECTOR DE CANTIDAD (SIN VERIFICACIÓN DE STOCK) */}
+                  <div className="row producto-cantidad-fila mt-4" id="producto-cantidad-fila">
+                    <div className="col-md-6 offset-md-3">
+                      <div className="card">
+                        <div className="card-body">
+                          <h5 className="card-title mb-3">Cantidad</h5>
+                          <div className="d-flex align-items-center justify-content-center">
+                            <button 
+                              className="btn btn-outline-secondary"
+                              onClick={decrementarCantidad}
+                              disabled={cantidad <= 1}
+                            >
+                              <i className="bi bi-dash"></i>
+                            </button>
+                            
+                            <input 
+                              type="number" 
+                              min="1"
+                              value={cantidad}
+                              onChange={handleCantidadChange}
+                              className="form-control text-center mx-3"
+                              style={{ maxWidth: '80px' }}
+                            />
+                            
+                            <button 
+                              className="btn btn-outline-secondary"
+                              onClick={incrementarCantidad}
+                            >
+                              <i className="bi bi-plus"></i>
+                            </button>
+                          </div>
+                          <div className="mt-2 text-center">
+                            <small className="text-muted">
+                              Cantidad seleccionada: {cantidad} unidad(es)
+                            </small>
+                            <br />
+                            <small className="text-success">
+                              Precio total: ${(producto.precio * cantidad).toLocaleString()}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
                   {/* BOTONES DE ACCIÓN */}
                   <div className="row producto-botones-fila justify-content-center mt-4" id="producto-botones-fila">
                     <div className="col-auto" id="producto-boton-favorito-col">
-                      <button
-                        className={`btn producto-btn-favorito ${favorito ? "btn-danger" : "btn-outline-danger"}`}
-                        onClick={() => setFavorito(!favorito)}
-                        id="producto-btn-favorito"
-                      >
-                        <i className={`bi ${favorito ? "bi-heart-fill" : "bi-heart"} producto-icono-favorito`} id="producto-icono-favorito"></i>
-                        {favorito ? " Quitar favorito" : " Agregar a favoritos"}
-                      </button>
+                      {renderBotonFavorito()}
                     </div>
 
                     <div className="col-auto" id="producto-boton-comprar-col">
                       <button 
                         className="btn producto-btn-comprar btn-success"
                         id="producto-btn-comprar"
+                        onClick={handleComprar}
+                        disabled={!colorSeleccionado || !tallaSeleccionada}
+                        title={!colorSeleccionado || !tallaSeleccionada ? "Selecciona color y talla" : ""}
                       >
                         <i className="bi bi-cart-plus producto-icono-comprar me-2" id="producto-icono-comprar"></i>
-                        Comprar Ahora
+                        Comprar
                       </button>
                     </div>
 
@@ -277,6 +596,18 @@ const ProductoGen = () => {
                       </Link>
                     </div>
                   </div>
+
+                  {/* ENLACE A FAVORITOS */}
+                  {isAuthenticated && !esModoAdmin && (
+                    <div className="row mt-3" id="producto-enlace-favoritos-fila">
+                      <div className="col-12 text-center" id="producto-enlace-favoritos-col">
+                        <Link to="/favoritos" className="btn btn-link text-decoration-none" id="producto-enlace-favoritos">
+                          <i className="bi bi-heart-fill text-danger me-2"></i>
+                          Ver todos mis favoritos
+                        </Link>
+                      </div>
+                    </div>
+                  )}
 
                   {/* SECCIÓN COMENTARIOS */}
                   <div className="row producto-comentarios-fila mt-5" id="producto-comentarios-fila">

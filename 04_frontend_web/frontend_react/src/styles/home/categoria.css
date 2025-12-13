@@ -1,5 +1,6 @@
 /* categoriasMobilePage.css - PÁGINA COMPLETA PARA MÓVIL */
 :root {
+  /* Colores originales en HEX */
   --primary-color: #E0B253;
   --secondary-color: #000000;
   --bg-body-dark: #000000;
@@ -7,6 +8,22 @@
   --text-light: #e4e9f7;
   --text-dark: #000000;
   --hover-color: #c89c3f;
+  
+  /* Colores en RGBA */
+  --primary-color-rgba: rgba(224, 178, 83, 1);
+  --secondary-color-rgba: rgba(0, 0, 0, 1);
+  --bg-body-dark-rgba: rgba(0, 0, 0, 1);
+  --bg-body-light-rgba: rgba(255, 255, 255, 1);
+  --text-light-rgba: rgba(228, 233, 247, 1);
+  --text-dark-rgba: rgba(0, 0, 0, 1);
+  --hover-color-rgba: rgba(200, 156, 63, 1);
+  
+  /* También versión semitransparente (opcional) */
+  --primary-color-transparent: rgba(224, 178, 83, 0.8);
+  --secondary-color-transparent: rgba(0, 0, 0, 0.8);
+  --hover-color-transparent: rgba(200, 156, 63, 0.8);
+  
+  /* Transiciones */
   --tran-03: all 0.3s ease;
   --tran-04: all 0.4s ease;
   --tran-05: all 0.5s ease;
