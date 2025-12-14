@@ -364,7 +364,7 @@ function AppRoutes() {
             <Route path="*" element={<div>Página no encontrada</div>} />
             
             {/* Componente de metodos de pago */}
-            <Route path='/api/payments/create' element={<PaymentPage/>}/>            
+            <Route path="/api/payments/create/:idUsuario" element={<PaymentPage/>}/>            
             
          </Routes>
       </FiltroProvider>

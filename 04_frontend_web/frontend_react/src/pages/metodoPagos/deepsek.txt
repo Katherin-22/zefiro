@@ -4,7 +4,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { useParams, useNavigate } from 'react-router-dom';
 import CheckoutForm from "../../components/metodoPagos/CheckoutForm";
 import { createPaymentIntent } from "../../services/metodoPagos/paymentApi";
-import "../../styles/metodoPagos/PaymentPage.css"; // Opcional: para estilos
+import "../../styles/administrador/PaymentPage.css"; // Opcional: para estilos
 
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PK);

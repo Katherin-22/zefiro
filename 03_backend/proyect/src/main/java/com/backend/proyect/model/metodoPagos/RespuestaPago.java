@@ -3,10 +3,16 @@ package com.backend.proyect.model.metodoPagos;
 import com.backend.proyect.model.usuario.Usuario;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,7 +28,7 @@ public class RespuestaPago {
     @Column(name = "clientSecret", nullable = false, length = 200)
     private String clientSecret;        
 
-    @Column(name = "amount", nullable = false)
+    @Column(name = "amount")
     private Long amount;
 
     @Column(name = "currency", nullable = false, length = 10)

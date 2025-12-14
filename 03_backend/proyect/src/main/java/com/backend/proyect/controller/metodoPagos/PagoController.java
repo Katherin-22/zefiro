@@ -58,6 +58,8 @@ public class PagoController {
 
             respuestaPagoRepository.save(response);     
 
+            System.out.println("Respuesta guardada en BD");
+
             return ResponseEntity.ok(response);     
 
         } catch (Exception e) {

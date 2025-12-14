@@ -165,7 +165,7 @@ const MenuHome = () => {
             </li>
 
             <li className="nav-item" id="navBarHome-cart-item">
-              <Link className="nav-link" id="navBarHome-cart-link" to="/api/payments/create">
+              <Link className="nav-link" id="navBarHome-cart-link" to={`/api/payments/create/{idUsuario}`}>
                 <i className="bi bi-cart-fill" id="navBarHome-cart-icon"></i>
                 {cartItems > 0 && <span className="cart-badge">{cartItems}</span>}
               </Link>

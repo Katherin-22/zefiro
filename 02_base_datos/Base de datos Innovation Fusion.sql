@@ -239,7 +239,7 @@ CREATE TABLE MetodoPago (
 
 CREATE TABLE SolicitudPago (
 	idSolicitudPago INT AUTO_INCREMENT NOT NULL,
-	amount BIGINT NOT NULL,
+	amount BIGINT NULL,
     currency VARCHAR(10) NOT NULL,
     description VARCHAR(200) NULL,
 	idUsuario INT NOT NULL,

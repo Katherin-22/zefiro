@@ -44,8 +44,12 @@ VALUES
 (10000010, "diana", "Morales", "Sanchez","Antonio Nariño, Carrera 24 #17-50 Sur", "3147788990","diana111", "dianam@gmail.com",1, 1, 3),
 
 -- PARA ADMINISTRADOR, CLAVE: sebas789
-(10000012, 'sebastian', 'martinez', 'lopez', 'Calle 9 #45-67', '3006547891', '$2a$10$WFBZmXWRz/J6BePxjfskT.FzkPDMc9j0CdyhmPATDqs.cILwWlWoi', 'sebastian.martinez@example.com', 1, 2, 1);
+(10000012, 'sebastian', 'martinez', 'lopez', 'Calle 9 #45-67', '3006547891', '$2a$10$WFBZmXWRz/J6BePxjfskT.FzkPDMc9j0CdyhmPATDqs.cILwWlWoi', 'sebastian.martinez@example.com', 1, 2, 1),
 
+-- PARA usuario, CLAVE: maria123
+
+(10000004, 'Maria', 'Compradora', 'lopez', 'Calle 9 #45-67' , '3006547891', '$2a$10$nSHeqNV6nYOfQK1f4hap1uhFWgKkydfxNn0tTgOTjztcrG4L3aY6W', 'mariacompradora@example.com', 1, 1, 1);
+select * from Usuario;
 -- -----------------------------------------------------
 -- MÓDULO DE PROMOCIONES Y DESCUENTOS						1.1
 -- -----------------------------------------------------
@@ -147,7 +151,8 @@ VALUES
 ("2025-02-05 18:55:00", 10),
 ("2025-03-01 08:05:00", 11),
 ("2025-10-01 20:30:00", 12),
-("2025-08-01 07:50:00", 13);
+("2025-08-01 07:50:00", 13),
+("2025-08-01 07:50:00", 15);
 
 
 -- Tabla MetodoPago
@@ -167,8 +172,8 @@ VALUES
 (2, 1, 1, 10.00, 1, 15),
 (1, 2, 2, 11.00, 1, 15),
 (2, 3, 3, 12.00, 2, 30),
-(1, 1, 2, 13.00, 1, 15);
-
+(1, 1, 2, 13.00, 1, 15),
+(11, 1, 2, 13.00, 1, 15);
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
@@ -204,7 +209,8 @@ INSERT INTO Pedido
 ("2025-07-04", 10, 7, 1, 1, 145000, 7),
 ("2025-07-04", 11, 8, 2, 1, 92000, 8),
 ("2025-07-05", 12, 9, 1, 1, 160000, 9),
-("2025-07-05", 13, 10, 2, 1, 110000, 10);
+("2025-07-05", 13, 10, 2, 1, 110000, 10),
+("2025-07-05", 11, 11, 2, 1, 110000, 10);
 
 -- Tabla detallePedido
 INSERT INTO DetallePedido (idPedido, idStock, cantidad, precioUnitario, subtotal) 
@@ -218,7 +224,8 @@ VALUES
 (7, 1, 2, 225000, 450000),
 (8, 2, 1, 89000, 89000),
 (9, 3, 1, 175000, 175000),
-(10, 1, 2, 105000, 210000);
+(10, 1, 2, 105000, 210000),
+(11, 1, 2, 105000, 210000);
 
 -- Tabla seguimientoPedido
 INSERT INTO SeguimientoPedido (fechaEstado, comentario, idPedido, idEstadoPedido)
