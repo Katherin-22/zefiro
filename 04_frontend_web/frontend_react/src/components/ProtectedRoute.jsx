@@ -7,7 +7,7 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   
   // Si no hay token
   if (!token) {
-    return <Navigate to="/loginpage" replace />;
+    return <Navigate to="/acceso-denegado" replace />;
   }
   
   try {

@@ -148,7 +148,7 @@ const CategoriasMobilePage = () => {
           <div className="categorias-header-content">
             <button 
               className="categorias-back-btn"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(-1)}// boton y funcionalidad para volver atras
               aria-label="Volver"
             >
               ←

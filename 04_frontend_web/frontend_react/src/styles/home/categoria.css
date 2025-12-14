@@ -18,7 +18,7 @@
   --text-dark-rgba: rgba(0, 0, 0, 1);
   --hover-color-rgba: rgba(200, 156, 63, 1);
   
-  /* También versión semitransparente (opcional) */
+  /* También versión semitransparente  */
   --primary-color-transparent: rgba(224, 178, 83, 0.8);
   --secondary-color-transparent: rgba(0, 0, 0, 0.8);
   --hover-color-transparent: rgba(200, 156, 63, 0.8);

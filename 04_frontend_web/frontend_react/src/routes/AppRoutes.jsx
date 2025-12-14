@@ -361,7 +361,7 @@ function AppRoutes() {
             
             {/* ========== PÁGINAS DE ERROR ========== */}
             {/* 🚫 Acceso denegado */}
-            <Route path="/acceso-denigado" element={<AccessDenied />} />
+            <Route path="/acceso-denegado" element={<AccessDenied />} />
             
             {/* ❌ Página no encontrada (404) */}
             <Route path="*" element={<div>Página no encontrada</div>} />

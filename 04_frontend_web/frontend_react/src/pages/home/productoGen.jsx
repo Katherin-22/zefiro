@@ -528,7 +528,7 @@ const ProductoGen = () => {
                   {/* SELECTOR DE CANTIDAD (SIN VERIFICACIÓN DE STOCK) */}
                   <div className="row producto-cantidad-fila mt-4" id="producto-cantidad-fila">
                     <div className="col-md-6 offset-md-3">
-                      <div className="card">
+                      <div className="card" id="cant-card">
                         <div className="card-body">
                           <h5 className="card-title mb-3">Cantidad</h5>
                           <div className="d-flex align-items-center justify-content-center">
