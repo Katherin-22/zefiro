@@ -4,6 +4,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useGetStock } from "../../hooks/stock/useGetStock";
 import MenuHome from "../../layouts/home/menuHome";
 import "../../styles/home/productGen.css";
+import ComentariosSeccion from "../../components/comentario/ComentariosSeccion.jsx";
 import "../../styles/administrador/inventario.css";
 import "../../styles/administrador/gestion_producto.css";
 import api_url from "../../services/administrador/api";
@@ -608,50 +609,6 @@ const ProductoGen = () => {
                       </div>
                     </div>
                   )}
-
-                  {/* SECCIÓN COMENTARIOS */}
-                  <div className="row producto-comentarios-fila mt-5" id="producto-comentarios-fila">
-                    <div className="col-12" id="producto-comentarios-col">
-                      <div className="producto-seccion-comentarios" id="producto-seccion-comentarios">
-                        <h2 className="producto-titulo-comentarios text-center mb-4" id="producto-titulo-comentarios">
-                          <i className="bi bi-chat-dots me-2" id="producto-icono-comentarios"></i>
-                          Opiniones del producto
-                        </h2>
-                        
-                        <form className="producto-form-comentario container" id="producto-form-comentario">
-                          <div className="row align-items-end" id="producto-form-comentario-row">
-                            <div className="col-md-8" id="producto-input-comentario-col">
-                              <label className="form-label producto-label-comentario" id="producto-label-comentario">Deja tu opinión</label>
-                              <input 
-                                type="text" 
-                                name="opinion"
-                                placeholder="Comparte tu experiencia con este producto..."
-                                className="form-control producto-input-comentario"
-                                id="producto-input-comentario"
-                              />
-                            </div>
-                            <div className="col-md-4" id="producto-boton-comentario-col">
-                              <button 
-                                type="submit" 
-                                className="btn producto-btn-enviar-comentario btn-outline-primary w-100"
-                                id="producto-btn-enviar-comentario"
-                              >
-                                <i className="bi bi-send producto-icono-comentar me-2" id="producto-icono-comentar"></i>
-                                Publicar comentario
-                              </button>
-                            </div>
-                          </div>
-                        </form>
-
-                        <div className="producto-lista-comentarios mt-4" id="producto-lista-comentarios">
-                          <p className="text-muted text-center" id="producto-sin-comentarios-message">
-                            <i className="bi bi-info-circle me-2" id="producto-icono-sin-comentarios"></i>
-                            Sé el primero en comentar este producto
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
 
                 </div>
               </div>

@@ -243,7 +243,8 @@ CREATE TABLE Pedido (
   idCarrito INT NOT NULL,
   idPromocion INT NOT NULL,
   idMetodoPago INT NOT NULL,
-  total int not null, 
+  estado enum('Pendiente','En proceso','Entregado')default 'Pendiente',
+  total int not null default "0", 
   
   PRIMARY KEY(idPedido),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
@@ -363,3 +364,24 @@ CREATE TABLE Favoritos (
   -- Un usuario no puede agregar el mismo producto dos veces a favoritos
   UNIQUE KEY unique_usuario_producto (idUsuario, idProducto)
 );
+
+-- Tabla de Comentarios para productos
+CREATE TABLE ComentarioProducto (
+  idComentario INT AUTO_INCREMENT NOT NULL,
+  idProducto INT NOT NULL,
+  idUsuario INT NOT NULL,
+  comentario TEXT NOT NULL,
+  calificacion INT NOT NULL CHECK (calificacion >= 1 AND calificacion <= 5),
+  fechaComentario TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  estado ENUM('Activo', 'Eliminado') DEFAULT 'Activo',
+  
+  PRIMARY KEY (idComentario),
+  FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE,
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE,
+  
+  -- Un usuario solo puede comentar una vez por producto
+  UNIQUE KEY unique_usuario_producto (idUsuario, idProducto)
+);
+
+-- Índice para búsquedas más rápidas
+CREATE INDEX idx_comentario_producto ON ComentarioProducto(idProducto, estado, fechaComentario);

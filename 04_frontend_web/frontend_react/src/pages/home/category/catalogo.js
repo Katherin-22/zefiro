@@ -182,24 +182,7 @@ const Catalogo = () => {
               {obtenerNombreCategoria()}
             </h2>
             
-            {/* Mostrar barra de búsqueda activa */}
-            {searchTerm && (
-              <div className="busqueda-activa" id="busqueda-activa">
-                <div className="busqueda-info" id="busqueda-info">
-                  <i className="bi bi-search" id="busqueda-icono"></i>
-                  <span id="busqueda-termino">{searchTerm}</span>
-                  <button 
-                    onClick={limpiarBusqueda}
-                    className="limpiar-busqueda-btn"
-                    id="limpiar-busqueda-btn"
-                    title="Limpiar búsqueda"
-                  >
-                    <i className="bi bi-x"></i>
-                  </button>
-                </div>
-              </div>
-            )}
-            
+           
             <p className="contador-productos" id="contador-productos">
               {productosFiltrados.length} producto{productosFiltrados.length !== 1 ? 's' : ''} encontrado{productosFiltrados.length !== 1 ? 's' : ''}
             </p>
