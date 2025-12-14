@@ -31,12 +31,10 @@ public class RespuestaPago {
     @Column(name = "status", nullable = false, length = 200)
     private String status;
 
-
-
     // Relación muchos a uno con Categoria
-    //// @ManyToOne(fetch = FetchType.LAZY)
-    //// @JoinColumn(name = "idUsuario", nullable = false)
-    ///// @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    //// private Usuario usuario;    
+     @ManyToOne(fetch = FetchType.LAZY)
+     @JoinColumn(name = "idUsuario", nullable = false)
+     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+     private Usuario usuario;    
 
 }

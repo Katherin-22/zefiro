@@ -1,4 +1,4 @@
-/*package com.backend.proyect.dto.carrito;
+package com.backend.proyect.dto.carrito;
 
 import jakarta.validation.constraints.Min;
 
@@ -21,4 +21,3 @@ public class AgregarItemDTO {
     private Integer cantidad;
 }
 
-*/

@@ -1,4 +1,4 @@
-/*package com.backend.proyect.model.carrito;
+package com.backend.proyect.model.carrito;
 
 import com.backend.proyect.model.usuario.Usuario;
 import jakarta.persistence.*;
@@ -36,4 +36,3 @@ public class Carrito {
     @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleCarrito> detalles;
 }
-*/

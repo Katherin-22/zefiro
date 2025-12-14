@@ -218,10 +218,13 @@ CREATE TABLE DetalleCarrito (
   idStock  INT NOT NULL,
   cantidad INT NOT NULL CHECK (cantidad > 0),
   precioUnitario DOUBLE NOT NULL,
+  idPromocionAplicada INT NULL,            
+  porcentajeDescuento INT NULL, 
   
   PRIMARY KEY (idDetalleCarrito),
   FOREIGN KEY (idCarrito) REFERENCES Carrito(idCarrito),
-  FOREIGN KEY (idStock) REFERENCES Stock(idStock)
+  FOREIGN KEY (idStock) REFERENCES Stock(idStock),
+  FOREIGN KEY (idPromocionAplicada) REFERENCES Promocion(idPromocion) 
 ) ;
 
 -- Tabla MetodoPago
@@ -239,8 +242,10 @@ CREATE TABLE SolicitudPago (
 	amount BIGINT NOT NULL,
     currency VARCHAR(10) NOT NULL,
     description VARCHAR(200) NULL,
+	idUsuario INT NOT NULL,
     
-	PRIMARY KEY (idSolicitudPago)
+	PRIMARY KEY (idSolicitudPago),
+	FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)    
 );
 
 CREATE TABLE RespuestaPago (
@@ -249,13 +254,23 @@ CREATE TABLE RespuestaPago (
     currency VARCHAR(10) NOT NULL,
     status VARCHAR(200) NOT NULL,
     clientSecret VARCHAR(200) NOT NULL,
+	idUsuario INT NOT NULL,    
     
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+	FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)        
 );
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
 -- -----------------------------------------------------
+
+-- Tabla estadoPedido
+CREATE TABLE EstadoPedido (
+  idEstadoPedido INT AUTO_INCREMENT NOT NULL,
+  nombreEstado VARCHAR(45) NOT NULL,
+  
+  PRIMARY KEY (idEstadoPedido)
+) ;
 
 -- Tabla Pedido
 CREATE TABLE Pedido (
@@ -265,35 +280,43 @@ CREATE TABLE Pedido (
   idCarrito INT NOT NULL,
   idPromocion INT  NULL,
   idMetodoPago INT NOT NULL,
-  total_final INT NOT NULL,
+  idEstadoPedido INT NOT NULL,
+  total_final DECIMAL(10,2) NOT NULL,
   
   PRIMARY KEY(idPedido),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
   FOREIGN KEY (idCarrito) REFERENCES Carrito (idCarrito),
   FOREIGN KEY (idPromocion) REFERENCES Promocion (idPromocion),
-  FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago)
+  FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago),
+  FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido) 
 ) ;
 
 -- Tabla detallePedido
 CREATE TABLE DetallePedido (
   idDetallePedido INT AUTO_INCREMENT NOT NULL,
   idPedido INT NOT NULL,
-  talla INT NOT NULL, 
+  idStock INT NOT NULL, 
   cantidad INT NOT NULL,
   precioUnitario DOUBLE NOT NULL,
-
+  subtotal DECIMAL(10,2) NOT NULL ,
   PRIMARY KEY(idDetallePedido),
-  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido)
+  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido),
+  FOREIGN KEY (idStock) REFERENCES Stock(idStock)
 ) ;
 
-CREATE TABLE DetallePedido_has_Pedido(
-  idDetallePedido INT NOT NULL,
+-- Tabla seguimientoPedido
+CREATE TABLE SeguimientoPedido (
+  idSeguimiento INT NOT NULL AUTO_INCREMENT,
+  fechaEstado DATE NOT NULL,
+  comentario VARCHAR(45) NULL,
   idPedido INT NOT NULL,
+  idEstadoPedido INT NOT NULL,
   
-  PRIMARY KEY(idDetallePedido, idPedido),
-  FOREIGN KEY (idDetallePedido) REFERENCES DetallePedido(idDetallePedido),
-  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido)
-);
+  PRIMARY KEY (idSeguimiento),
+  FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido),
+  FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido)
+) ;
+
 -- -----------------------------------------------------
 -- MÓDULO DE GESTION DE COMPRAS									PARTE 1.2
 -- -----------------------------------------------------
@@ -328,30 +351,6 @@ CREATE TABLE DetallesComprobanteDeVenta (
   FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
 
 ) ;
--- -----------------------------------------------------
--- MÓDULO DE GESTIÓN DE PEDIDOS 							PARTE 1.2
--- -----------------------------------------------------
--- Tabla estadoPedido
-CREATE TABLE EstadoPedido (
-  idEstadoPedido INT AUTO_INCREMENT NOT NULL,
-  nombreEstado VARCHAR(45) NOT NULL,
-  
-  PRIMARY KEY (idEstadoPedido)
-) ;
-
--- Tabla seguimientoPedido
-CREATE TABLE SeguimientoPedido (
-  idSeguimiento INT NOT NULL AUTO_INCREMENT,
-  fechaEstado DATE NOT NULL,
-  comentario VARCHAR(45) NULL,
-  idPedido INT,
-  idEstadoPedido INT,
-  
-  PRIMARY KEY (idSeguimiento),
-  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido),
-  FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido)
-) ;
-
 
 -- Tabla devoluciones_Cambios
 CREATE TABLE devoluciones_Cambios (

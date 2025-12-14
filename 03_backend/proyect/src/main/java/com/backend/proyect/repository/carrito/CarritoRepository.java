@@ -1,4 +1,4 @@
-/*package com.backend.proyect.repository.carrito;
+package com.backend.proyect.repository.carrito;
 
 import  com.backend.proyect.model.carrito.Carrito;
 import  com.backend.proyect.model.usuario.Usuario;
@@ -15,4 +15,3 @@ public interface CarritoRepository extends JpaRepository<Carrito, Integer> {
 
 
 
-*/

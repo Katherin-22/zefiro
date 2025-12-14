@@ -132,7 +132,6 @@ VALUES (5, 15, 2, 2, 1);
 INSERT INTO Stock (stockMinimo, stockActual, idColor, idVariacion, idProducto) 
 VALUES (2, 10, 2, 3, 2);
 
-
 -- -----------------------------------------------------
 -- MÓDULO DE GESTION DE COMPRAS								PARTE 1.1
 -- -----------------------------------------------------
@@ -150,75 +149,90 @@ VALUES
 ("2025-10-01 20:30:00", 12),
 ("2025-08-01 07:50:00", 13);
 
+
 -- Tabla MetodoPago
 INSERT INTO MetodoPago (nombreMetodoPago)
  VALUES
 ("PSE");
 
-
--- RECORDATORIO: Para que el precio unitario tenga el precio del producto, hay que crea primero el trigger para eso
-
 -- Tabla DetalleCarrito 
-INSERT INTO DetalleCarrito ( idCarrito, idStock, cantidad, precioUnitario) 
+INSERT INTO DetalleCarrito ( idCarrito, idStock, cantidad, precioUnitario, idPromocionAplicada, porcentajeDescuento) 
 VALUES
-(1, 1, 2, 4.00),
-(2, 2, 3, 5.00),
-(1, 3, 1, 6.00),
-(2, 1, 2, 7.00),
-(1, 2, 2, 8.00),
-(1, 3, 3, 9.00),
-(2, 1, 1, 10.00),
-(1, 2, 2, 11.00),
-(2, 3, 3, 12.00),
-(1, 1, 2, 13.00);
+(1, 1, 2, 4.00, 1, 15),
+(2, 2, 3, 5.00, 1, 15),
+(1, 3, 1, 6.00, 2, 30),
+(2, 1, 2, 7.00, 1, 15),
+(1, 2, 2, 8.00, 1, 15),
+(1, 3, 3, 9.00, 2, 30),
+(2, 1, 1, 10.00, 1, 15),
+(1, 2, 2, 11.00, 1, 15),
+(2, 3, 3, 12.00, 2, 30),
+(1, 1, 2, 13.00, 1, 15);
+
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
 -- -----------------------------------------------------
 
+
+-- Tabla estadoPedido
+INSERT INTO EstadoPedido (nombreEstado) VALUES
+('Pendiente'),
+('Pagado'),
+('Procesando'),
+('Empacado'),
+('Enviado'),
+('En tránsito'),
+('En reparto'),
+('Entregado'),
+('Cancelado'),
+('Rechazado'),
+('Devuelto'),
+('Reembolso en proceso'),
+('Reembolsado');
+
 -- Tabla Pedido
 INSERT INTO Pedido 
-(fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago, total_final)
+(fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago, total_final, idEstadoPedido)
  VALUES
-("2025-07-01", 4, 1, 1, 1, 120000),
-("2025-07-01", 5, 2, 2, 1, 85000),
-("2025-07-02", 6, 3, 1, 1, 99000),
-("2025-07-02", 7, 4, 2, 1, 130000),
-("2025-07-03", 8, 5, 1, 1, 115000),
-("2025-07-03", 9, 6, 2, 1, 78000),
-("2025-07-04", 10, 7, 1, 1, 145000),
-("2025-07-04", 11, 8, 2, 1, 92000),
-("2025-07-05", 12, 9, 1, 1, 160000),
-("2025-07-05", 13, 10, 2, 1, 110000);
-
+("2025-07-01", 4, 1, 1, 1, 120000, 1),
+("2025-07-01", 5, 2, 2, 1, 85000, 2),
+("2025-07-02", 6, 3, 1, 1, 99000, 3),
+("2025-07-02", 7, 4, 2, 1, 130000, 4),
+("2025-07-03", 8, 5, 1, 1, 115000, 5),
+("2025-07-03", 9, 6, 2, 1, 78000, 6),
+("2025-07-04", 10, 7, 1, 1, 145000, 7),
+("2025-07-04", 11, 8, 2, 1, 92000, 8),
+("2025-07-05", 12, 9, 1, 1, 160000, 9),
+("2025-07-05", 13, 10, 2, 1, 110000, 10);
 
 -- Tabla detallePedido
-INSERT INTO DetallePedido (idPedido , talla, cantidad, precioUnitario) 
+INSERT INTO DetallePedido (idPedido, idStock, cantidad, precioUnitario, subtotal) 
 VALUES
-(1, 38, 2, 75000),
-(2, 42, 1, 235000),
-(3, 40, 3, 320000),
-(4, 36, 1, 120000),
-(5, 37, 2, 28000),
-(6, 43, 1, 30000),
-(7, 39, 2, 225000),
-(8, 38, 1, 89000),
-(9, 41, 1, 175000),
-(10, 44, 2, 105000);
+(1, 1, 2, 75000, 150000),
+(2, 2, 1, 235000, 235000),
+(3, 3, 3, 320000, 960000),
+(4, 1, 1, 120000, 120000),
+(5, 2, 2, 28000, 56000),
+(6, 3, 1, 30000, 30000),
+(7, 1, 2, 225000, 450000),
+(8, 2, 1, 89000, 89000),
+(9, 3, 1, 175000, 175000),
+(10, 1, 2, 105000, 210000);
 
-
-INSERT INTO DetallePedido_has_Pedido
+-- Tabla seguimientoPedido
+INSERT INTO SeguimientoPedido (fechaEstado, comentario, idPedido, idEstadoPedido)
 VALUES
-(1,1),
-(2,2),
-(3,3),
-(4,4),
-(5,5),
-(6,6),
-(7,7),
-(8,8),
-(9,9),
-(10,10);
+("2025-06-25", "Pedido recibido", 1, 7),
+("2025-06-26", "Confirmado por el sistema", 2, 6),
+("2025-06-26", "Cocinando", 3, 3),
+("2025-06-27", "Va en camino", 4, 4),
+("2025-06-27", "Cliente recibió el pedido", 5, 5),
+("2025-06-27", "Cancelado por cliente", 6, 4),
+("2025-06-28", "Producto defectuoso", 7, 3),
+("2025-06-28", "Se cambió la fecha", 8, 2),
+("2025-06-28", "Problema con tarjeta", 9, 1),
+("2025-06-29", "Esperando recogida", 10, 7);
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTION DE COMPRAS									PARTE 1.2

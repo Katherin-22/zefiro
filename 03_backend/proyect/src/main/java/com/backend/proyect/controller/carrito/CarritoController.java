@@ -1,8 +1,8 @@
-/*package com.backend.proyect.controller.carrito;
+package com.backend.proyect.controller.carrito;
 
 import com.backend.proyect.dto.carrito.AgregarItemDTO;
 import com.backend.proyect.model.carrito.Carrito;
-import com.backend.proyect.entity.Pedido;
+import com.backend.proyect.model.pedido.Pedido;
 import com.backend.proyect.service.carrito.CarritoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -70,4 +70,3 @@ public class CarritoController {
 }
 
 
-*/

@@ -1,4 +1,4 @@
-/*package com.backend.proyect.repository.carrito;
+package com.backend.proyect.repository.carrito;
 
 import com.backend.proyect.model.carrito.DetalleCarrito;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +18,3 @@ public interface DetalleCarritoRepository extends JpaRepository<DetalleCarrito, 
 }
 
 
-*/

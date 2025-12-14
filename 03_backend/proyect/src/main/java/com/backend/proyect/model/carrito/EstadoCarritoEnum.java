@@ -1,4 +1,4 @@
-/*package com.backend.proyect.model.carrito;
+package com.backend.proyect.model.carrito;
 
 public enum EstadoCarritoEnum {
 
@@ -6,4 +6,3 @@ public enum EstadoCarritoEnum {
     Procesado,
     Cancelado
 }
-*/

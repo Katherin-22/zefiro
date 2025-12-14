@@ -1,4 +1,4 @@
-/*package com.backend.proyect.service.carrito;
+package com.backend.proyect.service.carrito;
 
 import com.backend.proyect.dto.carrito.AgregarItemDTO;
 import com.backend.proyect.model.carrito.Carrito;
@@ -9,23 +9,27 @@ import com.backend.proyect.model.productos.Stock;
 import com.backend.proyect.model.promociones.Promocion;
 import com.backend.proyect.model.usuario.Usuario;
 
-// Asumo estas entidades del proceso de Checkout (Pedidos)
 import com.backend.proyect.model.pedido.Pedido;
 import com.backend.proyect.model.pedido.DetallePedido;
-import com.backend.proyect.model.pago.MetodoPago; // Asumo esta entidad
+import com.backend.proyect.model.pedido.EstadoPedido;
+import com.backend.proyect.model.metodoPagos.MetodoPago;
 
 // Paquetes del Repositorio
 import com.backend.proyect.repository.carrito.CarritoRepository;
+import com.backend.proyect.repository.metodoPagos.MetodoPagoRepository;
 import com.backend.proyect.repository.productos.StockRepository;
 import com.backend.proyect.repository.usuario.UsuarioRepository;
 import com.backend.proyect.repository.carrito.DetalleCarritoRepository;
-import com.backend.proyect.repository.pedido.PedidoRepository; // <-- Agregado
-import com.backend.proyect.repository.pedido.DetallePedidoRepository; // <-- Necesario para guardar el detalle del pedido
+import com.backend.proyect.repository.pedido.pedidoRepository;
+import com.backend.proyect.repository.pedido.DetallePedidoRepository;
+import com.backend.proyect.repository.pedido.EstadoPedidoRepository;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime; // Usar LocalDateTime
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -35,31 +39,35 @@ public class CarritoService {
     private final CarritoRepository carritoRepository;
     private final DetalleCarritoRepository detalleCarritoRepository;
     private final StockRepository stockRepository;
-    private final PedidoRepository pedidoRepository;
+    private final pedidoRepository pedidoRepository;
     private final UsuarioRepository usuarioRepository;
-    // Nuevo repositorio necesario para guardar los detalles del pedido
     private final DetallePedidoRepository detallePedidoRepository;
+    private final EstadoPedidoRepository estadoPedidoRepository;
+    private final MetodoPagoRepository metodoPagoRepository; // Correcto: camelCase
 
     // Inyección de dependencias
     public CarritoService(CarritoRepository carritoRepository, DetalleCarritoRepository detalleCarritoRepository,
-                          StockRepository stockRepository, PedidoRepository pedidoRepository,
-                          UsuarioRepository usuarioRepository, DetallePedidoRepository detallePedidoRepository) {
+                          StockRepository stockRepository, pedidoRepository pedidoRepository,
+                          UsuarioRepository usuarioRepository, DetallePedidoRepository detallePedidoRepository,
+                          EstadoPedidoRepository estadoPedidoRepository,
+                          MetodoPagoRepository metodoPagoRepository) {
+
         this.carritoRepository = carritoRepository;
         this.detalleCarritoRepository = detalleCarritoRepository;
         this.stockRepository = stockRepository;
         this.pedidoRepository = pedidoRepository;
         this.usuarioRepository = usuarioRepository;
-        this.detallePedidoRepository = detallePedidoRepository; // <-- Inyectado
-    }
+        this.detallePedidoRepository = detallePedidoRepository;
+        this.estadoPedidoRepository = estadoPedidoRepository;
+        this.metodoPagoRepository = metodoPagoRepository;    }
 
     /**
      * Obtiene el carrito activo del usuario, o crea uno nuevo si no existe.
-     *
+     */
     public Carrito obtenerCarritoActivo(Integer idUsuario) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
 
-        // CORRECCIÓN: Usar findByUsuarioAndEstadoCarrito
         return carritoRepository.findByUsuarioAndEstadoCarrito(usuario, EstadoCarritoEnum.Activo)
                 .orElseGet(() -> {
                     Carrito nuevoCarrito = new Carrito();
@@ -72,7 +80,7 @@ public class CarritoService {
 
     /**
      * Agrega un item al carrito o actualiza la cantidad si ya existe.
-     *
+     */
     @Transactional
     public Carrito agregarOActualizarItem(Integer idUsuario, AgregarItemDTO itemDTO) {
         // ... (el método agregarOActualizarItem es correcto y no requiere cambios significativos)
@@ -103,9 +111,11 @@ public class CarritoService {
 
             // 1. Inicializar el precio con el precio base del producto
             Double precioUnitarioFinal = producto.getPrecio();
+            Integer idPromocionAplicada = null;
+            Integer porcentajeDescuento = null;
 
             if (promocion != null && promocion.isVigente()) {
-                Double descuentoAplicado = promocion.getDescuento();
+                Integer descuentoAplicado = promocion.getDescuento();
                 double porcentaje = descuentoAplicado / 100.0;
 
                 // Aplicar el descuento al precio original
@@ -113,9 +123,11 @@ public class CarritoService {
 
                 // Redondear a dos decimales (CRÍTICO para manejo de dinero)
                 precioUnitarioFinal = Math.round(precioConDescuento * 100.0) / 100.0;
+
+                idPromocionAplicada = promocion.getIdPromocion();
+                porcentajeDescuento = descuentoAplicado;
+
             }
-
-
 
             DetalleCarrito nuevoDetalle = new DetalleCarrito();
             nuevoDetalle.setCarrito(carrito);
@@ -123,6 +135,16 @@ public class CarritoService {
             nuevoDetalle.setCantidad(itemDTO.getCantidad());
             // El precio unitario se toma del precio actual del producto (con descuento aplicado)
             nuevoDetalle.setPrecioUnitario(precioUnitarioFinal);
+
+            if (idPromocionAplicada != null) {
+                // Asignamos la promoción completa al detalle
+                nuevoDetalle.setPromocionAplicada(promocion);
+                nuevoDetalle.setPorcentajeDescuento(porcentajeDescuento);
+            } else {
+                // Si no hay promoción, asignamos NULL para coincidir con la BD
+                nuevoDetalle.setPromocionAplicada(null);
+                nuevoDetalle.setPorcentajeDescuento(null);
+            }
 
             carrito.getDetalles().add(nuevoDetalle);
         }
@@ -137,7 +159,7 @@ public class CarritoService {
      * @param idUsuario ID del usuario que compra
      * @param idMetodoPago Método de pago seleccionado
      * @return El Pedido creado
-     *
+     */
     @Transactional
     public Pedido finalizarCheckout(Integer idUsuario, Integer idMetodoPago) {
         Carrito carrito = obtenerCarritoActivo(idUsuario);
@@ -145,7 +167,7 @@ public class CarritoService {
             throw new IllegalStateException("El carrito está vacío. No se puede generar un pedido.");
         }
 
-        double totalCalculado = 0.0;
+        BigDecimal totalCalculado = BigDecimal.ZERO;
 
         // 1. Revalidación de Stock y Cálculo del Total
         for (DetalleCarrito detalle : carrito.getDetalles()) {
@@ -156,16 +178,29 @@ public class CarritoService {
                 throw new IllegalArgumentException("El producto " + stock.getProducto().getNombreProducto() + " no tiene suficiente stock.");
             }
 
-            totalCalculado += detalle.getCantidad() * detalle.getPrecioUnitario();
+            BigDecimal cantidad = BigDecimal.valueOf(detalle.getCantidad());
+            BigDecimal precioUnitario = BigDecimal.valueOf(detalle.getPrecioUnitario());
+
+            BigDecimal subtotalItem = cantidad.multiply(precioUnitario);
+
+            totalCalculado = totalCalculado.add(subtotalItem);
+
         }
 
-
         // 2. Creación del Pedido
+
+        EstadoPedido estadoInicial = estadoPedidoRepository.findById(2)
+                .orElseThrow(() -> new IllegalStateException("El estado 'Pagado' (ID 2) no existe. Verifica la tabla EstadoPedido."));
+
+
         Pedido nuevoPedido = new Pedido();
         nuevoPedido.setUsuario(carrito.getUsuario());
-        nuevoPedido.setFechaPedido(LocalDateTime.now()); // CORRECCIÓN: Usar LocalDateTime.now()
-        nuevoPedido.setTotalPedido(totalCalculado);
-        nuevoPedido.setMetodoPago(new MetodoPago(idMetodoPago));
+        nuevoPedido.setFechaPedido(LocalDate.now());
+        nuevoPedido.setTotalFinal(totalCalculado);
+
+        MetodoPago metodoPago = metodoPagoRepository.getReferenceById(idMetodoPago);        nuevoPedido.setMetodoPago(metodoPago);
+
+        nuevoPedido.setEstadoPedido(estadoInicial);
 
         Pedido pedidoGuardado = pedidoRepository.save(nuevoPedido);
 
@@ -177,7 +212,7 @@ public class CarritoService {
             dp.setCantidad(detalle.getCantidad());
             dp.setPrecioUnitario(detalle.getPrecioUnitario());
 
-            // CORRECCIÓN: Guardar el DetallePedido
+            // Guardar el DetallePedido
             detallePedidoRepository.save(dp);
 
             // Descontar Stock (CRÍTICO)
@@ -203,8 +238,6 @@ public class CarritoService {
         }
 
         return totalCalculado;
-    }
-
+    }    
 
 }
-    */

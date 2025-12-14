@@ -126,4 +126,14 @@ public class Promocion {
     public void setEstadoPromocion(EstadoPromocion estadoPromocion) {
         this.estadoPromocion = estadoPromocion;
     }
+
+    public boolean isVigente() {
+        LocalDate hoy = LocalDate.now();
+        boolean estadoActivo = this.estadoPromocion == EstadoPromocion.Activo;
+        // Verifica que la fecha actual esté dentro del rango [fechaInicio, fechaFin]
+        boolean enRangoFechas = !hoy.isBefore(this.fechaInicio) && !hoy.isAfter(this.fechaFin);
+
+        return estadoActivo && enRangoFechas;
+    }
+        
 }
