@@ -12,7 +12,7 @@ export default function CreateImagen() {
   const [imagenes, setImagenes] = useState([]);
   const [file, setFile] = useState(null); // archivo seleccionado
   const [loading, setLoading] = useState(false);
-  const [ setSuccess] = useState(false); 
+  const [success,setSuccess] = useState(false);
   
   // Traer los productos al cargar la página
   useEffect(() => {
@@ -76,7 +76,10 @@ export default function CreateImagen() {
     }
   };   
 
-   
+    {success && (
+        console.log("imagen creada con éxito.")
+    )}   
+
   if (loading) return <p>Cargando imagenes...</p>;
 
   return (

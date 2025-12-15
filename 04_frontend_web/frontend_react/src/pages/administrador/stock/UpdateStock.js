@@ -4,7 +4,6 @@ import { getStockById, updateStock } from "../../../services/administrador/Stock
 import {useGetColor} from "../../../hooks/color/useGetColor";
 import {useGetVariacionPorProducto} from "../../../hooks/stock/useVariacionStock";
 import MenuAdmin from "../../../layouts/administrador/menuAdmin";
-import AlertMessage from "../../../components/admi/AlertMessage";
 import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
 
@@ -64,12 +63,7 @@ export default function UpdateStock() {
         try {
         await updateStock(idProducto, idStock, data); // paso 2: enviar datos al backend
         setSuccess(true);        // paso 3: si todo ok → marcar éxito
-    // Espera 3 segundos antes de redirigir
-// Esperar a que el mensaje desaparezca antes de navegar
-    setTimeout(() => {
-        setSuccess(null); // Oculta el mensaje suavemente
-        navigate(`/stock/producto/${idProducto}`, { replace: true }); // Evita doble render de historial
-    }, 2500);
+        navigate(`/stock/producto/${idProducto}`)
         } catch (error) {
         console.error("Error al actualizar el stock:", error);
         setSuccess(false);      // si falla → marcar como no exitoso
@@ -90,29 +84,16 @@ export default function UpdateStock() {
         await handleUpdateStock(idProducto, idStock, stock); // acá le pasas el id y los datos(como esta en el hook)
     }
 
+    {success && (
+        console.log("stock actualizado con éxito.")
+    )}
+    
   // Mostrar loading mientras trae el producto
   if (loading) return <p>Cargando stock...</p>;
 
   return (
 
 <div className="main-content">
-    {/*} Éxito con ícono de check por 5 segundos */}
-{success === true && (
-  <AlertMessage
-    type="success"
-    icon="check-circle-fill"
-    message="Stock actualizado con éxito"
-  />
-)}
-    {/*// Peligro (error) */}
-{success === false && (
-  <AlertMessage
-    type="danger"
-    icon="exclamation-triangle-fill"
-    message="No se pudo actualizar el stock"
-  />
-)}
-
     <nav>
         <MenuAdmin />
     </nav>
@@ -132,30 +113,32 @@ export default function UpdateStock() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
             <div className="col">
-                <label className="form-label">Stock minimo</label>
+                <label className="form-label required">Stock minimo</label>
                 <input type="number" 
                 name="stockMinimo" 
                 placeholder="Ingresa el stock minimo del producto"
-                className="form-control" 
+                className="form-control"
+                required 
                 value={stockMinimo} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Stock Actual</label>
+                <label className="form-label required">Stock Actual</label>
                 <input type="number" 
                 name="stockActual" 
                 placeholder="Ingresa el stock actual del producto"
-                className="form-control" 
+                className="form-control"
+                required 
                 value={stockActual} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Color</label>
-                <select name="idColor" value={stock.idColor} onChange={(e)=>onInputChange(e)} className="form-select">
+                <label className="form-label required">Color</label>
+                <select name="idColor" value={stock.idColor} onChange={(e)=>onInputChange(e)} className="form-select" required>
                 <option value="">-- Selecciona una opción --</option>
                 {color?.map((color) => (
                 <option key={color.idColor} value={color.idColor}>
@@ -166,8 +149,8 @@ export default function UpdateStock() {
             </div>
 
             <div className="col">
-                <label className="form-label">Medidas</label>
-                <select name="idVariacion" value={stock.idVariacion} onChange={(e)=>onInputChange(e)} className="form-select">
+                <label className="form-label required">Medidas</label>
+                <select name="idVariacion" value={stock.idVariacion} onChange={(e)=>onInputChange(e)} className="form-select" required>
                 <option value="">-- Selecciona una opción --</option>
                 {variacionStock?.map((variacion) => (
                 <option key={variacion.idVariacion} value={variacion.idVariacion}>

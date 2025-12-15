@@ -122,14 +122,11 @@ const PaymentPage = () => {
 
     return (
         <div className="payment-container">
+            
             <h2 className="payment-title">💳 Checkout de Pago</h2>
             
             {/* Panel de información */}
             <div className="info-panel">
-                <div className="info-item">
-                    <span className="info-label">ID Usuario:</span>
-                    <span className="info-value">{idUsuario}</span>
-                </div>
                 <div className="info-item">
                     <span className="info-label">Estado:</span>
                     <span className={`info-value ${clientSecret ? 'status-success' : 'status-pending'}`}>
@@ -155,20 +152,17 @@ const PaymentPage = () => {
             {!clientSecret && (
                 <div className="payment-init-section">
                     <div className="amount-display">
-                        <h3>Resumen del Pago</h3>
+                        <h3>Total Pago</h3>
                         <div className="amount-details">
                             <div className="amount-row">
                                 <span>Subtotal:</span>
                                 <span>Calculando...</span>
                             </div>
-                            <div className="amount-row">
-                                <span>Envío:</span>
-                                <span>$0.00</span>
-                            </div>
                             <div className="amount-total">
                                 <span>Total estimado:</span>
                                 <span>Se calculará automáticamente</span>
                             </div>
+                            
                         </div>
                         
                         {amount !== null && (
@@ -257,24 +251,6 @@ const PaymentPage = () => {
                 </div>
             )}
             
-            {/* Botón de debug (solo desarrollo) */}
-            {process.env.NODE_ENV === 'development' && (
-                <button
-                    onClick={() => {
-                        console.log("=== DEBUG STATE ===");
-                        console.log("idUsuario:", idUsuario);
-                        console.log("amount:", amount);
-                        console.log("currency:", currency);
-                        console.log("clientSecret:", clientSecret ? clientSecret.substring(0, 30) + "..." : "null");
-                        console.log("paymentData:", paymentData);
-                        console.log("error:", error);
-                        console.log("loading:", loading);
-                    }}
-                    className="debug-button"
-                >
-                    🐛 Debug
-                </button>
-            )}
         </div>
     );
 };

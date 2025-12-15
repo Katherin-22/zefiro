@@ -17,7 +17,7 @@ export default function UpdatePromocion() {
     const { idPromocion } = useParams(); // esto se usa cuando se va a editar
 
     const [loading, setLoading] = useState(true);
-    const [ setSuccess] = useState(false);
+    const [success,setSuccess] = useState(false);
 
     const [promocion,setPromocion]=useState({ 
         nombrePromocion:"",
@@ -85,6 +85,10 @@ export default function UpdatePromocion() {
         await handleUpdatePromocion(idPromocion, promocion); // acá le pasas el id y los datos(como esta en el hook)
     }
 
+    {success && (
+        console.log("promocion actualizada con éxito.")
+    )}
+    
   // Mostrar loading mientras trae el producto
   if (loading) return <p>Cargando categoria...</p>;
 
@@ -110,63 +114,68 @@ export default function UpdatePromocion() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
             <div className="col">
-                <label className="form-label">Nombre de promoción</label>
+                <label className="form-label required">Nombre de promoción</label>
                 <input type="text" 
                 name="nombrePromocion" 
                 placeholder="Ingresa nombre de la promoción"
-                className="form-control" 
+                className="form-control"
+                required 
                 value={nombrePromocion} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Código</label>
+                <label className="form-label required">Código</label>
                 <input type="text" 
                 name="codigoPromocion" 
                 placeholder="Ingresa el codigo de la promoción"
-                className="form-control" 
+                className="form-control"
+                required 
                 value={codigoPromocion} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Porcentaje</label>
+                <label className="form-label required">Porcentaje</label>
                 <input type="number" 
                 name="descuento" 
                 placeholder="Ingresa el procentaje del descuento "
                 className="form-control" 
+                required
                 value={descuento} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Descripción</label>
+                <label className="form-label required">Descripción</label>
                 <input type="text" 
                 name="descripcion" 
                 placeholder="Ingresa la descripción de la promoción"
-                className="form-control" 
+                className="form-control"
+                required 
                 value={descripcion} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Fecha de fin</label>
+                <label className="form-label required">Fecha de fin</label>
                 <input type="date" 
                 name="fechaFin" 
                 placeholder="Ingresa la fecha de finalización"
                 className="form-control" 
+                required
                 value={fechaFin} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Estado de la Promoción</label>
-                <select name="estadoPromocion" value={estadoPromocion} onChange={(e)=>onInputChange(e)} className="form-select">
+                <label className="form-label required">Estado de la Promoción</label>
+                <select name="estadoPromocion" value={estadoPromocion} onChange={(e)=>onInputChange(e)} className="form-select" required>
                 <option value="">-- Selecciona una opción --</option>
                 {opcionesEstado.map((estado) => (
                 <option key={estado} value={estado}>

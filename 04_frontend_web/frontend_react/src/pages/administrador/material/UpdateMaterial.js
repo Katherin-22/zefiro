@@ -16,7 +16,7 @@ export default function UpdateMaterial() {
     const { idMaterial } = useParams(); // esto se usa cuando se va a editar
 
     const [loading, setLoading] = useState(true);
-    const [ setSuccess] = useState(false);
+    const [success,setSuccess] = useState(false);
 
     const [materiales, setMateriales]=useState({ 
         nombreMaterial:"",
@@ -73,6 +73,10 @@ export default function UpdateMaterial() {
         await handleUpdateMaterial(idMaterial, materiales); // acá le pasas el id y los datos(como esta en el hook)
     }
 
+    {success && (
+        console.log("material actualizado con éxito.")
+    )}
+
   // Mostrar loading mientras trae el producto
   if (loading) return <p>Cargando material...</p>;
 
@@ -98,11 +102,12 @@ export default function UpdateMaterial() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
             <div className="col">
-                <label className="form-label">Nombre de material</label>
+                <label className="form-label required">Nombre de material</label>
                 <input type="text" 
                 name="nombreMaterial" 
                 placeholder="Ingresa nombre del material"
                 className="form-control" 
+                required
                 value={nombreMaterial} 
                 onChange={(e)=>onInputChange(e)}
                 />
