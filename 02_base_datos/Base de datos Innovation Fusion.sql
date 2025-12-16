@@ -263,6 +263,13 @@ CREATE TABLE RespuestaPago (
 -- -----------------------------------------------------
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
 -- -----------------------------------------------------
+-- Tabla estadoPedido
+CREATE TABLE EstadoPedido (
+  idEstadoPedido INT AUTO_INCREMENT NOT NULL,
+  nombreEstado VARCHAR(45) NOT NULL,
+  
+  PRIMARY KEY (idEstadoPedido)
+) ;
 
 -- Tabla Pedido
 CREATE TABLE Pedido (
@@ -270,28 +277,30 @@ CREATE TABLE Pedido (
   fechaPedido DATE NOT NULL, 
   idUsuario INT NOT NULL,
   idCarrito INT NOT NULL,
-  idPromocion INT NOT NULL,
+  idPromocion INT  NULL,
   idMetodoPago INT NOT NULL,
-  estado enum('Pendiente','En proceso','Entregado')default 'Pendiente',
-  total int not null default "0", 
+  idEstadoPedido INT NOT NULL,
+  total_final DECIMAL(10,2) NOT NULL,
   
   PRIMARY KEY(idPedido),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
   FOREIGN KEY (idCarrito) REFERENCES Carrito (idCarrito),
   FOREIGN KEY (idPromocion) REFERENCES Promocion (idPromocion),
-  FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago)
+  FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago),
+  FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido) 
 ) ;
 
 -- Tabla detallePedido
 CREATE TABLE DetallePedido (
   idDetallePedido INT AUTO_INCREMENT NOT NULL,
   idPedido INT NOT NULL,
-  talla INT NOT NULL, 
+  idStock INT NOT NULL, 
   cantidad INT NOT NULL,
   precioUnitario DOUBLE NOT NULL,
-
+  subtotal DECIMAL(10,2) NOT NULL ,
   PRIMARY KEY(idDetallePedido),
-  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido)
+  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido),
+  FOREIGN KEY (idStock) REFERENCES Stock(idStock)
 ) ;
 
 CREATE TABLE DetallePedido_has_Pedido(
@@ -341,13 +350,7 @@ CREATE TABLE DetallesComprobanteDeVenta (
 -- -----------------------------------------------------
 -- MÓDULO DE GESTIÓN DE PEDIDOS 							PARTE 1.2
 -- -----------------------------------------------------
--- Tabla estadoPedido
-CREATE TABLE EstadoPedido (
-  idEstadoPedido INT AUTO_INCREMENT NOT NULL,
-  nombreEstado VARCHAR(45) NOT NULL,
-  
-  PRIMARY KEY (idEstadoPedido)
-) ;
+
 
 -- Tabla seguimientoPedido
 CREATE TABLE SeguimientoPedido (
