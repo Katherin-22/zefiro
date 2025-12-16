@@ -42,7 +42,7 @@ const CheckoutForm = ({clientSecret, amount}) => {
                 <CardElement />
             </div>
         <button disabled={loading} style={{
-            background: "#6777e5", color: "#fff", padding: "12px", border: "none", borderRadius: 8, cursor: "pointer"
+            background: "#E0B253", color: "#fff", padding: "12px", border: "2px solid #E0B253", borderRadius: 25, cursor: "pointer"
         }}>
             {loading ? "Procesando..." : `Pagar $${(amount / 100).toFixed(2)}`}
         </button>    

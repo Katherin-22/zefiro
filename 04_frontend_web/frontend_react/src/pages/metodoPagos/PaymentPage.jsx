@@ -4,6 +4,9 @@ import { loadStripe } from "@stripe/stripe-js";
 import { useParams, useNavigate } from 'react-router-dom';
 import CheckoutForm from "../../components/metodoPagos/CheckoutForm";
 import { createPaymentIntent } from "../../services/metodoPagos/paymentApi";
+import "../../styles/home/paginaInicio.css";
+import MenuHome from "../../layouts/home/menuHome";
+import Footer from "../../layouts/home/footer";
 import "../../styles/metodoPagos/PaymentPage.css"; // Opcional: para estilos
 
 
@@ -121,8 +124,10 @@ const PaymentPage = () => {
     };
 
     return (
+    <div className="allHome" id="home-container">
+      <MenuHome />
+      <div className="body-color" id="home-body">      
         <div className="payment-container">
-            
             <h2 className="payment-title">💳 Checkout de Pago</h2>
             
             {/* Panel de información */}
@@ -195,9 +200,8 @@ const PaymentPage = () => {
                             )}
                         </button>
                         
-                        <button
-                            
-                            className="cancel-button"
+                        <button     
+                            className="btn btn-outline-light btn-sm w-100 d-flex align-items-center justify-content-center gap-2" id="home-bag-cart-btn-1"
                         >
                             ← Volver al Carrito
                         </button>
@@ -214,7 +218,7 @@ const PaymentPage = () => {
             {clientSecret && amount && (
                 <div className="stripe-section">
                     <div className="payment-summary">
-                        <h3>✅ Pago Listo para Completar</h3>
+                        <h3>Pago Listo para Completar</h3>
                         <p>Complete los datos de su tarjeta a continuación:</p>
                         <div className="final-amount">
                             <span>Total a pagar:</span>
@@ -244,7 +248,7 @@ const PaymentPage = () => {
                             setClientSecret("");
                             setAmount(null);
                         }}
-                        className="back-button"
+                        className="btn btn-outline-light btn-sm w-100 d-flex align-items-center justify-content-center gap-2" id="home-bag-cart-btn-1"
                     >
                         ← Cambiar método de pago
                     </button>
@@ -252,6 +256,9 @@ const PaymentPage = () => {
             )}
             
         </div>
+        <Footer />
+        </div>  
+        </div>  
     );
 };
 
