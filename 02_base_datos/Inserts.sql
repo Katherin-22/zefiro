@@ -398,33 +398,52 @@ VALUES
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
 -- -----------------------------------------------------
 
+-- Tabla estadoPedido
+INSERT INTO EstadoPedido (nombreEstado) VALUES
+('Pendiente'),
+('Pagado'),
+('Procesando'),
+('Empacado'),
+('Enviado'),
+('En tránsito'),
+('En reparto'),
+('Entregado'),
+('Cancelado'),
+('Rechazado'),
+('Devuelto'),
+('Reembolso en proceso'),
+('Reembolsado');
+
 -- Tabla Pedido
-INSERT INTO Pedido (fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago)
+INSERT INTO Pedido 
+(fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago, total_final, idEstadoPedido)
  VALUES
-("2025-07-01", 4, 1, 1, 1),
-("2025-07-01", 5, 2, 2, 1),
-("2025-07-02", 6, 3, 1, 1),
-("2025-07-02", 7, 4, 2, 1),
-("2025-07-03", 8, 5, 1, 1),
-("2025-07-03", 9, 6, 2, 1),
-("2025-07-04", 10, 7, 1, 1),
-("2025-07-04", 11, 8, 2, 1),
-("2025-07-05", 12, 9, 1, 1),
-("2025-07-05", 13, 10, 2, 1);
+("2025-07-01", 4, 1, 1, 1, 120000, 1),
+("2025-07-01", 5, 2, 2, 1, 85000, 2),
+("2025-07-02", 6, 3, 1, 1, 99000, 3),
+("2025-07-02", 7, 4, 2, 1, 130000, 4),
+("2025-07-03", 8, 5, 1, 1, 115000, 5),
+("2025-07-03", 9, 6, 2, 1, 78000, 6),
+("2025-07-04", 10, 7, 1, 1, 145000, 7),
+("2025-07-04", 11, 8, 2, 1, 92000, 8),
+("2025-07-05", 12, 9, 1, 1, 160000, 9),
+("2025-07-05", 13, 10, 2, 1, 110000, 10),
+("2025-07-05", 11, 11, 2, 1, 110000, 10);
 
 -- Tabla detallePedido
-INSERT INTO DetallePedido (idPedido , talla, cantidad, precioUnitario) 
+INSERT INTO DetallePedido (idPedido, idStock, cantidad, precioUnitario, subtotal) 
 VALUES
-(1, 38, 2, 75000),
-(2, 42, 1, 235000),
-(3, 40, 3, 320000),
-(4, 36, 1, 120000),
-(5, 37, 2, 28000),
-(6, 43, 1, 30000),
-(7, 39, 2, 225000),
-(8, 38, 1, 89000),
-(9, 41, 1, 175000),
-(10, 44, 2, 105000);
+(1, 1, 2, 75000, 150000),
+(2, 2, 1, 235000, 235000),
+(3, 3, 3, 320000, 960000),
+(4, 1, 1, 120000, 120000),
+(5, 2, 2, 28000, 56000),
+(6, 3, 1, 30000, 30000),
+(7, 1, 2, 225000, 450000),
+(8, 2, 1, 89000, 89000),
+(9, 3, 1, 175000, 175000),
+(10, 1, 2, 105000, 210000),
+(11, 1, 2, 105000, 210000);
 
 
 INSERT INTO DetallePedido_has_Pedido
