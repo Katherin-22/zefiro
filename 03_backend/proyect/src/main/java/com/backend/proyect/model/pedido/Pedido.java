@@ -47,6 +47,6 @@ public class Pedido {
     @JoinColumn(name = "idEstadoPedido", nullable = false)
     private EstadoPedido estadoPedido;
 
-    @Column(name = "total_final", nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalFinal;
-}
+        @Column(name = "total_final", nullable = false, precision = 10, scale = 2)
+        private BigDecimal totalFinal;
+    }
