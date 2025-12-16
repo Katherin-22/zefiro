@@ -1,58 +1,52 @@
 package com.backend.proyect.model.pedido;
 
-import com.backend.proyect.model.usuario.Usuario;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import com.backend.proyect.model.productos.Stock;
+import com.backend.proyect.model.carrito.Carrito;
+import com.backend.proyect.model.metodoPagos.MetodoPago;
 import com.backend.proyect.model.promociones.Promocion;
-import com.backend.proyect.model.metodosPago.MetodoPago;
+import com.backend.proyect.model.usuario.Usuario;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import java.time.LocalDate;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Entity
 @Table(name = "Pedido")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Pedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idPedido")
     private Integer idPedido;
 
+    @Column(name = "fechaPedido", nullable = false)
     private LocalDate fechaPedido;
 
     @ManyToOne
-    @JoinColumn(name = "idUsuario")
+    @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "idCarrito", nullable = false)
+    private Carrito carrito;
 
     @ManyToOne
     @JoinColumn(name = "idPromocion")
     private Promocion promocion;
 
     @ManyToOne
-    @JoinColumn(name = "idMetodoPago")
+    @JoinColumn(name = "idMetodoPago", nullable = false)
     private MetodoPago metodoPago;
 
-    @Column(columnDefinition = "ENUM('Pendiente', 'En proceso', 'Entregado')")
-    private String estado;
+    @ManyToOne
+    @JoinColumn(name = "idEstadoPedido", nullable = false)
+    private EstadoPedido estadoPedido;
 
-    @PrePersist
-    public void prePersist() {
-        if (fechaPedido == null) {
-            fechaPedido = LocalDate.now();
-        }
-        if (estado == null) {
-            estado = "Pendiente";
-        }
-    }
-
-    @Column(name = "total")
-    private Integer total;
-
-    // IMPORTANTE: base de datos tiene idCarrito 
-    // ,
-    // @ManyToOne
-    // @JoinColumn(name = "idCarrito")
-    // private Carrito carrito;
+    @Column(name = "total_final", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalFinal;
 }

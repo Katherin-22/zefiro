@@ -13,11 +13,8 @@ import com.backend.proyect.model.pedido.Pedido;
 @Repository
 public interface pedidoRepository extends JpaRepository<Pedido, Integer> {
 
-    // OPCIÓN ALTERNATIVA con @Query (mantiene el nombre findByUsuarioId)
     @Query("SELECT p FROM Pedido p WHERE p.usuario.idUsuario = :idUsuario")
     List<Pedido> findByUsuarioId(@Param("idUsuario") Integer idUsuario);
-
-    List<Pedido> findByEstado(String estado);
 
     List<Pedido> findByFechaPedidoBetween(LocalDate inicio, LocalDate fin);
 }
