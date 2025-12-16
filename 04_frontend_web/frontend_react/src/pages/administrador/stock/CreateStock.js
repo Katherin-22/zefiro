@@ -62,6 +62,10 @@ export default function CreateStock() {
         await handleCreateStock(idProducto, stock); // manda datos al backend
     }
 
+    {success && (
+        console.log("stock creado con éxito.")
+    )}    
+
   return (
 
 <div className="main-content">
@@ -84,30 +88,32 @@ export default function CreateStock() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
             <div className="col">
-                <label className="form-label">Stock minimo</label>
+                <label className="form-label required">Stock minimo</label>
                 <input type="number" 
                 name="stockMinimo" 
                 placeholder="Ingresa el stock minimo del producto"
-                className="form-control" 
+                className="form-control"
+                required 
                 value={stockMinimo} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Stock Actual</label>
+                <label className="form-label required">Stock Actual</label>
                 <input type="number" 
                 name="stockActual" 
                 placeholder="Ingresa el stock actual del producto"
-                className="form-control" 
+                className="form-control"
+                required 
                 value={stockActual} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Color</label>
-                <select name="idColor" value={stock.idColor} onChange={(e)=>onInputChange(e)} className="form-select">
+                <label className="form-label required">Color</label>
+                <select name="idColor" value={stock.idColor} onChange={(e)=>onInputChange(e)} className="form-select" required>
                 <option value="">-- Selecciona una opción --</option>
                 {color?.map((color) => (
                 <option key={color.idColor} value={color.idColor}>
@@ -118,8 +124,8 @@ export default function CreateStock() {
             </div>
 
             <div className="col">
-                <label className="form-label">Medidas</label>
-                <select name="idVariacion" value={stock.idVariacion} onChange={(e)=>onInputChange(e)} className="form-select">
+                <label className="form-label required">Medidas</label>
+                <select name="idVariacion" value={stock.idVariacion} onChange={(e)=>onInputChange(e)} className="form-select" required>
                 <option value="">-- Selecciona una opción --</option>
                 {variacionStock?.map((variacion) => (
                 <option key={variacion.idVariacion} value={variacion.idVariacion}>

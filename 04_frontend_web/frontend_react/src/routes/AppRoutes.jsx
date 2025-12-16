@@ -95,7 +95,12 @@ import Login from '../components/iniciosesion/Login'                        // C
    PERFIL USUARIO
    (Área personal)
 ============================== */
-import PerfilUsuario from '../pages/usuario/PerfilUsuario'                  // Perfil usuario
+import PerfilUsuario from '../pages/usuario/PerfilUsuario'   
+
+/* ==============================
+   METODOS DE PAGO
+============================== */
+import PaymentPage from '../pages/metodoPagos/PaymentPage'   // metodos de pago
 
 function AppRoutes() {
    return (
@@ -365,6 +370,9 @@ function AppRoutes() {
             
             {/* ❌ Página no encontrada (404) */}
             <Route path="*" element={<div>Página no encontrada</div>} />
+            
+            {/* Componente de metodos de pago */}
+            <Route path="/api/payments/create/:idUsuario" element={<PaymentPage/>}/>            
             
          </Routes>
       </FiltroProvider>

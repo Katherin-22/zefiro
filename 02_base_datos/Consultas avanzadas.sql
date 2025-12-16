@@ -41,9 +41,3 @@ LEFT JOIN Variacion v ON v.idVariacion = s.idVariacion
 LEFT JOIN Color c ON c.idColor = s.idColor
 GROUP BY p.idProducto
 ORDER BY p.nombreProducto ASC;
-
-select * from usuario;
-select * from rol;
-
-
-

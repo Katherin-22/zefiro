@@ -204,11 +204,27 @@ CREATE TABLE mensajes (
 -- Tabla carrito
 CREATE TABLE Carrito (
   idCarrito INT AUTO_INCREMENT NOT NULL ,
-  fechaCreacion VARCHAR(45) NOT NULL,
-  idUsuario INT,
-  
+  fechaCreacion DATETIME NOT NULL ,
+  estadoCarrito ENUM('Activo','Procesado','Cancelado') NOT NULL DEFAULT 'Activo',
+  idUsuario INT NOT NULL ,
   PRIMARY KEY (idCarrito),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
+) ;
+
+-- Tabla DetalleCarrito 
+CREATE TABLE DetalleCarrito (
+  idDetalleCarrito INT AUTO_INCREMENT NOT NULL,
+  idCarrito INT NOT NULL,
+  idStock  INT NOT NULL,
+  cantidad INT NOT NULL CHECK (cantidad > 0),
+  precioUnitario DOUBLE NOT NULL,
+  idPromocionAplicada INT NULL,            
+  porcentajeDescuento INT NULL, 
+  
+  PRIMARY KEY (idDetalleCarrito),
+  FOREIGN KEY (idCarrito) REFERENCES Carrito(idCarrito),
+  FOREIGN KEY (idStock) REFERENCES Stock(idStock),
+  FOREIGN KEY (idPromocionAplicada) REFERENCES Promocion(idPromocion) 
 ) ;
 
 -- Tabla MetodoPago
@@ -219,17 +235,30 @@ CREATE TABLE MetodoPago (
     PRIMARY KEY (idMetodoPago)
 );
 
--- Tabla DetalleCarrito 
-CREATE TABLE DetalleCarrito (
-  idProducto INT NOT NULL,
-  idCarrito INT NOT NULL,
-  cantidad INT NOT NULL,
-  idUsuario INT NOT NULL,
-  
-  PRIMARY KEY (idProducto,idCarrito),
-  FOREIGN KEY (idProducto) REFERENCES producto(idProducto),
-  FOREIGN KEY (idCarrito) REFERENCES Carrito(idCarrito)
-) ;
+-- Esta tabla guarda lo que tú envías al sistema de pagos: monto, moneda, descripción.
+
+CREATE TABLE SolicitudPago (
+	idSolicitudPago INT AUTO_INCREMENT NOT NULL,
+	amount BIGINT NULL,
+    currency VARCHAR(10) NOT NULL,
+    description VARCHAR(200) NULL,
+	idUsuario INT NOT NULL,
+    
+	PRIMARY KEY (idSolicitudPago),
+	FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)    
+);
+
+CREATE TABLE RespuestaPago (
+    id VARCHAR(255) NOT NULL,          
+    amount BIGINT NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    status VARCHAR(200) NOT NULL,
+    clientSecret VARCHAR(200) NOT NULL,
+	idUsuario INT NOT NULL,    
+    
+	PRIMARY KEY (id),
+	FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)        
+);
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
@@ -273,6 +302,7 @@ CREATE TABLE DetallePedido_has_Pedido(
   FOREIGN KEY (idDetallePedido) REFERENCES DetallePedido(idDetallePedido),
   FOREIGN KEY (idPedido) REFERENCES pedido(idPedido)
 );
+
 -- -----------------------------------------------------
 -- MÓDULO DE GESTION DE COMPRAS									PARTE 1.2
 -- -----------------------------------------------------
@@ -307,6 +337,7 @@ CREATE TABLE DetallesComprobanteDeVenta (
   FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
 
 ) ;
+
 -- -----------------------------------------------------
 -- MÓDULO DE GESTIÓN DE PEDIDOS 							PARTE 1.2
 -- -----------------------------------------------------
@@ -330,7 +361,6 @@ CREATE TABLE SeguimientoPedido (
   FOREIGN KEY (idPedido) REFERENCES pedido(idPedido),
   FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido)
 ) ;
-
 
 -- Tabla devoluciones_Cambios
 CREATE TABLE devoluciones_Cambios (

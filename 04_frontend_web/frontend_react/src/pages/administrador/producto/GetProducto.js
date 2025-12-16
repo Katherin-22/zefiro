@@ -78,8 +78,8 @@ export default function GetProducto() {
                         <th>Material</th>
                         <th>Género</th>
                         <th>Estado</th>
-                        <th>fechaCreacion</th>
-                        <th>fechaModificacion</th>
+                        <th>Fecha Creación</th>
+                        <th>Fecha Modificación</th>
                         <th>Acciones</th>
                         </tr>
                     </thead>

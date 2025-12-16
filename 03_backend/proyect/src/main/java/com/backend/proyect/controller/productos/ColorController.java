@@ -3,6 +3,7 @@ package com.backend.proyect.controller.productos;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +23,7 @@ public class ColorController {
     // tipoProductoRepository este se pone en los return
     private ColorRepository colorRepository;
 
-    //@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @PostMapping("/color")
     Color newColor(@RequestBody Color newColor) {
         return colorRepository.save(newColor);
@@ -39,7 +40,7 @@ public class ColorController {
                 .orElseThrow(() -> new ResourceNotFoundException("Color", idColor));
     }
 
-    //@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @PutMapping("/color/{idColor}")
     Color updateColor(@RequestBody Color updateColor, @PathVariable Integer idColor) {
         return colorRepository.findById(idColor)
@@ -50,7 +51,7 @@ public class ColorController {
                 }).orElseThrow(() -> new ResourceNotFoundException("Color", idColor));
     }
 
-    //@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @DeleteMapping("/color/{idColor}")
     String deleteColor(@PathVariable Integer idColor) {
         if (!colorRepository.existsById(idColor)) {
