@@ -14,7 +14,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.backend.proyect.security.usuario.JwtFilter;
 
-
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -63,7 +62,7 @@ public class SecurityConfig {
                                 "/marca/*",
                                 "/material/*",
                                 "/material",
-                                "/api/banners/*"
+                                "/api/banners/**"  // ← CAMBIÉ "/api/banners/*" por "/api/banners/**"
                         ).permitAll() // ajustar
 
 
@@ -89,5 +88,4 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
-
 }
