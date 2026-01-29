@@ -58,6 +58,39 @@ const ProductoGen = () => {
     const [verificandoStock, setVerificandoStock] = useState(false);
     const [mensajeStock, setMensajeStock] = useState("");
 
+    // Estados para estadísticas de comentarios
+    const [estadisticasComentarios, setEstadisticasComentarios] = useState({
+        promedioCalificacion: 0,
+        totalComentarios: 0
+    });
+    const [cargandoEstadisticas, setCargandoEstadisticas] = useState(false);
+
+    // ============================
+    // 0️⃣ Cargar estadísticas de comentarios
+    // ============================
+    useEffect(() => {
+        const cargarEstadisticasComentarios = async () => {
+            if (!producto?.idProducto) return;
+
+            try {
+                setCargandoEstadisticas(true);
+                const response = await api_url.get(`/comentarios/producto/${producto.idProducto}/estadisticas`);
+                if (response.data) {
+                    setEstadisticasComentarios({
+                        promedioCalificacion: response.data.promedioCalificacion || 0,
+                        totalComentarios: response.data.totalComentarios || 0
+                    });
+                }
+            } catch (error) {
+                console.error("Error al cargar estadísticas de comentarios:", error);
+            } finally {
+                setCargandoEstadisticas(false);
+            }
+        };
+
+        cargarEstadisticasComentarios();
+    }, [producto?.idProducto]);
+
     // ============================
     // 1️⃣ Cargar COLORES del producto
     // ============================
@@ -369,6 +402,25 @@ const ProductoGen = () => {
         alert(`¡Agregado al carrito! ${cantidad} unidad(es) de ${producto.nombreProducto} (${tallaSeleccionada})`);
     };
 
+    // ============================
+    // 🆕 Función para actualizar estadísticas después de una acción de comentario
+    // ============================
+    const actualizarEstadisticas = async () => {
+        if (!producto?.idProducto) return;
+
+        try {
+            const response = await api_url.get(`/comentarios/producto/${producto.idProducto}/estadisticas`);
+            if (response.data) {
+                setEstadisticasComentarios({
+                    promedioCalificacion: response.data.promedioCalificacion || 0,
+                    totalComentarios: response.data.totalComentarios || 0
+                });
+            }
+        } catch (error) {
+            console.error("Error al actualizar estadísticas de comentarios:", error);
+        }
+    };
+
     const abrirModalImagen = (imagenUrl = null) => {
         const imagenAMostrar = imagenUrl || imagenPrincipal;
         setImagenModal({
@@ -450,6 +502,48 @@ const ProductoGen = () => {
                     id="producto-icono-favorito"></i>
                 {esFavorito ? " Quitar favorito" : " Agregar a favoritos"}
             </button>
+        );
+    };
+
+    // ============================
+    // RENDER DE LAS ESTADÍSTICAS DE COMENTARIOS
+    // ============================
+    const renderEstadisticasComentarios = () => {
+        if (cargandoEstadisticas) {
+            return (
+                <div className="d-flex align-items-center justify-content-center">
+                    <div className="spinner-border spinner-border-sm me-2" role="status">
+                        <span className="visually-hidden">Cargando...</span>
+                    </div>
+                    <small className="text-muted">Cargando valoraciones...</small>
+                </div>
+            );
+        }
+
+        const promedio = estadisticasComentarios.promedioCalificacion || 0;
+        const total = estadisticasComentarios.totalComentarios || 0;
+
+        if (total === 0) {
+            return (
+                <div className="producto-calificacion">
+                    <span className="text-muted">Sin valoraciones aún</span>
+                </div>
+            );
+        }
+
+        return (
+            <div className="producto-calificacion d-flex align-items-center">
+                <div className="estrellas me-2">
+                    {[1, 2, 3, 4, 5].map((estrella) => (
+                        <i
+                            key={estrella}
+                            className={`bi ${estrella <= promedio ? 'bi-star-fill text-warning' : 'bi-star text-muted'}`}
+                        ></i>
+                    ))}
+                </div>
+                <span className="promedio-numerico fw-bold me-2">{promedio.toFixed(1)}</span>
+                <span className="text-muted small">({total} {total === 1 ? 'valoración' : 'valoraciones'})</span>
+            </div>
         );
     };
 
@@ -572,6 +666,12 @@ const ProductoGen = () => {
                                                         <p className="producto-precio-detalle" id="producto-precio-detalle">
                                                             Precio: <span className="producto-precio-valor" id="producto-precio-valor">${producto.precio?.toLocaleString()}</span>
                                                         </p>
+
+                                                        {/* VALORACIÓN DE COMENTARIOS */}
+                                                        <div className="producto-valoracion-detalle mb-3" id="producto-valoracion-detalle">
+                                                            Valoración: {renderEstadisticasComentarios()}
+                                                        </div>
+
                                                         <p className="producto-descripcion-detalle" id="producto-descripcion-detalle">
                                                             <span id="producto-descripcion-valor">{producto.descripcion}</span>
                                                         </p>
@@ -759,6 +859,18 @@ const ProductoGen = () => {
                                                     <i className="bi bi-heart-fill text-danger me-2"></i>
                                                     Ver todos mis favoritos
                                                 </Link>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* SECCIÓN DE COMENTARIOS */}
+                                    {!esModoAdmin && (
+                                        <div className="row mt-5" id="producto-seccion-comentarios-fila">
+                                            <div className="col-12" id="producto-seccion-comentarios-col">
+                                                <ComentariosSeccion
+                                                    productoId={producto.idProducto}
+                                                    actualizarEstadisticas={actualizarEstadisticas}
+                                                />
                                             </div>
                                         </div>
                                     )}
