@@ -1,43 +1,52 @@
 package com.backend.proyect.model.principal;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "banner")
 public class Banner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String titulo;
     private String descripcion;
-    private String imagenUrl;
+
+    @Column(name = "file_name")
     private String fileName;
+
     private String url;
 
-    public Banner() {}
+    private Boolean activo;
 
-    public Banner(Long id, String titulo, String descripcion, String imagenUrl, String fileName, String url) {
-        this.id = id;
-        this.titulo = titulo;
-        this.descripcion = descripcion;
-        this.imagenUrl = imagenUrl;
-        this.fileName = fileName;
-        this.url = url;
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
+
+    public Banner() {
+        this.activo = true;
+        this.fechaCreacion = LocalDateTime.now();
     }
 
-    // Getters y Setters
+    // Getters y Setters COMPLETOS
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
+
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public String getImagenUrl() { return imagenUrl; }
-    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
+
     public String getFileName() { return fileName; }
     public void setFileName(String fileName) { this.fileName = fileName; }
+
     public String getUrl() { return url; }
     public void setUrl(String url) { this.url = url; }
+
+    public Boolean getActivo() { return activo; }
+    public void setActivo(Boolean activo) { this.activo = activo; }
+
+    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
 }
