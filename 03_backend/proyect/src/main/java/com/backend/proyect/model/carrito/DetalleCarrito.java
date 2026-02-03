@@ -2,6 +2,7 @@ package com.backend.proyect.model.carrito;
 
 import com.backend.proyect.model.productos.Stock;
 import com.backend.proyect.model.promociones.Promocion;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -36,6 +37,7 @@ public class DetalleCarrito {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "idCarrito", referencedColumnName = "idCarrito")
+    @JsonIgnoreProperties("detalles")
     private Carrito carrito;
 
     @ManyToOne(optional = false)

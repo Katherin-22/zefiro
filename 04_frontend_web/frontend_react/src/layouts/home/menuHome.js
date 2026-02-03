@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useFiltro } from "../../utils/FiltroContextx";
+import { useCart } from '../../components/carrito/CarritoContext';
+import { useAuth } from '../../context/AuthContext';
 import { useResponsive } from "../../hooks//responsive/responsive";
 import "../../styles/home/menuHome.css";
 import "../../styles/home/menuMobile.css";
@@ -10,9 +12,12 @@ const MenuHome = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isMobile } = useResponsive();
+
+  const {totalItems, clearCart } = useCart();
+  const { user, logout } = useAuth();
+
   
   const [activeMobileNav, setActiveMobileNav] = useState('home');
-  const [cartItems] = useState(0); // agregar  setCartItems
   const [notification, setNotification] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,11 +46,6 @@ const MenuHome = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  // const addToCart = () => {
-  //  setCartItems(prev => prev + 1);
-  //  showNotification('Producto añadido al carrito!');
-  //};
-
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -54,6 +54,12 @@ const MenuHome = () => {
       showNotification(`Buscando: ${searchQuery}`);
       setSearchQuery('');
     }
+  };
+
+    const handleLogout = () => {
+    logout();
+    clearCart();
+    navigate("/loginpage");
   };
 
   // NAVBAR DESKTOP (solo visible en desktop)
@@ -145,16 +151,26 @@ const MenuHome = () => {
               >
                 <i className="bi bi-person-fill" id="navBarHome-profile-icon"></i>
               </button>
-              <ul className="dropdown-menu dropdown-menu-end" id="navBarHome-profile-menu">
+              <ul className="dropdown-menu dropdown-menu-end" id="navBarHome-profile-menu"> 
+                {user ? (
+                <>
+                <li><span className="dropdown-item text-muted">Hola, {user.name || 'Usuario'}</span></li>
+                <li><hr className="dropdown-divider" id="navBarHome-profile-divider-1" /></li>
                 <li><Link className="dropdown-item" id="navBarHome-login" to="/loginpage">Iniciar sesión</Link></li>
                 <li><Link className="dropdown-item" id="navBarHome-profile" to="/profile">Perfil</Link></li>
                 <li><Link className="dropdown-item" id="navBarHome-orders" to="/profile">Pedidos</Link></li>
-                <li><Link className="dropdown-item" id="navBarHome-orders" to="/Administrador/stock">Dashboard</Link></li>
+                {user.rol === 2 && (
+                  <li><Link className="dropdown-item" id="navBarHome-dashboard" to="/Administrador/stock">Dashboard</Link></li>
+                )} 
                 <li><hr className="dropdown-divider" id="navBarHome-profile-divider" /></li>
-                <li><Link className="dropdown-item" id="navBarHome-logout" onClick={() => {
-              localStorage.clear()
-              window.location.href = '/loginpage';
-             }}>Cerrar sesión</Link></li>
+                <li><button className="dropdown-item" id="navBarHome-logout" onClick={handleLogout}>Cerrar sesión</button></li> 
+                </>
+              ) : ( 
+                <>
+                  {/* Única opción cuando no hay usuario */}
+                  <li><Link className="dropdown-item" id="navBarHome-login" to="/loginpage"> Iniciar sesión</Link></li>
+                </>
+                )}
               </ul>
             </li>
 
@@ -167,7 +183,7 @@ const MenuHome = () => {
             <li className="nav-item" id="navBarHome-cart-item">
               <Link className="nav-link" id="navBarHome-cart-link" to="/carrito">
                 <i className="bi bi-cart-fill" id="navBarHome-cart-icon"></i>
-                {cartItems > 0 && <span className="cart-badge">{cartItems}</span>}
+                {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
               </Link>
             </li>
           </ul>
@@ -197,7 +213,7 @@ const MenuHome = () => {
             
             <Link to="/carrito" className="mobile-cart-btn">
               <i className="bi bi-cart-fill"></i>
-              {cartItems > 0 && <span className="cart-badge">{cartItems}</span>}
+              {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
             </Link>
           </div>
         </div>

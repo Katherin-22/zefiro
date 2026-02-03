@@ -96,6 +96,13 @@ import Login from '../components/iniciosesion/Login'                        // C
 ============================== */
 import PerfilUsuario from '../pages/usuario/PerfilUsuario'                  // Perfil usuario
 
+
+/* ==============================
+   carrito
+============================== */
+import Carrito from "../pages/carrito/Carrito";
+
+
 function AppRoutes() {
    return (
       <FiltroProvider>
@@ -351,7 +358,11 @@ function AppRoutes() {
                   <PerfilUsuario />
                </ProtectedRoute>
             }/>
+
+            {/* ========== CARRITO USUARIO ========== */}
             
+            <Route path="/carrito" element={<Carrito />} />
+
             {/* ========== PÁGINAS DE ERROR ========== */}
             {/* 🚫 Acceso denegado */}
             <Route path="/acceso-denigado" element={<AccessDenied />} />

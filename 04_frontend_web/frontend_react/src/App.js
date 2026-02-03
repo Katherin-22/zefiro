@@ -7,15 +7,22 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 
 import './App.css';
 
-import AppRoutes from "./routes/AppRoutes"; 
+import AppRoutes from "./routes/AppRoutes";
 import { BrowserRouter as Router } from 'react-router-dom';
+
+import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./components/carrito/CarritoContext";
 
 
 /*--- esto es para el manejo de rutas ---*/
 function App() {
   return (
     <Router>
-      <AppRoutes />
+      <AuthProvider>
+        <CartProvider>
+          <AppRoutes />
+        </CartProvider>
+      </AuthProvider>
     </Router>
   );
 }

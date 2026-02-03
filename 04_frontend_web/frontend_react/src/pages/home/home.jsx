@@ -3,18 +3,30 @@ import MenuHome from "../../layouts/home/menuHome";
 import Footer from "../../layouts/home/footer";
 import { useGetStock } from "../../hooks/stock/useGetStock";
 import { getImagenById } from "../../services/administrador/ImagenService.js";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../../components/carrito/CarritoContext.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 import "../../styles/home/paginaInicio.css";
 
+const STOCK_ID_PROPERTY = 'idStock';
+
 export default function Home() {
+  // El hook ahora devuelve List<Stock>
   const { stock, loading, error } = useGetStock();
+
+  // addToCart es clave para actualizar el contador
+  const { addToCart, isAuthenticated, isAuthLoading } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const ROL_CLIENTE = 1;
+
+  // Los estados ahora almacenarán objetos Stock, pero solo uno por cada Producto
   const [zapatos, setZapatos] = useState([]);
   const [bolsos, setBolsos] = useState([]);
   const [favoritos, setFavoritos] = useState([]);
-  const [carrito, setCarrito] = useState([]);
-  const [imagenesProductos, setImagenesProductos] = useState({}); // Objeto para almacenar imágenes por idProducto
+  const [imagenesProductos, setImagenesProductos] = useState({});
 
-  console.log("🔍 Home component - Stock:", stock);
+  console.log("🔍 Home component - Stock recibido:", stock);
 
   // Función para cargar imágenes de un producto
   const cargarImagenProducto = async (idProducto) => {
@@ -23,70 +35,76 @@ export default function Home() {
       if (response.data && response.data.length > 0) {
         return `http://localhost:8080${response.data[0].urlImagen}`;
       }
-      return null; // Si no hay imágenes
+      return null;
     } catch (error) {
       console.error("Error al cargar imagen del producto:", error);
       return null;
     }
   };
 
-  // Filtrar productos y cargar sus imágenes
+  // Filtrar productos, eliminar duplicados (por producto) y cargar sus imágenes
   useEffect(() => {
     const filtrarYCargarImagenes = async () => {
       if (stock && stock.length > 0) {
-        console.log("🎯 Filtrando productos y cargando imágenes...");
-        
-        // Filtrar zapatos
-        const zapatosFiltrados = stock.filter(producto => {
-          const tipo = producto.nombreTipoProducto?.toLowerCase() || '';
-          const nombre = producto.nombreProducto?.toLowerCase() || '';
-          
-          const esZapato = tipo.includes('zapato') || 
-                          tipo.includes('calzado') ||
-                          nombre.includes('zapato') ||
-                          nombre.includes('tenis') ||
-                          nombre.includes('deportivo');
-          
+        console.log("🎯 Filtrando stocks únicos por producto...");
+
+        // 1. Crear un mapa para obtener SOLO UN OBJETO Stock por cada idProducto (evitando duplicados en la vista)
+        const productosUnicosMap = stock.reduce((map, currentStockItem) => {
+          const idProducto = currentStockItem.producto?.idProducto;
+
+          // Si el producto tiene un ID y aún no está en el mapa, lo agregamos.
+          // Esto asegura que solo se muestre una tarjeta por producto.
+          if (idProducto && !map.has(idProducto)) {
+            map.set(idProducto, currentStockItem);
+          }
+          return map;
+        }, new Map());
+
+        const productosUnicos = Array.from(productosUnicosMap.values());
+
+        // Funciones auxiliares para acceder a las propiedades anidadas de forma segura
+        // CRITICAL FIX: Se corrige la ruta de acceso a la propiedad anidada
+        const getProductType = (item) => item.producto?.categoria?.tipoProducto?.nombreTipoProducto?.toLowerCase() || '';
+        const getProductName = (item) => item.producto?.nombreProducto?.toLowerCase() || '';
+
+        // 2. Filtrar Zapatos/Calzado
+        const zapatosFiltrados = productosUnicos.filter(stockItem => {
+          const tipo = getProductType(stockItem);
+          const nombre = getProductName(stockItem);
+
+          // Busca 'calzado' (valor real de la DB) o 'zapato' (lo que se buscaba antes)
+          const esZapato = tipo.includes('zapato') || tipo.includes('calzado') || nombre.includes('zapato') || nombre.includes('tenis') || nombre.includes('deportivo');
           return esZapato;
         }).slice(0, 4);
-        
-        // Filtrar bolsos
-        const bolsosFiltrados = stock.filter(producto => {
-          const tipo = producto.nombreTipoProducto?.toLowerCase() || '';
-          const nombre = producto.nombreProducto?.toLowerCase() || '';
-          
-          const esBolso = tipo.includes('bolso') || 
-                         nombre.includes('bolso') ||
-                         nombre.includes('mochila') ||
-                         nombre.includes('cartera');
-          
+
+        // 3. Filtrar Bolsos
+        const bolsosFiltrados = productosUnicos.filter(stockItem => {
+          const tipo = getProductType(stockItem);
+          const nombre = getProductName(stockItem);
+
+          // Busca 'bolso' (valor real de la DB)
+          const esBolso = tipo.includes('bolso') || nombre.includes('bolso') || nombre.includes('mochila') || nombre.includes('cartera');
           return esBolso;
         }).slice(0, 4);
-        
-        // Cargar imágenes para todos los productos
+
+        // 4. Cargar imágenes
+        const productosACargar = [...zapatosFiltrados, ...bolsosFiltrados];
         const todasImagenes = {};
-        
-        // Cargar imágenes de zapatos
-        for (const zapato of zapatosFiltrados) {
-          if (zapato.idProducto && !todasImagenes[zapato.idProducto]) {
-            const imagenUrl = await cargarImagenProducto(zapato.idProducto);
-            todasImagenes[zapato.idProducto] = imagenUrl || zapato.imagen || "/imagenes_prueba/default.jpg";
+
+        for (const stockItem of productosACargar) {
+          const idProducto = stockItem.producto?.idProducto;
+          if (idProducto && !todasImagenes[idProducto]) {
+            const imagenUrl = await cargarImagenProducto(idProducto);
+            // El objeto Stock.producto puede tener la URL de imagen directamente, úsala como fallback
+            todasImagenes[idProducto] = imagenUrl || stockItem.producto?.imagen || "/imagenes_prueba/default.jpg";
           }
         }
-        
-        // Cargar imágenes de bolsos
-        for (const bolso of bolsosFiltrados) {
-          if (bolso.idProducto && !todasImagenes[bolso.idProducto]) {
-            const imagenUrl = await cargarImagenProducto(bolso.idProducto);
-            todasImagenes[bolso.idProducto] = imagenUrl || bolso.imagen || "/imagenes_prueba/default.jpg";
-          }
-        }
-        
+
         setImagenesProductos(todasImagenes);
         setZapatos(zapatosFiltrados);
         setBolsos(bolsosFiltrados);
-        
-        console.log("✅ Imágenes cargadas para", Object.keys(todasImagenes).length, "productos");
+
+        console.log("✅ Productos filtrados y listos.");
       } else {
         console.log("📭 No hay stock disponible");
         setZapatos([]);
@@ -94,40 +112,88 @@ export default function Home() {
         setImagenesProductos({});
       }
     };
-    
+
     filtrarYCargarImagenes();
   }, [stock]);
 
-  // Función para obtener la imagen de un producto
-  const obtenerImagenProducto = (producto) => {
-    if (producto.idProducto && imagenesProductos[producto.idProducto]) {
-      return imagenesProductos[producto.idProducto];
+
+  // Función para obtener la imagen de un producto (usa el idProducto anidado)
+  const obtenerImagenProducto = (stockItem) => {
+    const idProducto = stockItem.producto?.idProducto;
+    if (idProducto && imagenesProductos[idProducto]) {
+      return imagenesProductos[idProducto];
     }
-    return producto.imagen || "/iamgenes_prueba/zapato/im6.jpg"; // Imagen por defecto
+    return stockItem.producto?.imagen || "/iamgenes_prueba/zapato/im6.jpg";
   };
 
-  // Función para manejar favoritos
-  const toggleFavorito = (producto) => {
-    const productoId = producto.codigoReferencia;
-    if (favoritos.includes(productoId)) {
-      setFavoritos(favoritos.filter(id => id !== productoId));
-      console.log("❌ Eliminado de favoritos:", producto.nombreProducto);
+  // Función para manejar favoritos (usa codigoReferencia anidado)
+  const toggleFavorito = (stockItem) => {
+    const productoRef = stockItem.producto?.codigoReferencia;
+    if (!productoRef) return; // Validación de seguridad
+
+    if (favoritos.includes(productoRef)) {
+      setFavoritos(favoritos.filter(id => id !== productoRef));
+      console.log("❌ Eliminado de favoritos:", stockItem.producto.nombreProducto);
     } else {
-      setFavoritos([...favoritos, productoId]);
-      console.log("❤️ Agregado a favoritos:", producto.nombreProducto);
+      setFavoritos([...favoritos, productoRef]);
+      console.log("❤️ Agregado a favoritos:", stockItem.producto.nombreProducto);
     }
   };
 
-  // Función para agregar al carrito
-  const agregarAlCarrito = (producto) => {
-    setCarrito([...carrito, producto]);
-    console.log("🛒 Agregado al carrito:", producto.nombreProducto);
-    
-    // Aquí podrías mostrar un toast/notificación
-    alert(`¡${producto.nombreProducto} agregado al carrito!`);
+  const handleAddToCart = async (productoStock) => {
+
+
+    if ( user && user.rol !== ROL_CLIENTE) {
+      alert("Solo los clientes pueden realizar compras.");
+      return;
+    }
+
+    if (isAuthLoading) return;
+
+    await agregarAlCarrito(productoStock);
   };
 
-  // Estados de carga y error
+
+  const agregarAlCarrito = async (stockItem) => {
+
+    if (isAuthLoading) {
+      console.log("⏳ Autenticación aún cargando, esperando...");
+      return;
+    }
+
+    const idStockProducto = stockItem[STOCK_ID_PROPERTY];
+    const cantidadInicial = 1;
+
+    if (!idStockProducto) {
+      console.error(`Error: La propiedad '${STOCK_ID_PROPERTY}' (idStock) no fue encontrada.`, stockItem);
+      alert("Error interno: No se pudo identificar el stock específico del producto.");
+      return;
+    }
+
+    const productoData = {
+        idStock: idStockProducto,
+        nombreProducto: stockItem.producto?.nombreProducto || 'Producto Desconocido',
+        precio: stockItem.producto?.precio || 0,
+        imagen: stockItem.producto?.imagen,
+        idProducto: stockItem.producto?.idProducto
+    };
+
+    const success = await addToCart(productoData, cantidadInicial);
+
+    if (success) {
+      console.log("🛒 Agregado al carrito:", productoData.nombreProducto);
+    } else {
+      if (!isAuthenticated) {
+        alert("Debes iniciar sesión para agregar productos.");
+        navigate("/loginpage");
+        return;
+      }
+      console.error("❌ Fallo al agregar al carrito.");
+    }
+  };
+
+
+  // Estados de carga y error (sin cambios significativos)
   if (loading) {
     return (
       <div className="allHome" id="home-container">
@@ -157,78 +223,84 @@ export default function Home() {
   }
 
   // Componente de tarjeta de producto reutilizable
-  const ProductoCard = ({ producto, tipo, index }) => {
-    const esFavorito = favoritos.includes(producto.codigoReferencia);
-    const imagenProducto = obtenerImagenProducto(producto);
-    
+  const ProductoCard = ({ productoStock, tipo, index }) => {
+    // Acceso a propiedades anidadas
+    const esFavorito = favoritos.includes(productoStock.producto?.codigoReferencia);
+    const imagenProducto = obtenerImagenProducto(productoStock);
+    const nombreProducto = productoStock.producto?.nombreProducto;
+
+    // CORRECCIÓN: Accede a nombrePublico vía producto.tipoPublico.nombrePublico
+    const nombrePublico = productoStock.producto?.tipoPublico?.nombrePublico;
+    // CORRECCIÓN: Accede a nombreTipoProducto vía producto.categoria.tipoProducto.nombreTipoProducto
+    const nombreTipoProducto = productoStock.producto?.categoria?.tipoProducto?.nombreTipoProducto;
+
+    const precio = productoStock.producto?.precio;
+    const codigoReferencia = productoStock.producto?.codigoReferencia;
+
     return (
-      <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-4" 
-           id={`home-${tipo}-card-${index + 1}`}>
-        <div className="card text-center h-100 home-product-card position-relative" 
-             id={`home-${tipo}-card-container-${index + 1}`}>
-          
+      <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-4"
+        id={`home-${tipo}-card-${index + 1}`}>
+        <div className="card text-center h-100 home-product-card position-relative"
+          id={`home-${tipo}-card-container-${index + 1}`}>
+
           {/* Botón de corazón (favoritos) */}
           <button
             className="btn btn-link text-decoration-none position-absolute top-0 end-0 p-3"
-            onClick={() => toggleFavorito(producto)}
+            onClick={() => toggleFavorito(productoStock)}
             aria-label={esFavorito ? "Quitar de favoritos" : "Agregar a favoritos"}
             style={{ zIndex: 2 }}
             id={`home-${tipo}-favorite-btn-${index + 1}`}
           >
-            <i className={`bi ${esFavorito ? 'bi-heart-fill text-danger' : 'bi-heart text-white'}`} 
-               style={{ fontSize: '1.5rem', filter: 'drop-shadow(0px 0px 2px rgba(0,0,0,0.5))' }}></i>
+            <i className={`bi ${esFavorito ? 'bi-heart-fill text-danger' : 'bi-heart text-white'}`}
+              style={{ fontSize: '1.5rem', filter: 'drop-shadow(0px 0px 2px rgba(0,0,0,0.5))' }}></i>
           </button>
-          
+
           {/* Imagen del producto */}
           <div className="producto-imagen-container-home" id={`home-${tipo}-image-container-${index + 1}`}>
-            <img 
-              src={imagenProducto} 
+            <img
+              src={imagenProducto}
               className="card-img-top home-product-image"
-              alt={producto.nombreProducto} 
+              alt={nombreProducto}
               id={`home-${tipo}-image-${index + 1}`}
               onError={(e) => {
-                e.target.src = "/iamgenes_prueba/zapato/im6.jpg"; // Imagen por defecto si falla la carga
+                e.target.src = "/iamgenes_prueba/zapato/im6.jpg";
               }}
             />
           </div>
-          
+
           <div className="card-body home-product-body" id={`home-${tipo}-card-body-${index + 1}`}>
             <h5 className="card-title home-product-title" id={`home-${tipo}-title-${index + 1}`}>
-              {producto.nombreProducto}
+              {nombreProducto}
             </h5>
+            {/* Se usan las variables corregidas */}
             <p className="card-text home-product-description" id={`home-${tipo}-description-${index + 1}`}>
-              {producto.nombrePublico} - {producto.nombreTipoProducto}
+              {nombrePublico} - {nombreTipoProducto}
             </p>
-            
+
             <div className="home-product-hover-text" id={`home-${tipo}-hover-text-${index + 1}`}>
               <p id={`home-${tipo}-hover-price-${index + 1}`}>
-                ${producto.precio?.toLocaleString() || 'N/A'}
+                ${precio?.toLocaleString() || 'N/A'}
               </p>
             </div>
-            
+
             {/* Botón de agregar al carrito */}
             <div className="mt-3">
               <button
                 className="btn btn-outline-light btn-sm w-100 d-flex align-items-center justify-content-center gap-2"
-                onClick={() => agregarAlCarrito(producto)}
+                onClick={() => handleAddToCart(productoStock)}
                 id={`home-${tipo}-cart-btn-${index + 1}`}
               >
                 <i className="bi bi-cart-plus"></i>
                 <span>Agregar al carrito</span>
               </button>
             </div>
-            
+
             {/* Botón de ver detalles */}
             <div className="mt-2">
               <Link
                 className="btn btn-link text-decoration-none text-light btn-sm w-100 d-flex align-items-center justify-content-center gap-2"
-                onClick={() => {
-                  console.log("Ver detalles:", producto);
-                  // Aquí podrías redirigir a la página de detalles del producto
-                  // window.location.href = `/producto/${producto.codigoReferencia}`;
-                }}
                 id={`home-${tipo}-details-btn-${index + 1}`}
-                to={`/home/${producto.codigoReferencia}`}
+                to={`/home/${codigoReferencia}`} // Usar códigoReferencia o idProducto si es más conveniente
               >
                 <i className="bi bi-eye"></i>
                 <span>Ver detalles</span>
@@ -244,7 +316,7 @@ export default function Home() {
     <div className="allHome" id="home-container">
       <MenuHome />
       <div className="body-color" id="home-body">
-        
+
         <div className="container-fluid" id="home-products-container">
 
           {/* Sección: Zapatos */}
@@ -252,14 +324,14 @@ export default function Home() {
             <h1 className="text-center text-white mb-4" id="home-shoes-title">
               Compra por estilos de calzado
             </h1>
-            
+
             {zapatos.length > 0 ? (
               zapatos.map((zapato, index) => (
-                <ProductoCard 
-                  key={zapato.codigoReferencia || index} 
-                  producto={zapato} 
-                  tipo="shoe" 
-                  index={index} 
+                <ProductoCard
+                  key={zapato.idStock || index} // Usamos idStock para la key (o un ID único)
+                  productoStock={zapato} // Renombrado para claridad
+                  tipo="shoe"
+                  index={index}
                 />
               ))
             ) : (
@@ -276,14 +348,14 @@ export default function Home() {
             <h1 className="text-center text-white mb-4" id="home-bags-title">
               Compra por estilos de bolsos
             </h1>
-            
+
             {bolsos.length > 0 ? (
               bolsos.map((bolso, index) => (
-                <ProductoCard 
-                  key={bolso.codigoReferencia || index} 
-                  producto={bolso} 
-                  tipo="bag" 
-                  index={index} 
+                <ProductoCard
+                  key={bolso.idStock || index} // Usamos idStock para la key (o un ID único)
+                  productoStock={bolso} // Renombrado para claridad
+                  tipo="bag"
+                  index={index}
                 />
               ))
             ) : (
@@ -295,7 +367,7 @@ export default function Home() {
             )}
           </div>
         </div>
-        
+
         <Footer />
       </div>
     </div>

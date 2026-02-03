@@ -67,7 +67,7 @@ const Catalogo = () => {
         
         if (esNumero) {
           // Filtrar por ID de categoría
-          return producto.idCategoria == filtro; // == para comparar string/number
+          return producto.idCategoria === Number(filtro); // == para comparar string/number
         } else {
           // Filtros por texto (mantén tu lógica actual)
           switch(filtro.toLowerCase()) {

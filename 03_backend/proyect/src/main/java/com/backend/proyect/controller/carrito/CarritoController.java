@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.NoSuchElementException;
+import java.util.List; // Importar List
 
 @RestController
 @RequestMapping("/api/carrito")
@@ -46,6 +47,33 @@ public class CarritoController {
         }
     }
 
+    // ===============================================
+    // ENDPOINT PARA SINCRONIZACIÓN (NUEVO)
+    // POST /api/carrito/sincronizar/{idUsuario}
+    // ===============================================
+    @PostMapping("/sincronizar/{idUsuario}")
+    public ResponseEntity<Carrito> sincronizarCarrito(
+            @PathVariable Integer idUsuario,
+            @Valid @RequestBody List<AgregarItemDTO> itemsInvitado) {
+
+        try {
+            // Llama al servicio para realizar la sincronización
+            Carrito carritoSincronizado = carritoService.sincronizarCarrito(idUsuario, itemsInvitado);
+
+            // Retorna el carrito completo actualizado.
+            return ResponseEntity.ok(carritoSincronizado);
+
+        } catch (NoSuchElementException e) {
+            // Usuario o Stock no encontrado
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            // Conflicto de Stock: El stock combinado del invitado excede el disponible
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     // Endpoint : /api/carrito/checkout/{idUsuario}/{idMetodoPago}
     @PostMapping("/checkout/{idUsuario}/{idMetodoPago}")
     public ResponseEntity<?> finalizarCheckout(
@@ -68,5 +96,3 @@ public class CarritoController {
         }
     }
 }
-
-
