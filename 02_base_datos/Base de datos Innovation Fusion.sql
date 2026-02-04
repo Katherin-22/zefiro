@@ -263,13 +263,7 @@ CREATE TABLE RespuestaPago (
 -- -----------------------------------------------------
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
 -- -----------------------------------------------------
--- Tabla estadoPedido
-CREATE TABLE EstadoPedido (
-  idEstadoPedido INT AUTO_INCREMENT NOT NULL,
-  nombreEstado VARCHAR(45) NOT NULL,
-  
-  PRIMARY KEY (idEstadoPedido)
-) ;
+
 
 -- Tabla Pedido
 CREATE TABLE Pedido (
@@ -278,8 +272,7 @@ CREATE TABLE Pedido (
   idUsuario INT NOT NULL,
   idCarrito INT NOT NULL,
   idPromocion INT  NULL,
-  idMetodoPago INT NOT NULL,
-  idEstadoPedido INT NOT NULL,
+  estado enum('Pendiente','En proceso','Entregado')default 'Pendiente',
   total_final DECIMAL(10,2) NOT NULL,
   
   PRIMARY KEY(idPedido),
@@ -287,7 +280,6 @@ CREATE TABLE Pedido (
   FOREIGN KEY (idCarrito) REFERENCES Carrito (idCarrito),
   FOREIGN KEY (idPromocion) REFERENCES Promocion (idPromocion),
   FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago),
-  FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido) 
 ) ;
 
 -- Tabla detallePedido
@@ -303,14 +295,18 @@ CREATE TABLE DetallePedido (
   FOREIGN KEY (idStock) REFERENCES Stock(idStock)
 ) ;
 
-CREATE TABLE DetallePedido_has_Pedido(
-  idDetallePedido INT NOT NULL,
+-- Tabla seguimientoPedido
+CREATE TABLE SeguimientoPedido (
+  idSeguimiento INT NOT NULL AUTO_INCREMENT,
+  fechaEstado DATE NOT NULL,
+  comentario VARCHAR(45) NULL,
   idPedido INT NOT NULL,
+  idEstadoPedido INT NOT NULL,
   
-  PRIMARY KEY(idDetallePedido, idPedido),
-  FOREIGN KEY (idDetallePedido) REFERENCES DetallePedido(idDetallePedido),
-  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido)
-);
+  PRIMARY KEY (idSeguimiento),
+  FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido),
+  FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido)
+) ;
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTION DE COMPRAS									PARTE 1.2
@@ -345,24 +341,6 @@ CREATE TABLE DetallesComprobanteDeVenta (
   FOREIGN KEY (idDetallePedido) REFERENCES DetallePedido (idDetallePedido),
   FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
 
-) ;
-
--- -----------------------------------------------------
--- MÓDULO DE GESTIÓN DE PEDIDOS 							PARTE 1.2
--- -----------------------------------------------------
-
-
--- Tabla seguimientoPedido
-CREATE TABLE SeguimientoPedido (
-  idSeguimiento INT NOT NULL AUTO_INCREMENT,
-  fechaEstado DATE NOT NULL,
-  comentario VARCHAR(45) NULL,
-  idPedido INT,
-  idEstadoPedido INT,
-  
-  PRIMARY KEY (idSeguimiento),
-  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido),
-  FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido)
 ) ;
 
 -- Tabla devoluciones_Cambios
