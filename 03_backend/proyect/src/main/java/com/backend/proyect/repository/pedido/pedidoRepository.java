@@ -1,12 +1,13 @@
 package com.backend.proyect.repository.pedido;
 
-import com.backend.proyect.model.pedido.EstadoPedido;
-import com.backend.proyect.model.pedido.Pedido;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.util.List;
+import com.backend.proyect.model.pedido.EstadoPedido;
+import com.backend.proyect.model.pedido.Pedido;
 
 @Repository
 public interface pedidoRepository extends JpaRepository<Pedido, Integer> {

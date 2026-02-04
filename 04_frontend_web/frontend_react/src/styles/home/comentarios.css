@@ -1,0 +1,168 @@
+/* styles/home/comentarios.css */
+
+/* Estilos para sección de comentarios */
+.producto-comentarios-fila {
+  margin-top: 3rem !important;
+}
+
+.producto-seccion-comentarios {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(224, 178, 83, 0.2);
+}
+
+.producto-header-comentarios {
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(224, 178, 83, 0.1);
+}
+
+.producto-titulo-comentarios {
+  color: #333;
+  font-weight: 600;
+  font-size: 1.8rem;
+}
+
+.producto-titulo-comentarios i {
+  color: var(--primary-color);
+}
+
+/* Estadísticas */
+.estadisticas-comentarios {
+  background: linear-gradient(135deg, rgba(224, 178, 83, 0.08), rgba(224, 178, 83, 0.03));
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(224, 178, 83, 0.15);
+}
+
+.promedio-calificacion {
+  text-align: center;
+  padding: 0 2rem;
+  border-right: 2px solid rgba(224, 178, 83, 0.2);
+}
+
+.promedio-calificacion .display-4 {
+  color: var(--primary-color);
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.total-comentarios .h3 {
+  color: #666;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.estrellas-promedio {
+  margin: 0.5rem 0;
+}
+
+/* Formulario de comentarios */
+.producto-form-comentario .card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.calificacion-estrellas button {
+  transition: all 0.2s ease;
+}
+
+.calificacion-estrellas button:hover {
+  transform: scale(1.2);
+}
+
+.producto-form-comentario textarea {
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.producto-form-comentario textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.25rem rgba(224, 178, 83, 0.25);
+}
+
+/* Comentario del usuario actual */
+.comentario-usuario-actual .card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(40, 167, 69, 0.15);
+}
+
+.comentario-usuario-actual .card-header {
+  font-weight: 500;
+}
+
+/* Lista de comentarios */
+.producto-lista-comentarios h4 {
+  color: #444;
+  font-weight: 600;
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid rgba(224, 178, 83, 0.1);
+}
+
+.producto-lista-comentarios .card {
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.producto-lista-comentarios .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: rgba(224, 178, 83, 0.3);
+}
+
+.producto-lista-comentarios .card-body {
+  padding: 1.25rem;
+}
+
+.producto-lista-comentarios .card-text {
+  color: #555;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Estrellas */
+.estrellas-calificacion {
+  line-height: 1;
+}
+
+.bi-star-fill {
+  color: #ffc107;
+}
+
+/* Estado vacío */
+.text-center.py-5 i {
+  opacity: 0.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .producto-seccion-comentarios {
+    padding: 1.5rem;
+  }
+  
+  .promedio-calificacion {
+    border-right: none;
+    border-bottom: 2px solid rgba(224, 178, 83, 0.2);
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .estadisticas-comentarios > .d-flex {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .producto-lista-comentarios .row {
+    row-gap: 1rem;
+  }
+}

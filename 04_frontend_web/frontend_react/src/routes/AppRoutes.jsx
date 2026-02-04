@@ -10,7 +10,8 @@ import AccessDenied from "../pages/usuario/denied/accesDenied";
 import Home from "../pages/home/home";                      // Página principal
 import Catalogo from "../pages/home/category/catalogo";     // Catálogo de productos
 import ProductoGen from "../pages/home/productoGen";        // Detalle de producto
-
+import CategoriasMobilePage from "../pages/home/category/categorias";
+import FavoritosPage  from "../pages/home/favoritos";
 /* ==============================
    ADMINISTRACIÓN - GENERAL
    (Dashboard principal)
@@ -123,6 +124,12 @@ function AppRoutes() {
                   <Inbox />
                </ProtectedRoute>
             } />
+
+            <Route path="/favoritos" element={
+               <ProtectedRoute >
+                  <FavoritosPage />
+               </ProtectedRoute>
+            }/>
             
             {/* 🔄 Gestión de devoluciones */}
             <Route path="/Administrador/Gestion_Devoluciones" element={
@@ -341,6 +348,7 @@ function AppRoutes() {
             
             {/* 📝 Formulario de registro */}
             <Route path='/registrarUsuarios' element={<RegistrarUsuarios/>}/>
+            <Route path="/categorias-mobile" element={<CategoriasMobilePage />} />
             
             {/* 🔓 Recuperación de contraseña */}
             <Route path='/recuperarContraseña' element={<RecuperarContraseña/>}/>
@@ -358,7 +366,7 @@ function AppRoutes() {
             
             {/* ========== PÁGINAS DE ERROR ========== */}
             {/* 🚫 Acceso denegado */}
-            <Route path="/acceso-denigado" element={<AccessDenied />} />
+            <Route path="/acceso-denegado" element={<AccessDenied />} />
             
             {/* ❌ Página no encontrada (404) */}
             <Route path="*" element={<div>Página no encontrada</div>} />

@@ -154,7 +154,6 @@ const AdminUserManagement = () => {
       <div className="admin-container">
         <div className="admin-header">
           <h2>Panel de Gestión de Usuarios</h2>
-          <p>Vista de Administrador: Control total sobre los registros.</p>
         </div>
 
         <div className="admin-actions">

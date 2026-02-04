@@ -206,19 +206,20 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
 
   // ... Resto del render del modal ...
   return (
-    <div className="admin-theme">
-      <div className="modal-overlay">
-        <div className="modal-container">
-          <div className="modal-header">
-            <h3>{userToEdit ? "Editar Usuario" : "Registrar Nuevo Usuario"}</h3>
-            <button onClick={onClose} className="close-btn">
-              <X size={20} />
-            </button>
-          </div>
+  <div className="admin-theme">
+    <div className="modal-overlay">
+      <div className="modal-container">
+        <div className="modal-header">
+          <h3>{userToEdit ? "Editar Usuario" : "Registrar Nuevo Usuario"}</h3>
+          <button onClick={onClose} className="close-btn">
+            <X size={20} />
+          </button>
+        </div>
 
-          <form onSubmit={handleSubmit} className="modal-form">
-            {/* Nombre y Apellido */}
-            <div className="form-group">
+        <form onSubmit={handleSubmit} className="modal-form">
+          <div className="row">
+            {/* Fila 1: Nombre y Primer Apellido */}
+            <div className="col-12 col-lg-6 mb-3">
               <div className="field">
                 <label>Nombres *</label>
                 <input
@@ -227,8 +228,11 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
                   value={formData.nombreUsuario}
                   onChange={handleChange}
                   required
+                  className="form-control"
                 />
               </div>
+            </div>
+            <div className="col-12 col-lg-6 mb-3">
               <div className="field">
                 <label>Primer Apellido *</label>
                 <input
@@ -237,12 +241,13 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
                   value={formData.primerApellido}
                   onChange={handleChange}
                   required
+                  className="form-control"
                 />
               </div>
             </div>
 
-            {/* Segundo Apellido y Documento */}
-            <div className="form-group">
+            {/* Fila 2: Segundo Apellido y Cédula */}
+            <div className="col-12 col-lg-6 mb-3">
               <div className="field">
                 <label>Segundo Apellido *</label>
                 <input
@@ -251,8 +256,11 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
                   value={formData.segundoApellido}
                   onChange={handleChange}
                   required
+                  className="form-control"
                 />
               </div>
+            </div>
+            <div className="col-12 col-lg-6 mb-3">
               <div className="field">
                 <label>Cédula *</label>
                 <input
@@ -261,12 +269,13 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
                   value={formData.numeroDocumento}
                   onChange={handleChange}
                   required
+                  className="form-control"
                 />
               </div>
             </div>
 
-            {/* Teléfono y Correo */}
-            <div className="form-group">
+            {/* Fila 3: Teléfono y Correo */}
+            <div className="col-12 col-lg-6 mb-3">
               <div className="field">
                 <label>Teléfono *</label>
                 <input
@@ -275,8 +284,11 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
                   value={formData.telefono}
                   onChange={handleChange}
                   required
+                  className="form-control"
                 />
               </div>
+            </div>
+            <div className="col-12 col-lg-6 mb-3">
               <div className="field">
                 <label>Correo Electrónico *</label>
                 <input
@@ -285,12 +297,13 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
                   value={formData.correoElectronico}
                   onChange={handleChange}
                   required
+                  className="form-control"
                 />
               </div>
             </div>
 
-            {/* Contraseña y Confirmación */}
-            <div className="form-group">
+            {/* Fila 4: Contraseña y Confirmación */}
+            <div className="col-12 col-lg-6 mb-3">
               <div className="field">
                 <label>Contraseña {userToEdit ? "" : "*"}</label>
                 <input
@@ -298,10 +311,12 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  // Si estamos editando, la contraseña es opcional. Si es nuevo, es requerida.
                   required={!userToEdit}
+                  className="form-control"
                 />
               </div>
+            </div>
+            <div className="col-12 col-lg-6 mb-3">
               <div className="field">
                 <label>Confirmar Contraseña {userToEdit ? "" : "*"}</label>
                 <input
@@ -310,15 +325,21 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required={!userToEdit}
+                  className="form-control"
                 />
               </div>
             </div>
 
-            {/* Rol y Estado */}
-            <div className="form-group">
+            {/* Fila 5: Rol y Estado */}
+            <div className="col-12 col-lg-6 mb-3">
               <div className="field">
                 <label>Rol</label>
-                <select name="idRol" value={formData.idRol} onChange={handleChange}>
+                <select 
+                  name="idRol" 
+                  value={formData.idRol} 
+                  onChange={handleChange}
+                  className="form-control"
+                >
                   {ROLES.map((r) => (
                     <option key={r.id} value={r.id}>
                       {r.nombre.charAt(0).toUpperCase() + r.nombre.slice(1)}
@@ -326,35 +347,52 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
                   ))}
                 </select>
               </div>
-              <div className="field checkbox-group">
-                <label>
+            </div>
+            <div className="col-12 col-lg-6 mb-3 d-flex align-items-end">
+              <div className="field checkbox-group w-100">
+                <div className="form-check">
                   <input
+                    className="form-check-input"
                     type="checkbox"
                     name="activo"
+                    id="activoCheckbox"
                     checked={formData.activo}
                     onChange={handleChange}
-                  />{" "}
-                  Usuario Activo
-                </label>
+                  />
+                  <label className="form-check-label" htmlFor="activoCheckbox">
+                    Usuario Activo
+                  </label>
+                </div>
               </div>
             </div>
+          </div>
 
-            {isError && <p className="error-text">⚠️ {isError}</p>}
-            {message && <p className="success-text">{message}</p>}
-
-            <div className="modal-footer">
-              <button type="button" onClick={onClose} className="btn-cancelar">
-                Cancelar
-              </button>
-              <button type="submit" className="btn-guardar">
-                {userToEdit ? "Guardar Cambios" : "Crear Usuario"}
-              </button>
+          {/* Mensajes de error/éxito */}
+          <div className="row">
+            <div className="col-12">
+              {isError && <p className="error-text">⚠️ {isError}</p>}
+              {message && <p className="success-text">{message}</p>}
             </div>
-          </form>
-        </div>
+          </div>
+
+          {/* Botones */}
+          <div className="modal-footer mt-4">
+            <div className="row w-100">
+              <div className="col-12 d-flex justify-content-end gap-2">
+                <button type="button" onClick={onClose} className="btn-cancelar">
+                  Cancelar
+                </button>
+                <button type="submit" className="btn-guardar">
+                  {userToEdit ? "Guardar Cambios" : "Crear Usuario"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default UserFormModal;
