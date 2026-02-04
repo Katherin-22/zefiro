@@ -178,13 +178,14 @@ CREATE TABLE Imagen(
     FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE
 );
 
-CREATE TABLE Banner (
+CREATE TABLE banner (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255),
     descripcion VARCHAR(500),
-    imagenUrl VARCHAR(255),
-    fileName VARCHAR(255),
-    url VARCHAR(500)
+    file_name VARCHAR(255),
+    url VARCHAR(500),
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabla Mensajes del inbox
@@ -244,7 +245,7 @@ CREATE TABLE Pedido (
   idPromocion INT NOT NULL,
   idMetodoPago INT NOT NULL,
   estado enum('Pendiente','En proceso','Entregado')default 'Pendiente',
-  total int not null default "0", 
+  total_final int not null default "0", 
   
   PRIMARY KEY(idPedido),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),

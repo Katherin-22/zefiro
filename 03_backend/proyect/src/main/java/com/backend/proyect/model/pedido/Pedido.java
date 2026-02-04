@@ -43,12 +43,8 @@ public class Pedido {
         if (estado == null) estado = "Pendiente";
     }
 
-    @Column(name = "total")
+    @Column(name = "total_final")
     private Integer total;
-    
-    // IMPORTANTE: base de datos tiene idCarrito 
-    // ,
-    // @ManyToOne
-    // @JoinColumn(name = "idCarrito")
-    // private Carrito carrito;
+
+
 }
