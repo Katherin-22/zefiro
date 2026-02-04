@@ -178,13 +178,14 @@ CREATE TABLE Imagen(
     FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE
 );
 
-CREATE TABLE Banner (
+CREATE TABLE banner (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255),
     descripcion VARCHAR(500),
-    imagenUrl VARCHAR(255),
-    fileName VARCHAR(255),
-    url VARCHAR(500)
+    file_name VARCHAR(255),
+    url VARCHAR(500),
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabla Mensajes del inbox
@@ -274,12 +275,13 @@ CREATE TABLE Pedido (
   idPromocion INT  NULL,
   estado enum('Pendiente','En proceso','Entregado')default 'Pendiente',
   total_final DECIMAL(10,2) NOT NULL,
+  idMetodoPago INT NOT NULL,
   
   PRIMARY KEY(idPedido),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
   FOREIGN KEY (idCarrito) REFERENCES Carrito (idCarrito),
   FOREIGN KEY (idPromocion) REFERENCES Promocion (idPromocion),
-  FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago),
+  FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago)
 ) ;
 
 -- Tabla detallePedido
@@ -293,19 +295,6 @@ CREATE TABLE DetallePedido (
   PRIMARY KEY(idDetallePedido),
   FOREIGN KEY (idPedido) REFERENCES pedido(idPedido),
   FOREIGN KEY (idStock) REFERENCES Stock(idStock)
-) ;
-
--- Tabla seguimientoPedido
-CREATE TABLE SeguimientoPedido (
-  idSeguimiento INT NOT NULL AUTO_INCREMENT,
-  fechaEstado DATE NOT NULL,
-  comentario VARCHAR(45) NULL,
-  idPedido INT NOT NULL,
-  idEstadoPedido INT NOT NULL,
-  
-  PRIMARY KEY (idSeguimiento),
-  FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido),
-  FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido)
 ) ;
 
 -- -----------------------------------------------------

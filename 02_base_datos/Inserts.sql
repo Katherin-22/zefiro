@@ -49,7 +49,7 @@ VALUES
 -- PARA usuario, CLAVE: maria123
 
 (10000004, 'Maria', 'Compradora', 'lopez', 'Calle 9 #45-67' , '3006547891', '$2a$10$nSHeqNV6nYOfQK1f4hap1uhFWgKkydfxNn0tTgOTjztcrG4L3aY6W', 'mariacompradora@example.com', 1, 1, 1);
-select * from Usuario;
+
 -- -----------------------------------------------------
 -- MÓDULO DE PROMOCIONES Y DESCUENTOS						1.1
 -- -----------------------------------------------------
@@ -179,38 +179,21 @@ VALUES
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
 -- -----------------------------------------------------
 
-
--- Tabla estadoPedido
-INSERT INTO EstadoPedido (nombreEstado) VALUES
-('Pendiente'),
-('Pagado'),
-('Procesando'),
-('Empacado'),
-('Enviado'),
-('En tránsito'),
-('En reparto'),
-('Entregado'),
-('Cancelado'),
-('Rechazado'),
-('Devuelto'),
-('Reembolso en proceso'),
-('Reembolsado');
-
 -- Tabla Pedido
 INSERT INTO Pedido 
-(fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago, total_final, idEstadoPedido)
+(fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago, total_final)
  VALUES
-("2025-07-01", 4, 1, 1, 1, 120000, 1),
-("2025-07-01", 5, 2, 2, 1, 85000, 2),
-("2025-07-02", 6, 3, 1, 1, 99000, 3),
-("2025-07-02", 7, 4, 2, 1, 130000, 4),
-("2025-07-03", 8, 5, 1, 1, 115000, 5),
-("2025-07-03", 9, 6, 2, 1, 78000, 6),
-("2025-07-04", 10, 7, 1, 1, 145000, 7),
-("2025-07-04", 11, 8, 2, 1, 92000, 8),
-("2025-07-05", 12, 9, 1, 1, 160000, 9),
-("2025-07-05", 13, 10, 2, 1, 110000, 10),
-("2025-07-05", 11, 11, 2, 1, 110000, 10);
+("2025-07-01", 4, 1, 1, 1, 120000),
+("2025-07-01", 5, 2, 2, 1, 85000),
+("2025-07-02", 6, 3, 1, 1, 99000),
+("2025-07-02", 7, 4, 2, 1, 130000),
+("2025-07-03", 8, 5, 1, 1, 115000),
+("2025-07-03", 9, 6, 2, 1, 78000),
+("2025-07-04", 10, 7, 1, 1, 145000),
+("2025-07-04", 11, 8, 2, 1, 92000),
+("2025-07-05", 12, 9, 1, 1, 160000),
+("2025-07-05", 13, 10, 2, 1, 110000),
+("2025-07-05", 11, 11, 2, 1, 110000);
 
 -- Tabla detallePedido
 INSERT INTO DetallePedido (idPedido, idStock, cantidad, precioUnitario, subtotal) 
@@ -227,19 +210,6 @@ VALUES
 (10, 1, 2, 105000, 210000),
 (11, 1, 2, 105000, 210000);
 
--- Tabla seguimientoPedido
-INSERT INTO SeguimientoPedido (fechaEstado, comentario, idPedido, idEstadoPedido)
-VALUES
-("2025-06-25", "Pedido recibido", 1, 7),
-("2025-06-26", "Confirmado por el sistema", 2, 6),
-("2025-06-26", "Cocinando", 3, 3),
-("2025-06-27", "Va en camino", 4, 4),
-("2025-06-27", "Cliente recibió el pedido", 5, 5),
-("2025-06-27", "Cancelado por cliente", 6, 4),
-("2025-06-28", "Producto defectuoso", 7, 3),
-("2025-06-28", "Se cambió la fecha", 8, 2),
-("2025-06-28", "Problema con tarjeta", 9, 1),
-("2025-06-29", "Esperando recogida", 10, 7);
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTION DE COMPRAS									PARTE 1.2
@@ -282,30 +252,7 @@ VALUES
 -- MÓDULO DE GESTIÓN DE PEDIDOS 							PARTE 1.2
 -- -----------------------------------------------------
 
--- Tabla estadoPedido
-INSERT INTO EstadoPedido (nombreEstado)
-VALUES 
-("En terminal de origen"),
-("En transporte"),
-("En terminal destino"),
-("En reparto"),
-("Entregado"),
-("Cancelado"),
-("Devuelto");
 
--- Tabla seguimientoPedido
-INSERT INTO SeguimientoPedido (fechaEstado, comentario, idPedido, idEstadoPedido)
-VALUES
-("2025-06-25", "Pedido recibido", 1, 7),
-("2025-06-26", "Confirmado por el sistema", 2, 6),
-("2025-06-26", "Cocinando", 3, 3),
-("2025-06-27", "Va en camino", 4, 4),
-("2025-06-27", "Cliente recibió el pedido", 5, 5),
-("2025-06-27", "Cancelado por cliente", 6, 4),
-("2025-06-28", "Producto defectuoso", 7, 3),
-("2025-06-28", "Se cambió la fecha", 8, 2),
-("2025-06-28", "Problema con tarjeta", 9, 1),
-("2025-06-29", "Esperando recogida", 10, 7);
 
 -- Tabla DevolucionCambio
 INSERT INTO devoluciones_Cambios 
