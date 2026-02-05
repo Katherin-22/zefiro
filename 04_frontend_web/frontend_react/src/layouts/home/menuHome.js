@@ -394,7 +394,7 @@ const MenuHome = () => {
                                             <i className="bi bi-heart me-2"></i>Favoritos
                                         </Link></li>
                                         {/* Dashboard solo para administradores */}
-                                        {userData?.rol === 1 && (
+                                        {userData?.rol === 2 && (
                                             <li><Link className="dropdown-item" id="navBarHome-dashboard" to="/Administrador/stock">
                                                 <i className="bi bi-speedometer2 me-2"></i>Dashboard
                                             </Link></li>
