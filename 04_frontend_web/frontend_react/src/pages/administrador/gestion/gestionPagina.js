@@ -154,11 +154,6 @@ const GestionPagina = () => {
                                                                 e.target.alt = 'Imagen no disponible';
                                                             }}
                                                         />
-                                                        <div className="position-absolute top-0 end-0 m-2">
-                                                            <span className={`badge ${banner.activo ? 'bg-success' : 'bg-secondary'}`}>
-                                                                {banner.activo ? 'Activo' : 'Inactivo'}
-                                                            </span>
-                                                        </div>
                                                     </div>
                                                     <div className="card-body d-flex flex-column">
                                                         <div className="mt-3">
