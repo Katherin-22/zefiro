@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 
 const BannerForm = ({ onUpload }) => {
     const [file, setFile] = useState(null);
@@ -32,7 +32,13 @@ const BannerForm = ({ onUpload }) => {
             const data = await response.json();
             onUpload(data);
             setFile(null);
-            e.target.reset();
+
+            // Resetear el input file
+            const fileInput = e.target.querySelector('input[type="file"]');
+            if (fileInput) fileInput.value = "";
+
+            // Mostrar mensaje de éxito
+            alert("✅ Banner subido exitosamente");
         } catch (err) {
             setError(`Error al subir: ${err.message}`);
             console.error("Error en upload:", err);
@@ -43,21 +49,49 @@ const BannerForm = ({ onUpload }) => {
 
     return (
         <form onSubmit={handleSubmit} className="d-flex flex-column align-items-center p-3">
-            <input
-                type="file"
-                onChange={(e) => {
-                    setFile(e.target.files[0]);
-                    setError("");
-                }}
-                className="form-control mb-3"
-                accept="image/*"
-            />
+            <div className="mb-3 w-100">
+                <label htmlFor="bannerFile" className="form-label fw-bold">
+                    Seleccionar imagen para banner:
+                </label>
+                <input
+                    id="bannerFile"
+                    type="file"
+                    onChange={(e) => {
+                        setFile(e.target.files[0]);
+                        setError("");
+                    }}
+                    className="form-control"
+                    accept="image/*"
+                    disabled={loading}
+                />
+                <div className="form-text">
+                    Formatos aceptados: JPG, PNG, GIF, WebP. Tamaño máximo recomendado: 10MB.
+                </div>
+            </div>
 
-            {error && <div className="alert alert-danger mb-3">{error}</div>}
+            {file && (
+                <div className="alert alert-info w-100">
+                    <div className="d-flex align-items-center">
+                        <i className="bi bi-file-earmark-image me-2"></i>
+                        <div>
+                            <strong>Archivo seleccionado:</strong> {file.name}
+                            <br />
+                            <small>Tamaño: {(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {error && (
+                <div className="alert alert-danger w-100 mb-3">
+                    <i className="bi bi-exclamation-triangle me-2"></i>
+                    {error}
+                </div>
+            )}
 
             <button
                 type="submit"
-                className="btn btn-primary btn-lg rounded-3 shadow"
+                className="btn btn-primary btn-lg rounded-3 shadow px-5"
                 disabled={loading || !file}
             >
                 {loading ? (
@@ -66,7 +100,10 @@ const BannerForm = ({ onUpload }) => {
                         Subiendo...
                     </>
                 ) : (
-                    "Subir Banner"
+                    <>
+                        <i className="bi bi-cloud-arrow-up me-2"></i>
+                        Subir Banner
+                    </>
                 )}
             </button>
         </form>
