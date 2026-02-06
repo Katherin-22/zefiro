@@ -1,0 +1,180 @@
+import React, { useState, useEffect } from 'react'
+import axios from 'axios';
+import { Link, useNavigate } from "react-router-dom";
+
+import "../../styles/gestionusuarios/perfilusuario.css";
+import "../../styles/home/paginaInicio.css";
+import MenuHome from "../../layouts/home/menuHome";
+import Footer from "../../layouts/home/footer";
+
+function FormDireccion() {
+
+    const [formData, setFormData] = useState(null);
+
+    // 2. Estado separado para la nueva contraseña (siempre inicia vacío).
+    const [newPassword, setNewPassword] = useState('');
+
+    // 3. Estado para manejar la UI
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState('');
+    let navigate=useNavigate();
+
+    // --- A. Obtención de Datos (GET) ---
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                // 1. Obtener el token de autenticación (Eliminamos comillas si existen)
+                const token = localStorage.getItem("authToken")?.replace(/"/g, "");
+
+                if (!token) {
+                    setError("No se encontró el token de autenticación. Inicie sesión.");
+                    setLoading(false);
+                    return;
+                }
+                
+                // Endpoint: GET /api/usuarios/perfil
+                const response = await axios.get('http://localhost:8080/api/usuarios/perfil', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+
+                // Usamos esta data para pre-llenar los campos.
+                setFormData(response.data);
+
+            } catch (err) {
+                console.error("Error al cargar el perfil:", err);
+                setError("No se pudo cargar el perfil del usuario. Intente más tarde.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserProfile();
+    }, []);
+
+    // --- B. Manejo de Cambios en el Formulario ---
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        if (name === 'password') {
+            // Maneja el campo de password en su estado separado
+            setNewPassword(value);
+        } else {
+            // Maneja los demás campos en el estado principal
+            setFormData(prevData => ({
+                ...prevData,
+                [name]: value
+            }));
+        }
+        // Limpiar mensajes al empezar a editar
+        setSuccessMessage('');
+        setError(null);
+    };
+
+    // --- C. Manejo del Envío (PUT) ---
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setSuccessMessage('');
+        setError(null);
+
+        const token = localStorage.getItem("authToken")?.replace(/"/g, "");
+        
+        if (!token) {
+            setError("No se encontró el token de autenticación para actualizar. Inicie sesión.");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            // 1. Crear el DTO a enviar al backend
+            const requestData = {
+                ...formData,
+                // Incluimos la nueva contraseña solo si se ha escrito algo.
+                password: newPassword || null,
+
+                // Eliminamos los objetos de relación anidados para el DTO.
+                rol: undefined,
+                tipo_de_documento: undefined,
+                estado_usuario: undefined,
+            };
+
+            // Endpoint: PUT /api/usuarios/perfil
+            await axios.put('http://localhost:8080/api/usuarios/perfil', requestData, { 
+                headers: {
+                    Authorization: `Bearer ${token}`, 
+                    "Content-Type": "application/json",
+                }
+            });
+
+            // Éxito
+            navigate(`/api/payments/create/:idUsuario`)
+            setLoading(false);
+        } catch (err) {
+            console.error("Error al actualizar:", err);
+            setError("Error al actualizar el perfil. Revisa los datos.");
+            setLoading(false);
+        }
+    };
+
+    // --- D. Lógica de Renderizado ---
+    if (loading && !formData) {
+        return <div className="loading-state">Cargando perfil... </div>;
+    }
+
+    if (error && !formData) {
+        return <div className="error-state">Error: {error}</div>;
+    }
+
+    if (!formData) return null;
+
+    return (
+    <div className="allHome" id="home-container">
+      <MenuHome />        
+        <div className="user-profile-container">
+            <h1>Datos personales</h1>
+
+            {successMessage && <div className="success-message">{successMessage}</div>}
+            {error && <div className="error-message">{error}</div>}
+
+            <form onSubmit={handleSubmit} className="profile-form">
+
+                {/* Campos de texto y email */}
+                <div className="form-group">
+                    <label htmlFor="nombreUsuario">Nombre:</label>
+                    <input type="text" name="nombreUsuario" value={formData.nombreUsuario || ''} onChange={handleChange} required />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="primerApellido">Primer Apellido:</label>
+                    <input type="text" name="primerApellido" value={formData.primerApellido || ''} onChange={handleChange} required />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="segundoApellido">Segundo Apellido:</label>
+                    <input type="text" name="segundoApellido" value={formData.segundoApellido || ''} onChange={handleChange} />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="correoElectronico">Correo Electrónico:</label>
+                    <input type="email" name="correoElectronico" value={formData.correoElectronico || ''} onChange={handleChange} required />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="telefono">Teléfono:</label>
+                    <input type="text" name="telefono" value={formData.telefono || ''} onChange={handleChange} required />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="direccion">Dirección:</label>
+                    <input type="text" name="direccion" value={formData.direccion || ''} onChange={handleChange} required />
+                </div>
+
+                <button type="submit" disabled={loading}>
+                    {loading ? 'Guardando...' : 'Actualizar datos'}
+                </button>
+            </form>
+
+        </div>
+        <Footer />
+    </div>    
+    )
+}
+
+export default FormDireccion;

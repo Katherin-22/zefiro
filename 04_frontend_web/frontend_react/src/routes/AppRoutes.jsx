@@ -100,6 +100,11 @@ import PerfilUsuario from '../pages/usuario/PerfilUsuario'
 /* ==============================
    METODOS DE PAGO
 ============================== */
+import FormDireccion from '../pages/direccion/FormDireccion'   // metodos de pago
+
+/* ==============================
+   METODOS DE PAGO
+============================== */
 import PaymentPage from '../pages/metodoPagos/PaymentPage'   // metodos de pago
 
 function AppRoutes() {
@@ -372,7 +377,9 @@ function AppRoutes() {
             <Route path="*" element={<div>Página no encontrada</div>} />
             
             {/* Componente de metodos de pago */}
-            <Route path="/api/payments/create/:idUsuario" element={<PaymentPage/>}/>            
+            <Route path="/api/payments/create/:idUsuario" element={<PaymentPage/>}/>  
+
+            <Route path="/form-direccion" element={<FormDireccion/>}/>             
             
          </Routes>
       </FiltroProvider>
