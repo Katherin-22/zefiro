@@ -170,13 +170,18 @@ export default function Home() {
       return;
     }
 
+    console.log("Datos del stock antes de enviar:", stockItem);
+
     const productoData = {
         idStock: idStockProducto,
         nombreProducto: stockItem.producto?.nombreProducto || 'Producto Desconocido',
         precio: stockItem.producto?.precio || 0,
         imagen: stockItem.producto?.imagen,
-        idProducto: stockItem.producto?.idProducto
+        idProducto: stockItem.producto?.idProducto,
+        stockActual: stockItem.stockActual
     };
+
+    console.log("📦 Verificando stock antes de enviar:", productoData.stockActual); 
 
     const success = await addToCart(productoData, cantidadInicial);
 

@@ -144,7 +144,17 @@ const ProductoGen = () => {
             return;
         }
 
-        const success = await addToCart(idStockSeleccionado, quantity);
+        const productoParaCarrito = {
+        idStock: idStockSeleccionado,
+        nombreProducto: producto.nombreProducto,
+        precio: producto.precio,
+        imagen: imagenPrincipal, // La imagen que tienes seleccionada
+        stockActual: stockDisponible, // ¡ESTO es lo que te faltaba!
+        talla: tallaSeleccionada,
+        color: colores.find(c => String(c.idColor) === String(colorSeleccionado))?.nombreColor
+       };
+
+        const success = await addToCart(productoParaCarrito, quantity);
 
         if (success) {
             setShowCartMenu(true); 

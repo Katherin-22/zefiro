@@ -341,7 +341,7 @@ public class CarritoService {
         }
 
         // Eliminar todos los detalles
-        detalleCarritoRepository.deleteAll(carrito.getDetalles());
+        detalleCarritoRepository.deleteByCarritoIdCarrito(carrito.getIdCarrito());
 
         // Limpiar la lista en memoria y guardar el Carrito (para reflejar el cambio inmediatamente)
         carrito.getDetalles().clear();
@@ -420,6 +420,14 @@ public class CarritoService {
         carritoRepository.save(carrito);
 
         return pedidoGuardado;
+    }
+
+    public double calcularTotalCarrito(Integer idUsuario) {
+        Carrito carrito = obtenerCarritoActivo(idUsuario);
+
+        return carrito.getDetalles().stream()
+                .mapToDouble(detalle -> detalle.getPrecioUnitario() * detalle.getCantidad())
+                .sum();
     }
 
 }

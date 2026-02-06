@@ -44,7 +44,7 @@ const Carrito = () => {
 
         const nombre = productoRef?.nombreProducto || item.nombreProducto || "Producto Desconocido";
         const precio = item.precioUnitario || item.precio|| productoRef?.precio || 0;
-        const stockDisponible = stockRef?.stockActual || item.stockDisponible || 0;
+        const stockDisponible = stockRef?.stockActual || item.stockActual || item.stockDisponible || 0;
         const cantidad = item.cantidad || 0;
 
         // Lógica de prioridad de imagen igual que en Home:

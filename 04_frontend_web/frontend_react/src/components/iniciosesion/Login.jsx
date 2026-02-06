@@ -60,7 +60,7 @@ function Login({ stateOverride }) {
           }
 
           // ✅ Login permitido
-          login(userData);
+          login(userData, token);
           localStorage.setItem("authToken", token);
           localStorage.setItem("userData", JSON.stringify(userData));
 
@@ -69,7 +69,7 @@ function Login({ stateOverride }) {
 
         // 🔓 LOGIN NORMAL (NO COMPRA)
         else {
-          login(userData);
+          login(userData, token);
           localStorage.setItem("authToken", token);
           localStorage.setItem("userData", JSON.stringify(userData));
 

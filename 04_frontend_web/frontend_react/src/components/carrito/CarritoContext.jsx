@@ -12,6 +12,22 @@ const api_url = axios.create({
     withCredentials: true
 });
 
+
+api_url.interceptors.request.use(
+    (config) => {
+        const tokenRaw = localStorage.getItem("authToken"); 
+        const token = tokenRaw ? tokenRaw.replace(/"/g, "") : null;
+
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
 // ==============================
 // CONTEXT
 // ==============================
@@ -197,7 +213,8 @@ export const CartProvider = ({ children }) => {
                         cantidad: cantidad,
                         nombreProducto: productoData.nombreProducto, 
                         precio: productoData.precio,
-                        imagen: productoData.imagen
+                        imagen: productoData.imagen,
+                        stockActual: productoData.stockActual // <--- AGREGADO
                     }];
                 }
 
