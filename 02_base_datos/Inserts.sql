@@ -427,19 +427,6 @@ VALUES
 (10,10,  2, 105000);
 
 
-INSERT INTO DetallePedido_has_Pedido
-VALUES
-(1,1),
-(2,2),
-(3,3),
-(4,4),
-(5,5),
-(6,6),
-(7,7),
-(8,8),
-(9,9),
-(10,10);
-
 -- -----------------------------------------------------
 -- MÓDULO DE GESTION DE COMPRAS
 -- -----------------------------------------------------
@@ -482,29 +469,6 @@ VALUES
 -- -----------------------------------------------------
 
 -- Tabla estadoPedido
-INSERT INTO EstadoPedido (nombreEstado)
-VALUES 
-("En terminal de origen"),
-("En transporte"),
-("En terminal destino"),
-("En reparto"),
-("Entregado"),
-("Cancelado"),
-("Devuelto");
-
--- Tabla seguimientoPedido
-INSERT INTO SeguimientoPedido (fechaEstado, comentario, idPedido, idEstadoPedido)
-VALUES
-("2025-06-25", "Pedido recibido", 1, 7),
-("2025-06-26", "Confirmado por el sistema", 2, 6),
-("2025-06-26", "Cocinando", 3, 3),
-("2025-06-27", "Va en camino", 4, 4),
-("2025-06-27", "Cliente recibió el pedido", 5, 5),
-("2025-06-27", "Cancelado por cliente", 6, 4),
-("2025-06-28", "Producto defectuoso", 7, 3),
-("2025-06-28", "Se cambió la fecha", 8, 2),
-("2025-06-28", "Problema con tarjeta", 9, 1),
-("2025-06-29", "Esperando recogida", 10, 7);
 
 -- Tabla DevolucionCambio
 INSERT INTO devoluciones_Cambios 
