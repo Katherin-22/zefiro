@@ -68,7 +68,6 @@ export default function GetCategoria() {
                         <tr>
                         <th>Nombre</th>
                         <th>Tipo de Producto</th>
-                        <th>id Tipo de Producto</th>
                         <th>Acciones</th>
                         </tr>
                     </thead>
@@ -77,7 +76,6 @@ export default function GetCategoria() {
                             <tr key={categoria.idCategoria}>
                             <td>{categoria.nombreCategoria}</td>
                             <td>{categoria.nombreTipoProducto}</td>
-                            <td>{categoria.idTipoProducto}</td>
                             <td><Link to={`/categoria/${categoria.idCategoria}`} id="boton_agregar" className="btn btn-light">Editar</Link>
                             
                             <button

@@ -49,13 +49,13 @@ export default function CreateProducto() {
         setSuccess(true);        // paso 3: si todo ok → marcar éxito
         navigate("/ver_producto")
         } catch (error) {
-        console.error("Error al crear la categoria:", error);
+        console.error("Error al crear el producto:", error);
 
         // Verifica si el backend envió un mensaje
         if (error.response && error.response.data && error.response.data.errorMessage) {
         alert("⚠️ " + error.response.data.errorMessage);
         } else {
-        alert("⚠️ Error desconocido al crear la categoria");
+        alert("⚠️ Error desconocido al crear el producto.");
         }
         setSuccess(false);      // si falla → marcar como no exitoso
         } finally {

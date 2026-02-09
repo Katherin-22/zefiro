@@ -141,7 +141,7 @@ export default function CreateImagen() {
                             <button
                             className="btn btn-light"
                             onClick={() => {
-                                if (window.confirm("¿Estás seguro de eliminar este color?")) {
+                                if (window.confirm("¿Estás seguro de eliminar esta imagen?")) {
                                 handleDeleteImagen(imagen.idImagen);
                                 }
                             }}
