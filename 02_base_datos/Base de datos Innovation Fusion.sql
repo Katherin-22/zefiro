@@ -274,7 +274,7 @@ CREATE TABLE Pedido (
   idCarrito INT NOT NULL,
   idPromocion INT  NULL,
   estado enum('Pendiente','En proceso','Entregado')default 'Pendiente',
-  total_final DECIMAL(10,2) NOT NULL,
+  total_final DECIMAL(10,2) NOT NULL DEFAULT 0,
   idMetodoPago INT NOT NULL,
   
   PRIMARY KEY(idPedido),
@@ -291,7 +291,7 @@ CREATE TABLE DetallePedido (
   idStock INT NOT NULL, 
   cantidad INT NOT NULL,
   precioUnitario DOUBLE NOT NULL,
-  subtotal DECIMAL(10,2) NOT NULL ,
+  subtotal DECIMAL(10,2) NOT NULL DEFAULT 0 ,
   PRIMARY KEY(idDetallePedido),
   FOREIGN KEY (idPedido) REFERENCES pedido(idPedido),
   FOREIGN KEY (idStock) REFERENCES Stock(idStock)

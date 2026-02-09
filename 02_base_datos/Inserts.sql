@@ -413,18 +413,18 @@ INSERT INTO Pedido (fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago
 ("2025-07-05", 13, 10, 2, 1);
 
 -- Tabla detallePedido
-INSERT INTO DetallePedido (idPedido , talla, cantidad, precioUnitario) 
+INSERT INTO DetallePedido (idPedido ,idStock ,cantidad, precioUnitario) 
 VALUES
-(1, 38, 2, 75000),
-(2, 42, 1, 235000),
-(3, 40, 3, 320000),
-(4, 36, 1, 120000),
-(5, 37, 2, 28000),
-(6, 43, 1, 30000),
-(7, 39, 2, 225000),
-(8, 38, 1, 89000),
-(9, 41, 1, 175000),
-(10, 44, 2, 105000);
+(1,1, 2, 75000),
+(2,2, 1, 235000),
+(3,3, 3, 320000),
+(4,4, 1, 120000),
+(5,5, 2, 28000),
+(6,6, 1, 30000),
+(7,7, 2, 225000),
+(8,8, 1, 89000),
+(9,9, 1, 175000),
+(10,10,  2, 105000);
 
 
 INSERT INTO DetallePedido_has_Pedido
