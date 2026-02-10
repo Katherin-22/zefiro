@@ -110,6 +110,10 @@ public class CarritoService {
         Stock stock = stockRepository.findById(itemDTO.getIdStock())
                 .orElseThrow(() -> new NoSuchElementException("Variación de Stock no encontrada"));
 
+        if (stock.getStockActual() < itemDTO.getCantidad()) {
+            throw new IllegalArgumentException("No hay suficiente stock disponible. Unidades en inventario: " + stock.getStockActual());
+        }
+
         // Buscar si el item (idStock) ya existe en el carrito
         Optional<DetalleCarrito> detalleExistente = carrito.getDetalles().stream()
                 .filter(d -> d.getStock().getIdStock().equals(itemDTO.getIdStock()))

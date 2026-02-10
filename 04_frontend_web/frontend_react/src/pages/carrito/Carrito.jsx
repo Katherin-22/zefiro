@@ -51,7 +51,7 @@ const Carrito = () => {
         // 1. Imagen del estado (cargada por API)
         // 2. Imagen que venga en el objeto (fallback)
         // 3. Imagen por defecto
-        let imagenFinal = "/iamgenes_prueba/zapato/im6.jpg";
+        let imagenFinal = "/imagenes_prueba/zapato/default.jpg";
         
         if (idProducto && imagenesProductos[idProducto]) {
             imagenFinal = imagenesProductos[idProducto];
@@ -190,7 +190,7 @@ const Carrito = () => {
             return;
         }
 
-        navigate("/checkout");
+        navigate("/form-direccion");
     };
 
     // ===============================================

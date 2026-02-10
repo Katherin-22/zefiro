@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from "../../context/AuthContext";
 import CheckoutForm from "../../components/metodoPagos/CheckoutForm";
 import { createPaymentIntent } from "../../services/metodoPagos/paymentApi";
+import api_url from "../../services/administrador/api";
 import "../../styles/home/paginaInicio.css";
 import MenuHome from "../../layouts/home/menuHome";
 import Footer from "../../layouts/home/footer";
@@ -13,6 +15,9 @@ import "../../styles/metodoPagos/PaymentPage.css"; // Opcional: para estilos
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PK);
 
 const PaymentPage = () => {
+    const { token } = useAuth(); // Obtenemos el token JWT del contexto
+    const { idUsuario } = useParams();
+    const navigate = useNavigate();
     const [clientSecret, setClientSecret] = useState("");
     const [amount, setAmount] = useState(null); 
     const [currency, setCurrency] = useState("");
@@ -20,8 +25,6 @@ const PaymentPage = () => {
     const [error, setError] = useState(null);
     const [paymentData, setPaymentData] = useState(null);
     
-    const { idUsuario } = useParams();
-    const navigate = useNavigate();
 
     // Verificar que idUsuario sea válido
     useEffect(() => {
@@ -40,17 +43,26 @@ const PaymentPage = () => {
         
         try {
             // Validar ID
-            if (!idUsuario || isNaN(idUsuario)) {
-                throw new Error("ID de usuario inválido");
+            if (!token) {
+                throw new Error("Sesión expirada. Por favor, inicia sesión de nuevo.");
             }
             
             console.log("🌐 Llamando a createPaymentIntent...");
             
             // Llamar al backend
-            const response = await createPaymentIntent(idUsuario, {
-                currency: "usd", // o "cop" según tu backend
-                description: "Pago de carrito de compras"
-            });
+            const response = await api_url.post("/api/payments/create",
+                {
+                    idUsuario: idUsuario,
+                    currency: "usd", // o "cop" según tu backend
+                    description: "Pago de carrito de compras"
+                }, 
+                {
+                    headers: {
+                        // Pasamos el token manualmente SOLO para esta petición
+                        Authorization: `Bearer ${token}` 
+                    }
+                }
+            );
             
             console.log("✅ Respuesta del backend recibida:", response.data);
             

@@ -43,6 +43,8 @@ public class SecurityConfig {
 
                         .requestMatchers("/uploads/**").permitAll()
 
+                        .requestMatchers("/api/comentarios/**").permitAll()
+
                         .requestMatchers(
                                 "/categoria", "/categoria/*", "/promocion", "/stock/*",
                                 "/stock/variaciones/*", "/stock/*", "/producto/*/stock/*", "/promocion/*",

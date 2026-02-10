@@ -184,13 +184,15 @@ CREATE TABLE Imagen(
     FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE
 );
 
-CREATE TABLE Banner (
+
+CREATE TABLE banner (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255),
     descripcion VARCHAR(500),
-    imagenUrl VARCHAR(255),
-    fileName VARCHAR(255),
-    url VARCHAR(500)
+    file_name VARCHAR(255),
+    url VARCHAR(500),
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -224,6 +226,31 @@ CREATE TABLE MetodoPago (
     nombreMetodoPago VARCHAR(45) NOT NULL,
     
     PRIMARY KEY (idMetodoPago)
+);
+
+-- Esta tabla guarda lo que tú envías al sistema de pagos: monto, moneda, descripción.
+
+CREATE TABLE SolicitudPago (
+	idSolicitudPago INT AUTO_INCREMENT NOT NULL,
+	amount BIGINT NULL,
+    currency VARCHAR(10) NOT NULL,
+    description VARCHAR(200) NULL,
+	idUsuario INT NOT NULL,
+    
+	PRIMARY KEY (idSolicitudPago),
+	FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)    
+);
+
+CREATE TABLE RespuestaPago (
+    id VARCHAR(255) NOT NULL,          
+    amount BIGINT NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    status VARCHAR(200) NOT NULL,
+    clientSecret VARCHAR(200) NOT NULL,
+	idUsuario INT NOT NULL,    
+    
+	PRIMARY KEY (id),
+	FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)        
 );
 
 
@@ -373,6 +400,28 @@ CREATE TABLE Favoritos (
   -- Un usuario no puede agregar el mismo producto dos veces a favoritos
   UNIQUE KEY unique_usuario_producto (idUsuario, idProducto)
 );
+
+-- Tabla de Comentarios para productos
+CREATE TABLE ComentarioProducto (
+  idComentario INT AUTO_INCREMENT NOT NULL,
+  idProducto INT NOT NULL,
+  idUsuario INT NOT NULL,
+  comentario TEXT NOT NULL,
+  calificacion INT NOT NULL CHECK (calificacion >= 1 AND calificacion <= 5),
+  fechaComentario TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  estado ENUM('Activo', 'Eliminado') DEFAULT 'Activo',
+  
+  PRIMARY KEY (idComentario),
+  FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE,
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE,
+  
+  -- Un usuario solo puede comentar una vez por producto
+  UNIQUE KEY unique_usuario_producto (idUsuario, idProducto)
+);
+
+-- Índice para búsquedas más rápidas
+CREATE INDEX idx_comentario_producto ON ComentarioProducto(idProducto, estado, fechaComentario);
+
 
 								-- DML: Insert - Insertar registros de las tablas:
 -- -----------------------------------------------------

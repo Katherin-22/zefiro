@@ -11,6 +11,7 @@ import Home from "../pages/home/home";                      // Página principal
 import Catalogo from "../pages/home/category/catalogo";     // Catálogo de productos
 import ProductoGen from "../pages/home/productoGen";        // Detalle de producto
 import CategoriasMobilePage from "../pages/home/category/categorias";
+import FavoritosPage  from "../pages/home/favoritos";
 /* ==============================
    ADMINISTRACIÓN - GENERAL
    (Dashboard principal)
@@ -102,6 +103,16 @@ import PerfilUsuario from '../pages/usuario/PerfilUsuario'                  // P
 ============================== */
 import Carrito from "../pages/carrito/Carrito";
 
+/* ==============================
+   METODOS DE PAGO
+============================== */
+import FormDireccion from '../pages/direccion/FormDireccion'   // metodos de pago
+
+/* ==============================
+   METODOS DE PAGO
+============================== */
+import PaymentPage from '../pages/metodoPagos/PaymentPage'
+
 
 function AppRoutes() {
    return (
@@ -125,6 +136,12 @@ function AppRoutes() {
                   <Inbox />
                </ProtectedRoute>
             } />
+
+            <Route path="/favoritos" element={
+               <ProtectedRoute >
+                  <FavoritosPage />
+               </ProtectedRoute>
+            }/>
             
             {/* 🔄 Gestión de devoluciones */}
             <Route path="/Administrador/Gestion_Devoluciones" element={
@@ -362,6 +379,11 @@ function AppRoutes() {
             {/* ========== CARRITO USUARIO ========== */}
             
             <Route path="/carrito" element={<Carrito />} />
+
+            {/* Componente de metodos de pago */}
+            <Route path="/api/payments/create/:idUsuario" element={<PaymentPage/>}/>  
+
+            <Route path="/form-direccion" element={<FormDireccion/>}/>             
 
             {/* ========== PÁGINAS DE ERROR ========== */}
             {/* 🚫 Acceso denegado */}
