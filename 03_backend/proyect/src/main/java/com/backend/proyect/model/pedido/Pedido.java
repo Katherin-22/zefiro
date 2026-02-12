@@ -4,13 +4,17 @@ import com.backend.proyect.model.usuario.Usuario;
 import com.backend.proyect.model.carrito.Carrito;
 import com.backend.proyect.model.promociones.Promocion;
 import com.backend.proyect.model.metodosPago.MetodoPago;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,6 +39,8 @@ public class  Pedido {
     
     @OneToOne
     @JoinColumn(name = "idCarrito", nullable = false)
+    @JsonIgnore
+    @ToString.Exclude
     private Carrito carrito;
     
     @ManyToOne
@@ -52,7 +58,10 @@ public class  Pedido {
     @Column(name = "total_final", nullable = false)
     private BigDecimal totalFinal;
 
-    
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    @JsonManagedReference // Indica que esta es la parte de la relación que sí se debe serializar
+    private List<DetallePedido> detalles;
+
     @PrePersist
     public void prePersist() {
         if (fechaPedido == null) fechaPedido = LocalDate.now();

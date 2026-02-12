@@ -62,7 +62,15 @@ const saveLocalCart = (items) => {
 export const CartProvider = ({ children }) => {
     // 🔐 OBTENER DATOS DE AUTENTICACIÓN
     const { user, isLoading: isAuthLoading } = useAuth();
-    const userId = user?.id || user?.idUsuario;
+
+    const getActiveUserId = () => {
+        if (user?.idUsuario) return user.idUsuario;
+        if (user?.id) return user.id;
+        const stored = JSON.parse(localStorage.getItem("userData"));
+        return stored?.idUsuario || stored?.id;
+    };
+
+    const userId = getActiveUserId()
     const isAuthenticated = !!userId;
 
     // 🛒 ESTADOS
@@ -80,7 +88,7 @@ export const CartProvider = ({ children }) => {
     // ==============================
     const fetchCartItems = useCallback(async () => {
         // Si no está autenticado, simplemente usamos el estado local ya cargado.
-        if (!isAuthenticated) {
+        if (!isAuthenticated || !userId) {
             setCartItems(getLocalCart());
             return;
         }
@@ -178,7 +186,7 @@ export const CartProvider = ({ children }) => {
     // ==============================
     const addToCart = async (productoData, cantidad) => {
 
-        if (isAuthenticated) {
+        if (isAuthenticated && userId) {
             // Logueado: Llama al backend (que devuelve la data completa)
             setLoading(true);
             try {
@@ -235,7 +243,7 @@ export const CartProvider = ({ children }) => {
 
         if (nuevaCantidad <= 0) return removeFromCart(id);
         
-        if (!isAuthenticated) {
+        if (!isAuthenticated || !userId) {
             // Invitado: Actualización local usando idStock
             setCartItems(prev => {
                 const newCart = prev.map(item => 
@@ -285,7 +293,7 @@ export const CartProvider = ({ children }) => {
     // REMOVE ITEM (DELETE)
     // ==============================
     const removeFromCart = async (id) => { // 'id' es idDetalleCarrito (logueado) o idStock (invitado)
-        if (!isAuthenticated) {
+        if (!isAuthenticated || !userId) {
             // Invitado: Lógica local (filtrar por idStock)
             setCartItems(prevItems => {
                 const newCart = prevItems.filter(item => item.idStock !== id);
@@ -313,7 +321,7 @@ export const CartProvider = ({ children }) => {
     // CLEAR CART (Vaciar todo)
     // ==============================
     const clearCart = async () => {
-        if (!isAuthenticated) {
+        if (!isAuthenticated || !userId) {
             // Invitado: Lógica local
             setCartItems([]);
             localStorage.removeItem(LOCAL_STORAGE_KEY);

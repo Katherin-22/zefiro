@@ -143,7 +143,14 @@ public class CarritoController {
             @PathVariable Integer idMetodoPago) {
         try {
             Pedido pedido = carritoService.finalizarCheckout(idUsuario, idMetodoPago);
-            return ResponseEntity.ok(pedido);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "¡Pedido realizado con éxito!",
+                    "idPedido", pedido.getIdPedido(),
+                    "total", pedido.getTotalFinal(),
+                    "fecha", pedido.getFechaPedido()
+            ));
+
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (IllegalArgumentException e) {

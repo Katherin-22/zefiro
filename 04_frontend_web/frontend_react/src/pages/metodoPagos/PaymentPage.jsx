@@ -20,7 +20,7 @@ const PaymentPage = () => {
     const navigate = useNavigate();
     const [clientSecret, setClientSecret] = useState("");
     const [amount, setAmount] = useState(null); 
-    const [currency, setCurrency] = useState("");
+    const [currency, setCurrency] = useState("cop");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [paymentData, setPaymentData] = useState(null);
@@ -30,6 +30,9 @@ const PaymentPage = () => {
     useEffect(() => {
         console.log("✅ PaymentPage montado");
         console.log("🆔 ID Usuario desde URL:", idUsuario);
+        if (!idUsuario || idUsuario === "undefined") {
+            setError("ID de usuario no válido. Regrese al carrito.");
+        }
         
 
     }, [idUsuario, navigate]);
@@ -52,8 +55,6 @@ const PaymentPage = () => {
             // Llamar al backend
             const response = await api_url.post("/api/payments/create",
                 {
-                    idUsuario: idUsuario,
-                    currency: "usd", // o "cop" según tu backend
                     description: "Pago de carrito de compras"
                 }, 
                 {
@@ -127,11 +128,12 @@ const PaymentPage = () => {
     };
 
     const formatAmount = (amount, currency) => {
-        if (!amount) return "$0.00";
+        if (!amount) return "$0";
         const amountInCurrency = amount / 100; // Convertir centavos a unidades
-        return new Intl.NumberFormat('en-US', {
+        return new Intl.NumberFormat('es-CO', {
             style: 'currency',
-            currency: currency.toUpperCase() || 'USD'
+            currency: currency.toUpperCase() || 'COP',
+            minimumFractionDigits: 0
         }).format(amountInCurrency);
     };
 
@@ -245,6 +247,7 @@ const PaymentPage = () => {
                             clientSecret={clientSecret} 
                             amount={amount}
                             currency={currency}
+                            idUsuario={idUsuario}
                             onSuccess={() => {
                                 alert("¡Pago exitoso!");
                                 navigate("/orden-completada");

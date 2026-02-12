@@ -392,6 +392,7 @@ public class CarritoService {
 
         Pedido nuevoPedido = new Pedido();
         nuevoPedido.setUsuario(carrito.getUsuario());
+        nuevoPedido.setCarrito(carrito);
         nuevoPedido.setFechaPedido(LocalDate.now());
         nuevoPedido.setTotalFinal(totalCalculado);
 
@@ -409,6 +410,10 @@ public class CarritoService {
             dp.setStock(detalle.getStock());
             dp.setCantidad(detalle.getCantidad());
             dp.setPrecioUnitario(detalle.getPrecioUnitario());
+
+            BigDecimal subtotal = BigDecimal.valueOf(detalle.getPrecioUnitario())
+                    .multiply(BigDecimal.valueOf(detalle.getCantidad()));
+            dp.setSubtotal(subtotal);
 
             // Guardar el DetallePedido
             detallePedidoRepository.save(dp);

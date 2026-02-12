@@ -2,12 +2,14 @@ package com.backend.proyect.model.pedido;
 
 import com.backend.proyect.model.productos.Stock;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
@@ -37,6 +39,8 @@ public class DetallePedido {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "idPedido", referencedColumnName = "idPedido")
+    @JsonBackReference // 1. Evita el bucle infinito en la serialización JSON
+    @ToString.Exclude
     private Pedido pedido;
 
     @ManyToOne(optional = false)
