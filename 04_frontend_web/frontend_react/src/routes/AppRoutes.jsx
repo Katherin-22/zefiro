@@ -107,6 +107,23 @@ import FormDireccion from '../pages/direccion/FormDireccion'   // metodos de pag
 ============================== */
 import PaymentPage from '../pages/metodoPagos/PaymentPage'   // metodos de pago
 
+
+/* ==============================
+   carrito
+============================== */
+import Carrito from "../pages/carrito/Carrito";
+
+/* ==============================
+   METODOS DE PAGO
+============================== */
+import FormDireccion from '../pages/direccion/FormDireccion'   // metodos de pago
+
+/* ==============================
+   METODOS DE PAGO
+============================== */
+import PaymentPage from '../pages/metodoPagos/PaymentPage'
+
+
 function AppRoutes() {
    return (
       <FiltroProvider>
@@ -368,7 +385,16 @@ function AppRoutes() {
                   <PerfilUsuario />
                </ProtectedRoute>
             }/>
+
+            {/* ========== CARRITO USUARIO ========== */}
             
+            <Route path="/carrito" element={<Carrito />} />
+
+            {/* Componente de metodos de pago */}
+            <Route path="/api/payments/create/:idUsuario" element={<PaymentPage/>}/>  
+
+            <Route path="/form-direccion" element={<FormDireccion/>}/>             
+
             {/* ========== PÁGINAS DE ERROR ========== */}
             {/* 🚫 Acceso denegado */}
             <Route path="/acceso-denegado" element={<AccessDenied />} />

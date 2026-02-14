@@ -83,8 +83,10 @@ public class StockController {
     }
 
     @GetMapping("/publico/stocks")
-    public ResponseEntity<List<StockGeneralProjection>> getAllStock() {
-        List<StockGeneralProjection> listaStock = stockRepository.obtenerStockAgrupado();
+    public ResponseEntity<List<Stock>> getAllStock() {
+        // Antes: List<Stock> listaStock = stockRepository.findAll();
+        // Ahora: Usamos JOIN FETCH para cargar el producto anidado, lo que necesita el frontend.
+        List<Stock> listaStock = stockRepository.findAllWithProducto();
         return ResponseEntity.ok(listaStock);
     }
 
@@ -135,36 +137,36 @@ public class StockController {
     @PutMapping("/producto/{idProducto}/stock/{idStock}")
     ResponseEntity<Stock> updateStock(@RequestBody StockDTO updateStockDTO, @PathVariable Integer idProducto, @PathVariable Integer idStock) {
         return stockRepository.findById(idStock)
-            .map(stock -> {
-                // Buscar las entidades relacionadas por ID
-                Producto producto = productoRepository.findById(idProducto)
-                        .orElseThrow(() -> new ResourceNotFoundException("Producto", idProducto));
+                .map(stock -> {
+                    // Buscar las entidades relacionadas por ID
+                    Producto producto = productoRepository.findById(idProducto)
+                            .orElseThrow(() -> new ResourceNotFoundException("Producto", idProducto));
 
-                // Color opcional
-                if (updateStockDTO.getIdColor() != null) {
-                    Color color = colorRepository.findById(updateStockDTO.getIdColor())
-                            .orElseThrow(() -> new ResourceNotFoundException("Color", updateStockDTO.getIdColor()));
-                    stock.setColor(color);
-                } else {
-                    stock.setColor(null);
-                }
+                    // Color opcional
+                    if (updateStockDTO.getIdColor() != null) {
+                        Color color = colorRepository.findById(updateStockDTO.getIdColor())
+                                .orElseThrow(() -> new ResourceNotFoundException("Color", updateStockDTO.getIdColor()));
+                        stock.setColor(color);
+                    } else {
+                        stock.setColor(null);
+                    }
 
-                // Variación opcional
-                if (updateStockDTO.getIdVariacion() != null) {
-                    Variacion variacion = variacionRepository.findById(updateStockDTO.getIdVariacion())
-                            .orElseThrow(() -> new ResourceNotFoundException("Variacion", updateStockDTO.getIdVariacion()));
-                    stock.setVariacion(variacion);
-                } else {
-                    stock.setVariacion(null);
-                }
+                    // Variación opcional
+                    if (updateStockDTO.getIdVariacion() != null) {
+                        Variacion variacion = variacionRepository.findById(updateStockDTO.getIdVariacion())
+                                .orElseThrow(() -> new ResourceNotFoundException("Variacion", updateStockDTO.getIdVariacion()));
+                        stock.setVariacion(variacion);
+                    } else {
+                        stock.setVariacion(null);
+                    }
 
-                stock.setStockMinimo(updateStockDTO.getStockMinimo());
-                stock.setStockActual(updateStockDTO.getStockActual());
-                stock.setProducto(producto);
+                    stock.setStockMinimo(updateStockDTO.getStockMinimo());
+                    stock.setStockActual(updateStockDTO.getStockActual());
+                    stock.setProducto(producto);
 
-                Stock actualizado = stockRepository.save(stock);
-                return ResponseEntity.ok(actualizado); // 200 OK
-            }).orElseThrow(() -> new ResourceNotFoundException("Stock", idStock));
+                    Stock actualizado = stockRepository.save(stock);
+                    return ResponseEntity.ok(actualizado); // 200 OK
+                }).orElseThrow(() -> new ResourceNotFoundException("Stock", idStock));
     }
 
     //@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")

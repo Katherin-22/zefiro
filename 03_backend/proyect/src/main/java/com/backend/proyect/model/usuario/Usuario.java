@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.sql.Timestamp;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,7 +19,7 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idUsuario")
+    @Column(name = "idUsuario" )
     private Integer idUsuario;
 
     @Column(name = "numeroDocumento", nullable = false)
@@ -42,6 +46,18 @@ public class Usuario {
     @Column(name = "Direccion")
     private String Direccion;
 
+    @Column(name = "verify_otp")
+    private String verify_otp;
+
+    @Column(name = "verify_otp_expire_at")
+    private Long verify_otp_expire_at;
+
+    @Column(name = "reset_otp")
+    private String reset_otp;
+
+    @Column(name = "reset_otp_expire_at")
+    private Long reset_otp_expire_at;
+
     @ManyToOne
     @JoinColumn(name = "idRol", referencedColumnName = "idRol")
     private Rol rol;
@@ -53,6 +69,13 @@ public class Usuario {
     @ManyToOne
     @JoinColumn(name = "idestado_usuario", referencedColumnName = "idestado_usuario")
     private EstadoUsuario  estado_usuario;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Timestamp created_at;
+
+    @UpdateTimestamp
+    private Timestamp updated_at;
 
 }
 

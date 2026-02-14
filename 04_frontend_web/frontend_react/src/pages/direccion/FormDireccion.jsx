@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import { Link, useNavigate } from "react-router-dom";
-
+import { useAuth } from "../../context/AuthContext";
 import "../../styles/gestionusuarios/perfilusuario.css";
 import "../../styles/home/paginaInicio.css";
 import MenuHome from "../../layouts/home/menuHome";
 import Footer from "../../layouts/home/footer";
 
 function FormDireccion() {
+
+    const { user } = useAuth();
+    const userId = user?.id || user?.idUsuario;
 
     const [formData, setFormData] = useState(null);
 
@@ -109,8 +112,12 @@ function FormDireccion() {
             });
 
             // Éxito
-            navigate(`/api/payments/create/:idUsuario`)
+            if (userId) {
+            navigate(`/api/payments/create/${userId}`)
             setLoading(false);
+            } else {
+            throw new Error("No se pudo obtener el ID del usuario.");
+        }
         } catch (err) {
             console.error("Error al actualizar:", err);
             setError("Error al actualizar el perfil. Revisa los datos.");
