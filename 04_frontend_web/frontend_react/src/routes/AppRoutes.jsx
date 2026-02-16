@@ -113,15 +113,7 @@ import PaymentPage from '../pages/metodoPagos/PaymentPage'   // metodos de pago
 ============================== */
 import Carrito from "../pages/carrito/Carrito";
 
-/* ==============================
-   METODOS DE PAGO
-============================== */
-import FormDireccion from '../pages/direccion/FormDireccion'   // metodos de pago
 
-/* ==============================
-   METODOS DE PAGO
-============================== */
-import PaymentPage from '../pages/metodoPagos/PaymentPage'
 
 
 function AppRoutes() {

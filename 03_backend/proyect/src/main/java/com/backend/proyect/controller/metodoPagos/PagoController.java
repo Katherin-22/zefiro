@@ -2,7 +2,6 @@ package com.backend.proyect.controller.metodoPagos;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,23 +30,22 @@ public class PagoController {
         this.pagoService = pagoService;
     }
 
-    @PostMapping("/create/{idUsuario}")
-    public ResponseEntity<RespuestaPago> createPayment(@RequestBody SolicitudPago request, @PathVariable Integer idUsuario) {
+    @PostMapping("/create")
+    public ResponseEntity<RespuestaPago> createPayment(@RequestBody SolicitudPago request) {
         try {
-           // 1. Buscar el usuario en la base de datos
+            // El ID del usuario viene en el request
+            Integer idUsuario = request.getUsuario().getIdUsuario();
+            
             Usuario usuario = usuarioService.obtenerUsuarioPorId(idUsuario);
             
             if (usuario == null) {
                 return ResponseEntity.status(404).build();
             }
             
-            // 2. Asignar el usuario al request
             request.setUsuario(usuario);
             
-            // 3. Crear el PaymentIntent
             PaymentIntent intent = pagoService.createPayment(request);
 
-            // 4. Construir la respuesta
             RespuestaPago response = new RespuestaPago();
             response.setId(intent.getId());
             response.setClientSecret(intent.getClientSecret());
@@ -63,7 +61,7 @@ public class PagoController {
             return ResponseEntity.ok(response);     
 
         } catch (Exception e) {
-            e.printStackTrace(); // Para ver el error real
+            e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
     }

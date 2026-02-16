@@ -42,8 +42,9 @@ public class Pedido {
     @JoinColumn(name = "idMetodoPago", nullable = false)
     private MetodoPago metodoPago;
 
-    @Column(name = "estado", columnDefinition = "ENUM('Pendiente', 'En proceso', 'Entregado')")
-    private String estado;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", columnDefinition = "ENUM('Pendiente','En proceso','Entregado')")
+    private EstadoPedido estado;
 
     @Column(name = "total_final", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalFinal;
@@ -54,7 +55,7 @@ public class Pedido {
             fechaPedido = LocalDate.now();
         }
         if (estado == null) {
-            estado = "Pendiente";
+            estado = EstadoPedido.PENDIENTE;
         }
         if (totalFinal == null) {
             totalFinal = BigDecimal.ZERO;

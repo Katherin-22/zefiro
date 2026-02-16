@@ -45,13 +45,18 @@ CREATE TABLE Usuario (
   idRol INT NOT NULL,
   idTipoDeDocumento INT NOT NULL,
   idestado_usuario INT NOT NULL,
+  created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  reset_otp VARCHAR(255) NULL,
+  reset_otp_expire_at TIMESTAMP NULL,
+  updated_at TIMESTAMP NULL,
+  verify_otp VARCHAR(255) NULL,
+  verify_otp_expire_at TIMESTAMP NULL,
   
   PRIMARY KEY(idUsuario),
-  FOREIGN KEY (idRol) REFERENCES rol( idRol),
+  FOREIGN KEY (idRol) REFERENCES rol(idRol),
   FOREIGN KEY (idTipoDeDocumento) REFERENCES tipo_de_documento(idTipoDeDocumento),
   FOREIGN KEY (idestado_usuario) REFERENCES estado_usuario(idestado_usuario)
-  
-) ;
+);
 -- -----------------------------------------------------
 -- MÓDULO DE PROMOCIONES Y DESCUENTOS            			1.1
 -- -----------------------------------------------------

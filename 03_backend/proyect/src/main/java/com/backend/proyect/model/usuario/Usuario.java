@@ -50,13 +50,13 @@ public class Usuario {
     private String verify_otp;
 
     @Column(name = "verify_otp_expire_at")
-    private Long verify_otp_expire_at;
+    private Timestamp verify_otp_expire_at;
 
     @Column(name = "reset_otp")
     private String reset_otp;
 
     @Column(name = "reset_otp_expire_at")
-    private Long reset_otp_expire_at;
+    private Timestamp reset_otp_expire_at;
 
     @ManyToOne
     @JoinColumn(name = "idRol", referencedColumnName = "idRol")
