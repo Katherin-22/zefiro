@@ -23,12 +23,6 @@ public class TipoPublicoController {
     // tipoProductoRepository este se pone en los return
     private TipoPublicoRepository tipoPublicoRepository;
 
-    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
-    @PostMapping("/tipo_publico")
-    TipoPublico newTipoPublico(@RequestBody TipoPublico newTipoPublico) {
-        return tipoPublicoRepository.save(newTipoPublico);
-    }
-
     @GetMapping("/publico/tipo_publicos")
     List<TipoPublico> getAllTipoPublico() {
         return tipoPublicoRepository.findAll();
@@ -40,24 +34,4 @@ public class TipoPublicoController {
                 .orElseThrow(() -> new ResourceNotFoundException("TipoPublico", idPublico));
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
-    @PutMapping("/tipo_publico/{idPublico}")
-    TipoPublico updateTipoPublico(@RequestBody TipoPublico updateTipoPublico, @PathVariable Integer idPublico) {
-        return tipoPublicoRepository.findById(idPublico)
-                .map(tipoPublico -> {
-                    tipoPublico.setNombrePublico(updateTipoPublico.getNombrePublico());
-
-                    return tipoPublicoRepository.save(tipoPublico);
-                }).orElseThrow(() -> new ResourceNotFoundException("TipoPublico", idPublico));
-    }
-
-    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
-    @DeleteMapping("/tipo_publico/{idPublico}")
-    String deleteTipoPublico(@PathVariable Integer idPublico) {
-        if (!tipoPublicoRepository.existsById(idPublico)) {
-            throw new ResourceNotFoundException("TipoPublico", idPublico);
-        }
-        tipoPublicoRepository.deleteById(idPublico);
-        return "El TipoPublico con id " + idPublico + " ha sido eliminado correctamente";
-    }
 }

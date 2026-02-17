@@ -180,7 +180,7 @@ const Carrito = () => {
     // ===============================================
     const handleCheckout = () => {
         if (!user) {
-            sessionStorage.setItem('pendingCheckoutRedirect', '/checkout'); // Corregido a /checkout
+            sessionStorage.setItem('pendingCheckoutRedirect', '/form-direccion'); // Corregido a /checkout
             sessionStorage.setItem('requireClientRole', 'true');
 
             setTimeout(() => {

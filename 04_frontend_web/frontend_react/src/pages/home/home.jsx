@@ -4,18 +4,15 @@ import Footer from "../../layouts/home/footer";
 import { useGetStock } from "../../hooks/stock/useGetStock";
 import { getImagenById } from "../../services/administrador/ImagenService.js";
 import { Link, useNavigate } from "react-router-dom";
-import { useCart } from "../../components/carrito/CarritoContext.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "../../styles/home/paginaInicio.css";
 
-const STOCK_ID_PROPERTY = 'idStock';
 
 export default function Home() {
   // El hook ahora devuelve List<Stock>
   const { stock, loading, error } = useGetStock();
 
   // addToCart es clave para actualizar el contador
-  const { addToCart, isAuthenticated, isAuthLoading } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const ROL_CLIENTE = 1;
@@ -50,7 +47,7 @@ export default function Home() {
 
         // 1. Crear un mapa para obtener SOLO UN OBJETO Stock por cada idProducto (evitando duplicados en la vista)
         const productosUnicosMap = stock.reduce((map, currentStockItem) => {
-          const idProducto = currentStockItem.producto?.idProducto;
+          const idProducto = currentStockItem.idProducto;
 
           // Si el producto tiene un ID y aún no está en el mapa, lo agregamos.
           // Esto asegura que solo se muestre una tarjeta por producto.
@@ -64,8 +61,8 @@ export default function Home() {
 
         // Funciones auxiliares para acceder a las propiedades anidadas de forma segura
         // CRITICAL FIX: Se corrige la ruta de acceso a la propiedad anidada
-        const getProductType = (item) => item.producto?.categoria?.tipoProducto?.nombreTipoProducto?.toLowerCase() || '';
-        const getProductName = (item) => item.producto?.nombreProducto?.toLowerCase() || '';
+        const getProductType = (item) => item.nombreTipoProducto?.toLowerCase() || '';
+        const getProductName = (item) => item.nombreProducto?.toLowerCase() || '';
 
         // 2. Filtrar Zapatos/Calzado
         const zapatosFiltrados = productosUnicos.filter(stockItem => {
@@ -92,11 +89,11 @@ export default function Home() {
         const todasImagenes = {};
 
         for (const stockItem of productosACargar) {
-          const idProducto = stockItem.producto?.idProducto;
+          const idProducto = stockItem.idProducto;
           if (idProducto && !todasImagenes[idProducto]) {
             const imagenUrl = await cargarImagenProducto(idProducto);
             // El objeto Stock.producto puede tener la URL de imagen directamente, úsala como fallback
-            todasImagenes[idProducto] = imagenUrl || stockItem.producto?.imagen || "/imagenes_prueba/default.jpg";
+            todasImagenes[idProducto] = imagenUrl || stockItem.imagen || "/imagenes_prueba/default.jpg";
           }
         }
 
@@ -119,16 +116,16 @@ export default function Home() {
 
   // Función para obtener la imagen de un producto (usa el idProducto anidado)
   const obtenerImagenProducto = (stockItem) => {
-    const idProducto = stockItem.producto?.idProducto;
+    const idProducto = stockItem.idProducto;
     if (idProducto && imagenesProductos[idProducto]) {
       return imagenesProductos[idProducto];
     }
-    return stockItem.producto?.imagen || "/iamgenes_prueba/zapato/im6.jpg";
+    return stockItem.imagen || "/iamgenes_prueba/zapato/im6.jpg";
   };
 
   // Función para manejar favoritos (usa codigoReferencia anidado)
   const toggleFavorito = (stockItem) => {
-    const productoRef = stockItem.producto?.codigoReferencia;
+    const productoRef = stockItem.codigoReferencia;
     if (!productoRef) return; // Validación de seguridad
 
     if (favoritos.includes(productoRef)) {
@@ -136,7 +133,7 @@ export default function Home() {
       console.log("❌ Eliminado de favoritos:", stockItem.producto.nombreProducto);
     } else {
       setFavoritos([...favoritos, productoRef]);
-      console.log("❤️ Agregado a favoritos:", stockItem.producto.nombreProducto);
+      console.log("❤️ Agregado a favoritos:", stockItem.nombreProducto);
     }
   };
 
@@ -148,54 +145,12 @@ export default function Home() {
       return;
     }
 
-    if (isAuthLoading) return;
-
-    await agregarAlCarrito(productoStock);
+    navigate(`/home/${productoStock.codigoReferencia}`);
+    
   };
 
 
-  const agregarAlCarrito = async (stockItem) => {
-
-    if (isAuthLoading) {
-      console.log("⏳ Autenticación aún cargando, esperando...");
-      return;
-    }
-
-    const idStockProducto = stockItem[STOCK_ID_PROPERTY];
-    const cantidadInicial = 1;
-
-    if (!idStockProducto) {
-      console.error(`Error: La propiedad '${STOCK_ID_PROPERTY}' (idStock) no fue encontrada.`, stockItem);
-      alert("Error interno: No se pudo identificar el stock específico del producto.");
-      return;
-    }
-
-    console.log("Datos del stock antes de enviar:", stockItem);
-
-    const productoData = {
-        idStock: idStockProducto,
-        nombreProducto: stockItem.producto?.nombreProducto || 'Producto Desconocido',
-        precio: stockItem.producto?.precio || 0,
-        imagen: stockItem.producto?.imagen,
-        idProducto: stockItem.producto?.idProducto,
-        stockActual: stockItem.stockActual
-    };
-
-    console.log("📦 Verificando stock antes de enviar:", productoData.stockActual); 
-
-    const success = await addToCart(productoData, cantidadInicial);
-
-    if (success) {
-      console.log("🛒 Agregado al carrito:", productoData.nombreProducto);
-    } else {
-      if (!isAuthenticated) {
-        alert("Debes iniciar sesión para agregar productos.");
-        navigate("/loginpage");
-        return;
-      }
-      console.error("❌ Fallo al agregar al carrito.");
-    }
-  };
+  
 
 
   // Estados de carga y error (sin cambios significativos)
@@ -230,17 +185,17 @@ export default function Home() {
   // Componente de tarjeta de producto reutilizable
   const ProductoCard = ({ productoStock, tipo, index }) => {
     // Acceso a propiedades anidadas
-    const esFavorito = favoritos.includes(productoStock.producto?.codigoReferencia);
+    const esFavorito = favoritos.includes(productoStock.codigoReferencia);
     const imagenProducto = obtenerImagenProducto(productoStock);
-    const nombreProducto = productoStock.producto?.nombreProducto;
+    const nombreProducto = productoStock.nombreProducto;
 
     // CORRECCIÓN: Accede a nombrePublico vía producto.tipoPublico.nombrePublico
-    const nombrePublico = productoStock.producto?.tipoPublico?.nombrePublico;
+    const nombrePublico = productoStock.nombrePublico;
     // CORRECCIÓN: Accede a nombreTipoProducto vía producto.categoria.tipoProducto.nombreTipoProducto
-    const nombreTipoProducto = productoStock.producto?.categoria?.tipoProducto?.nombreTipoProducto;
+    const nombreTipoProducto = productoStock.nombreTipoProducto;
 
-    const precio = productoStock.producto?.precio;
-    const codigoReferencia = productoStock.producto?.codigoReferencia;
+    const precio = productoStock.precio;
+    const codigoReferencia = productoStock.codigoReferencia;
 
     return (
       <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-4"

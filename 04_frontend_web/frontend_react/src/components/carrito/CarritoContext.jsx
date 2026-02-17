@@ -78,6 +78,7 @@ export const CartProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState(getLocalCart);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [showCartMenu, setShowCartMenu] = useState(false); 
 
     // Cálculo correcto del total de UNIDADES (usando la data del servidor/local)
     const totalItemsCount = useMemo(() => cartItems.reduce((sum, item) => sum + (item.cantidad ?? 0), 0), [cartItems]);
@@ -350,6 +351,9 @@ export const CartProvider = ({ children }) => {
         totalItems: totalItemsCount,
         loading,
         error,
+        showCartMenu,         
+        setShowCartMenu,
+        setError,
         addToCart,
         increaseQuantity,
         decreaseQuantity,

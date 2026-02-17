@@ -43,9 +43,9 @@ public class Stock {
     private Variacion variacion;
 
     // Relación muchos a uno con TipoProducto
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idProducto", nullable = false)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "stocks", "detallesPedido"})
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Producto producto;
 
     public Stock() {

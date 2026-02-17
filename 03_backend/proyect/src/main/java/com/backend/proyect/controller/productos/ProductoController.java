@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -102,8 +101,8 @@ public class ProductoController {
     }
 
 //OJO: Aca se muestra todos los productos, tanto activos como inactivos
-//@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
-@GetMapping("/productos")
+
+@GetMapping("/publico/productos")
 ResponseEntity<List<ProductoDTO>> getProductos() {
     List<ProductoDTO> lista = productoRepository.findAll().stream().map(producto -> {
         ProductoDTO dto = new ProductoDTO();
@@ -128,11 +127,12 @@ ResponseEntity<List<ProductoDTO>> getProductos() {
 }
 
 //OJO: Aca se muestra solo los productos activos- para el cliente final
-    @GetMapping("/publico/productos_activos")
-    ResponseEntity<List<Producto>> getProductosActivos(){
-        List<Producto> productos = productoRepository.findByEstadoProducto(Producto.EstadoProducto.Activo);
-        return ResponseEntity.ok(productos); // 200 OK
-    }
+
+//       @GetMapping("/publico/productos_activos")
+//      ResponseEntity<List<Producto>> getProductosActivos(){
+//         List<Producto> productos = productoRepository.findByEstadoProducto(Producto.EstadoProducto.Activo);
+//         return ResponseEntity.ok(productos); // 200 OK
+//    }
 
     @GetMapping("/publico/producto/{idProducto}")
     ResponseEntity<Producto> getOneProducto(@PathVariable Integer idProducto) {
@@ -141,7 +141,7 @@ ResponseEntity<List<ProductoDTO>> getProductos() {
     return ResponseEntity.ok(producto); // 200 OK
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
+    // @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @GetMapping("/buscar_producto/{codigoReferencia}")
     public ResponseEntity<?> buscarPorCodigo(@PathVariable String codigoReferencia) {
         return productoRepository.findByCodigoReferencia(codigoReferencia.toLowerCase())

@@ -83,10 +83,8 @@ public class StockController {
     }
 
     @GetMapping("/publico/stocks")
-    public ResponseEntity<List<Stock>> getAllStock() {
-        // Antes: List<Stock> listaStock = stockRepository.findAll();
-        // Ahora: Usamos JOIN FETCH para cargar el producto anidado, lo que necesita el frontend.
-        List<Stock> listaStock = stockRepository.findAllWithProducto();
+    public ResponseEntity<List<StockGeneralProjection>> getAllStock() {
+        List<StockGeneralProjection> listaStock = stockRepository.obtenerStockAgrupado();
         return ResponseEntity.ok(listaStock);
     }
 
