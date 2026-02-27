@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef , useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../components/carrito/CarritoContext";
 import { useAuth } from "../../context/AuthContext";
@@ -27,23 +27,23 @@ const Carrito = () => {
 
     const safeCart = useMemo(() => cart ?? [], [cart]);
 
-// ===============================================
-// 1. FUNCIÓN AUXILIAR DE ACCESO A DATOS SEGURO
-// ===============================================
-    const getProductData =  useCallback ((item) => {
+    // ===============================================
+    // 1. FUNCIÓN AUXILIAR DE ACCESO A DATOS SEGURO
+    // ===============================================
+    const getProductData = useCallback((item) => {
         // En invitado (no autenticado), la data de 'item' podría ser simple (solo idStock y cantidad)
         // En logueado, 'item' es un DetalleCarrito completo.
 
         const stockRef = item.stock || null;
-        const productoRef =stockRef?.producto || item.producto || null;
+        const productoRef = stockRef?.producto || item.producto || null;
 
         console.log("Datos del item:", item);
 
         const idProducto = productoRef?.idProducto || item.idProducto;
-        const idDetalle = isAuthenticated ? item.idDetalleCarrito :  item.idStock ;
+        const idDetalle = isAuthenticated ? item.idDetalleCarrito : item.idStock;
 
         const nombre = productoRef?.nombreProducto || item.nombreProducto || "Producto Desconocido";
-        const precio = item.precioUnitario || item.precio|| productoRef?.precio || 0;
+        const precio = item.precioUnitario || item.precio || productoRef?.precio || 0;
         const stockDisponible = stockRef?.stockActual || item.stockActual || item.stockDisponible || 0;
         const cantidad = item.cantidad || 0;
 
@@ -52,7 +52,7 @@ const Carrito = () => {
         // 2. Imagen que venga en el objeto (fallback)
         // 3. Imagen por defecto
         let imagenFinal = "/imagenes_prueba/zapato/default.jpg";
-        
+
         if (idProducto && imagenesProductos[idProducto]) {
             imagenFinal = imagenesProductos[idProducto];
         } else if (item.imagen || productoRef?.imagen) {
@@ -62,18 +62,18 @@ const Carrito = () => {
         }
 
         return {
-            idDetalle, 
+            idDetalle,
             idProducto,
             nombre,
-            precio, 
+            precio,
             cantidad,
             stockDisponible,
-            imagenUrl: imagenFinal, 
+            imagenUrl: imagenFinal,
         };
-    } , [isAuthenticated, imagenesProductos]);
+    }, [isAuthenticated, imagenesProductos]);
 
 
-// ===============================================
+    // ===============================================
     //2.  EFECTO PARA CARGAR IMÁGENES 
     // ===============================================
     useEffect(() => {
@@ -85,7 +85,7 @@ const Carrito = () => {
                 for (const item of safeCart) {
                     const data = getProductData(item);
                     const idProducto = data.idProducto;
-                    
+
                     // Solo buscamos si tenemos ID y si NO está ya en nuestro estado local
                     if (idProducto && !idsCargadosRef.current.has(idProducto)) {
                         try {
@@ -118,12 +118,12 @@ const Carrito = () => {
     // ===============================================
     // 3. LÓGICA DE AUMENTAR/DISMINUIR
     // ===============================================
-    
+
     // AUMENTAR CANTIDAD (validando stock)
     const handleIncreaseQuantity = (item) => {
         const product = getProductData(item);
 
-        if (!product.idDetalle) return; 
+        if (!product.idDetalle) return;
 
         if (product.cantidad < product.stockDisponible) {
             // Llama al contexto con el ID del DetalleCarrito
@@ -146,7 +146,7 @@ const Carrito = () => {
             setErrorMessage("");
         } else {
             // Eliminar si la cantidad es 1
-            handleRemoveFromCart(product.idDetalle); 
+            handleRemoveFromCart(product.idDetalle);
         }
     };
 
@@ -160,7 +160,7 @@ const Carrito = () => {
     // ===============================================
     // 3. CÁLCULOS
     // ===============================================
-    
+
     // TOTAL PRODUCTOS (Unidades)
     const totalItems = safeCart.reduce(
         (total, item) => total + (item.cantidad ?? 0),
@@ -172,7 +172,7 @@ const Carrito = () => {
 
         const data = getProductData(item);
         return total + (data.precio * data.cantidad);
-        
+
     }, 0);
 
     // ===============================================
@@ -180,13 +180,13 @@ const Carrito = () => {
     // ===============================================
     const handleCheckout = () => {
         if (!user) {
-            sessionStorage.setItem('pendingCheckoutRedirect', '/checkout'); // Corregido a /checkout
+            sessionStorage.setItem('pendingCheckoutRedirect', '/form-direccion'); // Corregido a /checkout
             sessionStorage.setItem('requireClientRole', 'true');
 
             setTimeout(() => {
                 navigate("/loginpage");
             }, 50);
-            
+
             return;
         }
 
@@ -196,7 +196,7 @@ const Carrito = () => {
     // ===============================================
     // 5. RENDERIZADO
     // ===============================================
-    
+
     if (loading) {
         return <div className="carrito-container loading-state">Cargando carrito...</div>;
     }

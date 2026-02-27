@@ -12,21 +12,25 @@ import { getImagenById } from "../../services/administrador/ImagenService.js";
 import { useFavoritos } from "../../hooks/favorito/useFavorito";
 import useAuth from "../../hooks/token/useAuth";
 import { getStockByProducto, deleteStock } from "../../services/administrador/StockService";
+import { useCart } from "../../components/carrito/CarritoContext.jsx";
 
 const ProductoGen = () => {
     const { stock } = useGetStock();
     const { codigoReferencia, idProducto } = useParams();
     const navigate = useNavigate();
 
-    // Usa tu hook useAuth
+    // Auth
     const { isAuthenticated, userData } = useAuth();
-    const userId = userData?.idUsuario;
+    const userId = userData?.idUsuario || userData?.id;
 
-    console.log('ProductoGen - isAuthenticated:', isAuthenticated);
-    console.log('ProductoGen - userData:', userData);
-    console.log('ProductoGen - userId:', userId);
+    // Determinar si es admin o cliente basado en el rol
+    const esAdmin = userData?.rol === 2; // Asumiendo que rol 2 = admin
+    const esCliente = userData?.rol === 1; // Asumiendo que rol 1 = cliente
 
-    // Usar hook de favoritos
+    // Carrito Context
+    const { addToCart, loading: cartLoading, error: cartError, setError: setCartError, setShowCartMenu } = useCart();
+
+    // Favoritos
     const {
         agregarFavorito,
         eliminarFavorito,
@@ -53,7 +57,7 @@ const ProductoGen = () => {
     const [colorSeleccionado, setColorSeleccionado] = useState("");
     const [tallaSeleccionada, setTallaSeleccionada] = useState("");
 
-    // Nuevos estados para manejar stock disponible
+    // Estados para manejar stock disponible
     const [stockDisponible, setStockDisponible] = useState(0);
     const [verificandoStock, setVerificandoStock] = useState(false);
     const [mensajeStock, setMensajeStock] = useState("");
@@ -66,7 +70,19 @@ const ProductoGen = () => {
     const [cargandoEstadisticas, setCargandoEstadisticas] = useState(false);
 
     // ============================
-    // 0️⃣ Cargar estadísticas de comentarios
+    // 0️⃣ LIMPIEZA DE ESTADOS AL CAMBIAR DE PRODUCTO
+    // ============================
+    useEffect(() => {
+        setColorSeleccionado("");
+        setTallaSeleccionada("");
+        setTallas([]);
+        setCantidad(1);
+        setMensajeStock("");
+        setCartError(null);
+    }, [codigoReferencia, setCartError]);
+
+    // ============================
+    // 1️⃣ Cargar estadísticas de comentarios
     // ============================
     useEffect(() => {
         const cargarEstadisticasComentarios = async () => {
@@ -92,7 +108,7 @@ const ProductoGen = () => {
     }, [producto?.idProducto]);
 
     // ============================
-    // 1️⃣ Cargar COLORES del producto
+    // 2️⃣ Cargar COLORES del producto
     // ============================
     useEffect(() => {
         if (!producto) return;
@@ -105,7 +121,7 @@ const ProductoGen = () => {
     }, [producto]);
 
     // ============================
-    // 2️⃣ Cargar IMÁGENES del producto
+    // 3️⃣ Cargar IMÁGENES del producto
     // ============================
     useEffect(() => {
         if (!producto) return;
@@ -129,7 +145,7 @@ const ProductoGen = () => {
     }, [producto]);
 
     // ============================
-    // 3️⃣ Cargar TALLAS cuando se selecciona un color
+    // 4️⃣ Cargar TALLAS cuando se selecciona un color
     // ============================
     useEffect(() => {
         if (!producto || !colorSeleccionado) {
@@ -151,7 +167,7 @@ const ProductoGen = () => {
     }, [producto, colorSeleccionado]);
 
     // ============================
-    // 4️⃣ Cargar stock específico cuando se tiene idProducto
+    // 5️⃣ Cargar stock específico cuando se tiene idProducto
     // ============================
     useEffect(() => {
         const fetchStockEspecifico = async () => {
@@ -177,14 +193,14 @@ const ProductoGen = () => {
     }, [idProducto, producto?.idProducto]);
 
     // ============================
-    // 5️⃣ VERIFICAR STOCK DISPONIBLE cuando cambia color y talla
+    // 6️⃣ VERIFICAR STOCK DISPONIBLE cuando cambia color y talla
     // ============================
     useEffect(() => {
         const verificarStock = async () => {
             if (!producto?.idProducto || !colorSeleccionado || !tallaSeleccionada) {
                 setStockDisponible(0);
                 setMensajeStock("");
-                setCantidad(1); // Resetear cantidad cuando no hay selección completa
+                setCantidad(1);
                 return;
             }
 
@@ -192,12 +208,18 @@ const ProductoGen = () => {
                 setVerificandoStock(true);
                 setMensajeStock("Verificando stock...");
 
-                // Buscar en el stock específico la combinación seleccionada
-                const stockCombinacion = stockEspecifico.find(s =>
-                    s.nombreColor && s.nombre &&
-                    s.nombreColor.toLowerCase() === colores.find(c => c.idColor === parseInt(colorSeleccionado))?.nombreColor?.toLowerCase() &&
-                    s.nombre.toLowerCase() === tallaSeleccionada.toLowerCase()
-                );
+                // Buscar en stockEspecifico la combinación exacta
+                const colorId = parseInt(colorSeleccionado);
+                const colorNombre = colores.find(c => c.idColor === colorId)?.nombreColor;
+
+                let stockCombinacion = null;
+                if (stockEspecifico.length > 0) {
+                    stockCombinacion = stockEspecifico.find(s => {
+                        const coincideColor = s.idColor ? s.idColor === colorId : s.nombreColor?.toLowerCase() === colorNombre?.toLowerCase();
+                        const coincideTalla = s.nombre?.toLowerCase() === tallaSeleccionada.toLowerCase();
+                        return coincideColor && coincideTalla;
+                    });
+                }
 
                 if (stockCombinacion) {
                     const disponible = stockCombinacion.stockActual || 0;
@@ -205,18 +227,15 @@ const ProductoGen = () => {
 
                     if (disponible > 0) {
                         setMensajeStock(`${disponible} unidad(es) disponibles`);
-
-                        // Ajustar cantidad si excede el stock disponible
                         if (cantidad > disponible) {
                             setCantidad(disponible);
-                            alert(`Solo hay ${disponible} unidad(es) disponibles. Se ajustó la cantidad.`);
                         }
                     } else {
                         setMensajeStock("Sin stock disponible");
-                        setCantidad(0); // No se puede seleccionar cantidad
+                        setCantidad(0);
                     }
                 } else {
-                    // Si no se encuentra la combinación, buscar mediante API
+                    // Si no está en stockEspecifico, consultar API directamente
                     try {
                         const response = await api_url.get(`/publico/stock/producto/${producto.idProducto}/color/${colorSeleccionado}/talla/${tallaSeleccionada}`);
                         if (response.data && response.data.stockActual !== undefined) {
@@ -225,11 +244,8 @@ const ProductoGen = () => {
 
                             if (disponible > 0) {
                                 setMensajeStock(`${disponible} unidad(es) disponibles`);
-
-                                // Ajustar cantidad si excede el stock disponible
                                 if (cantidad > disponible) {
                                     setCantidad(disponible);
-                                    alert(`Solo hay ${disponible} unidad(es) disponibles. Se ajustó la cantidad.`);
                                 }
                             } else {
                                 setMensajeStock("Sin stock disponible");
@@ -258,14 +274,15 @@ const ProductoGen = () => {
         };
 
         verificarStock();
-    }, [producto, colorSeleccionado, tallaSeleccionada, stockEspecifico, colores]);
+    }, [producto, colorSeleccionado, tallaSeleccionada, stockEspecifico, colores, cantidad]);
 
     // ============================
-    // 6️⃣ VERIFICAR SI EL PRODUCTO ES FAVORITO
+    // 7️⃣ VERIFICAR SI EL PRODUCTO ES FAVORITO (solo para clientes)
     // ============================
     useEffect(() => {
         const verificarEstadoFavorito = async () => {
-            if (!isAuthenticated || !userId || !producto?.idProducto) {
+            // Solo verificar si es cliente autenticado
+            if (!isAuthenticated || !userId || esAdmin || !producto?.idProducto) {
                 setEsFavorito(false);
                 return;
             }
@@ -283,15 +300,48 @@ const ProductoGen = () => {
         };
 
         verificarEstadoFavorito();
-    }, [isAuthenticated, userId, producto, verificarProductoEnFavoritos]);
+    }, [isAuthenticated, userId, esAdmin, producto, verificarProductoEnFavoritos]);
 
     // ============================
-    // 7️⃣ MANEJAR CLIC EN BOTÓN DE FAVORITOS
+    // 8️⃣ Función para obtener el idStock de la combinación seleccionada
+    // ============================
+    const obtenerIdStockSeleccionado = () => {
+        if (!producto?.idProducto || !colorSeleccionado || !tallaSeleccionada) return null;
+
+        const colorId = parseInt(colorSeleccionado);
+        const colorNombre = colores.find(c => c.idColor === colorId)?.nombreColor;
+
+        // Buscar en stockEspecifico
+        const stockEncontrado = stockEspecifico.find(s => {
+            const coincideColor = s.idColor ? s.idColor === colorId : s.nombreColor?.toLowerCase() === colorNombre?.toLowerCase();
+            const coincideTalla = s.nombre?.toLowerCase() === tallaSeleccionada.toLowerCase();
+            return coincideColor && coincideTalla;
+        });
+
+        return stockEncontrado?.idStock || null;
+    };
+
+    // ============================
+    // 9️⃣ Función para obtener el objeto color seleccionado
+    // ============================
+    const obtenerColorSeleccionado = () => {
+        if (!colorSeleccionado) return null;
+        const colorId = parseInt(colorSeleccionado);
+        return colores.find(c => c.idColor === colorId)?.nombreColor || '';
+    };
+
+    // ============================
+    // 🔟 MANEJAR CLIC EN BOTÓN DE FAVORITOS
     // ============================
     const handleFavoritoClick = async () => {
         if (!isAuthenticated || !userId) {
             alert("Por favor inicia sesión para agregar productos a favoritos");
             navigate('/loginpage');
+            return;
+        }
+
+        if (esAdmin) {
+            alert("Los administradores no pueden usar la lista de favoritos");
             return;
         }
 
@@ -302,12 +352,10 @@ const ProductoGen = () => {
 
         try {
             if (esFavorito) {
-                // Eliminar de favoritos
                 await eliminarFavorito(userId, producto.idProducto);
                 setEsFavorito(false);
                 alert("Producto eliminado de favoritos");
             } else {
-                // Agregar a favoritos
                 const requestData = { idProducto: producto.idProducto };
                 await agregarFavorito(userId, requestData);
                 setEsFavorito(true);
@@ -320,7 +368,7 @@ const ProductoGen = () => {
     };
 
     // ============================
-    // 8️⃣ Función para eliminar stock (solo si estamos en modo admin)
+    // 1️⃣1️⃣ Función para eliminar stock (solo admin)
     // ============================
     const handleDeleteStock = async (idStock) => {
         if (!window.confirm("¿Estás seguro de eliminar este stock?")) return;
@@ -336,7 +384,7 @@ const ProductoGen = () => {
     };
 
     // ============================
-    // 9️⃣ Manejar cambios en cantidad CON VERIFICACIÓN DE STOCK
+    // 1️⃣2️⃣ Manejar cambios en cantidad
     // ============================
     const handleCantidadChange = (e) => {
         const value = parseInt(e.target.value) || 0;
@@ -366,44 +414,73 @@ const ProductoGen = () => {
     };
 
     // ============================
-    // 🔟 Función para manejar compra CON VALIDACIÓN DE STOCK
+    // 1️⃣3️⃣ Función para manejar carrito (AGREGAR AL CARRITO) - VERSIÓN CORREGIDA
     // ============================
-    const handleComprar = () => {
+    const handleAddToCart = async () => {
+        setCartError(null);
+
         if (!colorSeleccionado || !tallaSeleccionada) {
-            alert("Por favor selecciona color y talla");
+            setCartError("Debes seleccionar una combinación de color y talla válida.");
             return;
         }
 
         if (stockDisponible <= 0) {
-            alert("Lo sentimos, este producto no tiene stock disponible en la combinación seleccionada");
+            setCartError("Lo sentimos, este producto no tiene stock disponible en la combinación seleccionada");
             return;
         }
 
         if (cantidad > stockDisponible) {
-            alert(`Solo hay ${stockDisponible} unidad(es) disponibles`);
+            setCartError(`Solo quedan ${stockDisponible} unidades disponibles en stock.`);
             return;
         }
 
         if (cantidad < 1) {
-            alert("Debes seleccionar al menos 1 unidad");
+            setCartError("Debes seleccionar al menos 1 unidad");
             return;
         }
 
-        // Aquí iría la lógica para agregar al carrito o procesar la compra
-        console.log("Comprar:", {
-            producto: producto.nombreProducto,
-            color: colorSeleccionado,
-            talla: tallaSeleccionada,
-            cantidad: cantidad,
-            precioTotal: producto.precio * cantidad,
-            stockDisponible: stockDisponible
-        });
+        // Validar autenticación
+        if (!isAuthenticated || !userId) {
+            alert("Por favor inicia sesión para agregar productos al carrito");
+            navigate('/loginpage');
+            return;
+        }
 
-        alert(`¡Agregado al carrito! ${cantidad} unidad(es) de ${producto.nombreProducto} (${tallaSeleccionada})`);
+        // Obtener idStock
+        const idStock = obtenerIdStockSeleccionado();
+        if (!idStock) {
+            setCartError("No se pudo identificar el stock del producto. Intenta nuevamente.");
+            console.error("No se encontró idStock para la combinación:", { colorSeleccionado, tallaSeleccionada });
+            return;
+        }
+
+        // Preparar producto para el carrito
+        const productoParaCarrito = {
+            idStock: idStock,
+            nombreProducto: producto.nombreProducto,
+            precio: producto.precio,
+            imagen: imagenPrincipal,
+            stockActual: stockDisponible,
+            talla: tallaSeleccionada,
+            color: obtenerColorSeleccionado()
+        };
+
+        // Usar la función addToCart del contexto
+        const success = await addToCart(productoParaCarrito, cantidad);
+
+        if (success) {
+            setShowCartMenu(true);
+            alert(`✅ ${cantidad} unidad(es) de ${producto.nombreProducto} agregada(s) al carrito`);
+
+            // Disparar evento para actualizar el contador del carrito en el header
+            window.dispatchEvent(new CustomEvent('carritoActualizado', {
+                detail: { action: 'agregar', cantidad }
+            }));
+        }
     };
 
     // ============================
-    // 🆕 Función para actualizar estadísticas después de una acción de comentario
+    // 🆕 Actualizar estadísticas de comentarios
     // ============================
     const actualizarEstadisticas = async () => {
         if (!producto?.idProducto) return;
@@ -437,6 +514,9 @@ const ProductoGen = () => {
         setImagenPrincipal(nuevaImagenUrl);
     };
 
+    // Calcular precio total
+    const totalPrice = producto?.precio ? producto.precio * cantidad : 0;
+
     if (!producto) {
         return <h2 className="text-center mt-5" id="producto-no-encontrado">Producto no encontrado</h2>;
     }
@@ -445,9 +525,25 @@ const ProductoGen = () => {
     const esModoAdmin = !!idProducto;
 
     // ============================
-    // RENDER DEL BOTÓN DE FAVORITOS
+    // RENDER DEL BOTÓN DE FAVORITOS (con validación de rol)
     // ============================
     const renderBotonFavorito = () => {
+        // Si es admin, mostrar botón deshabilitado
+        if (esAdmin) {
+            return (
+                <button
+                    className="btn producto-btn-favorito btn-secondary"
+                    disabled
+                    title="Los administradores no tienen lista de favoritos"
+                    id="producto-btn-favorito"
+                >
+                    <i className="bi bi-heart producto-icono-favorito" id="producto-icono-favorito"></i>
+                    Favoritos no disponible para admins
+                </button>
+            );
+        }
+
+        // Si no está autenticado
         if (!isAuthenticated) {
             return (
                 <button
@@ -462,6 +558,7 @@ const ProductoGen = () => {
             );
         }
 
+        // Si es cliente pero está verificando
         if (verificandoFavorito) {
             return (
                 <button
@@ -477,6 +574,7 @@ const ProductoGen = () => {
             );
         }
 
+        // Si es cliente y está cargando
         if (loadingFavoritos) {
             return (
                 <button
@@ -492,6 +590,7 @@ const ProductoGen = () => {
             );
         }
 
+        // Si es cliente, mostrar botón normal de favoritos
         return (
             <button
                 className={`btn producto-btn-favorito ${esFavorito ? "btn-danger" : "btn-outline-danger"}`}
@@ -711,7 +810,12 @@ const ProductoGen = () => {
                                             <select
                                                 className="form-select producto-select-color"
                                                 value={colorSeleccionado}
-                                                onChange={(e) => setColorSeleccionado(e.target.value)}
+                                                onChange={(e) => {
+                                                    setColorSeleccionado(e.target.value);
+                                                    setTallaSeleccionada("");
+                                                    setCantidad(1);
+                                                    setCartError(null);
+                                                }}
                                                 id="producto-select-color"
                                             >
                                                 <option value="" id="producto-option-color-default">Seleccione un color</option>
@@ -728,8 +832,12 @@ const ProductoGen = () => {
                                             <select
                                                 className="form-select producto-select-talla"
                                                 value={tallaSeleccionada}
-                                                onChange={(e) => setTallaSeleccionada(e.target.value)}
-                                                disabled={!colorSeleccionado}
+                                                onChange={(e) => {
+                                                    setTallaSeleccionada(e.target.value);
+                                                    setCantidad(1);
+                                                    setCartError(null);
+                                                }}
+                                                disabled={!colorSeleccionado || tallas.length === 0}
                                                 id="producto-select-talla"
                                             >
                                                 <option value="" id="producto-option-talla-default">Seleccione una talla</option>
@@ -744,7 +852,7 @@ const ProductoGen = () => {
                                         {/* MOSTRAR STOCK DISPONIBLE */}
                                         {colorSeleccionado && tallaSeleccionada && (
                                             <div className="col-12 mt-3" id="producto-stock-info-col">
-                                                <div className="alert alert-info" role="alert" id="producto-stock-alert">
+                                                <div className={`alert ${stockDisponible > 0 ? 'alert-info' : 'alert-danger'} d-flex align-items-center`} role="alert" id="producto-stock-alert">
                                                     {verificandoStock ? (
                                                         <div className="d-flex align-items-center">
                                                             <div className="spinner-border spinner-border-sm me-2" role="status">
@@ -754,13 +862,16 @@ const ProductoGen = () => {
                                                         </div>
                                                     ) : (
                                                         <>
-                                                            <strong>Stock disponible:</strong> {mensajeStock}
-                                                            {stockDisponible > 0 && stockDisponible <= 5 && (
-                                                                <div className="text-warning mt-1">
-                                                                    <i className="bi bi-exclamation-triangle-fill me-1"></i>
-                                                                    ¡Quedan pocas unidades!
-                                                                </div>
-                                                            )}
+                                                            <i className={`bi ${stockDisponible > 0 ? 'bi-check-circle-fill' : 'bi-x-circle-fill'} me-2`}></i>
+                                                            <div>
+                                                                <strong>{mensajeStock}</strong>
+                                                                {stockDisponible > 0 && stockDisponible <= 5 && (
+                                                                    <div className="text-warning mt-1">
+                                                                        <i className="bi bi-exclamation-triangle-fill me-1"></i>
+                                                                        ¡Quedan pocas unidades!
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         </>
                                                     )}
                                                 </div>
@@ -773,7 +884,7 @@ const ProductoGen = () => {
                                         <div className="col-md-6 offset-md-3">
                                             <div className="card" id="cant-card">
                                                 <div className="card-body">
-                                                    <h5 className="card-title mb-3">
+                                                    <h5 className="card-title mb-3 text-center">
                                                         Cantidad
                                                         {colorSeleccionado && tallaSeleccionada && stockDisponible > 0 && (
                                                             <span className="text-muted fs-6 ms-2">
@@ -785,7 +896,7 @@ const ProductoGen = () => {
                                                         <button
                                                             className="btn btn-outline-secondary"
                                                             onClick={decrementarCantidad}
-                                                            disabled={cantidad <= 1 || stockDisponible <= 0}
+                                                            disabled={cantidad <= 1 || stockDisponible <= 0 || cartLoading}
                                                         >
                                                             <i className="bi bi-dash"></i>
                                                         </button>
@@ -798,26 +909,41 @@ const ProductoGen = () => {
                                                             onChange={handleCantidadChange}
                                                             className="form-control text-center mx-3"
                                                             style={{ maxWidth: '80px' }}
-                                                            disabled={stockDisponible <= 0}
+                                                            disabled={stockDisponible <= 0 || cartLoading}
                                                         />
 
                                                         <button
                                                             className="btn btn-outline-secondary"
                                                             onClick={incrementarCantidad}
-                                                            disabled={cantidad >= stockDisponible || stockDisponible <= 0}
+                                                            disabled={cantidad >= stockDisponible || cartLoading || stockDisponible <= 0}
                                                         >
                                                             <i className="bi bi-plus"></i>
                                                         </button>
                                                     </div>
                                                     <div className="mt-2 text-center">
-                                                        <small className="text-success">
-                                                            Precio total: ${(producto.precio * cantidad).toLocaleString()}
-                                                        </small>
+                                                        <h4 className="producto-precio-total-detalle mb-0">
+                                                            <small className="text-muted fs-6">Precio total:</small>
+                                                            <br />
+                                                            <strong className="text-success">
+                                                                {new Intl.NumberFormat("es-CO", {
+                                                                    style: "currency",
+                                                                    currency: "COP",
+                                                                    minimumFractionDigits: 0,
+                                                                }).format(totalPrice)}
+                                                            </strong>
+                                                        </h4>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* MENSAJE DE ERROR DEL CARRITO */}
+                                    {cartError && (
+                                        <div className="alert alert-danger mt-3" id="producto-cart-error-alert">
+                                            {cartError}
+                                        </div>
+                                    )}
 
                                     {/* BOTONES DE ACCIÓN */}
                                     <div className="row producto-botones-fila justify-content-center mt-4" id="producto-botones-fila">
@@ -829,17 +955,23 @@ const ProductoGen = () => {
                                             <button
                                                 className="btn producto-btn-comprar btn-success"
                                                 id="producto-btn-comprar"
-                                                onClick={handleComprar}
-                                                disabled={!colorSeleccionado || !tallaSeleccionada || stockDisponible <= 0 || cantidad < 1}
-                                                title={
-                                                    !colorSeleccionado || !tallaSeleccionada ? "Selecciona color y talla" :
-                                                        stockDisponible <= 0 ? "Sin stock disponible" :
-                                                            cantidad < 1 ? "Selecciona al menos 1 unidad" :
-                                                                "Comprar producto"
-                                                }
+                                                onClick={handleAddToCart}
+                                                disabled={cartLoading || !obtenerIdStockSeleccionado() || stockDisponible <= 0 || cantidad < 1}
+                                                title={cartLoading ? "Procesando..." : !obtenerIdStockSeleccionado() ? "Selecciona color y talla" : stockDisponible <= 0 ? "Sin stock disponible" : cantidad < 1 ? "Selecciona al menos 1 unidad" : "Agregar al carrito"}
                                             >
-                                                <i className="bi bi-cart-plus producto-icono-comprar me-2" id="producto-icono-comprar"></i>
-                                                {stockDisponible <= 0 ? "Sin stock" : "Comprar"}
+                                                {cartLoading ? (
+                                                    <>
+                                                        <div className="spinner-border spinner-border-sm me-2" role="status">
+                                                            <span className="visually-hidden">Cargando...</span>
+                                                        </div>
+                                                        Agregando...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <i className="bi bi-cart-plus producto-icono-comprar me-2" id="producto-icono-comprar"></i>
+                                                        {stockDisponible <= 0 ? "Sin stock" : "Agregar al carrito"}
+                                                    </>
+                                                )}
                                             </button>
                                         </div>
 
@@ -851,8 +983,8 @@ const ProductoGen = () => {
                                         </div>
                                     </div>
 
-                                    {/* ENLACE A FAVORITOS */}
-                                    {isAuthenticated && !esModoAdmin && (
+                                    {/* ENLACE A FAVORITOS - Solo para clientes */}
+                                    {isAuthenticated && esCliente && !esModoAdmin && (
                                         <div className="row mt-3" id="producto-enlace-favoritos-fila">
                                             <div className="col-12 text-center" id="producto-enlace-favoritos-col">
                                                 <Link to="/favoritos" className="btn btn-link text-decoration-none" id="producto-enlace-favoritos">

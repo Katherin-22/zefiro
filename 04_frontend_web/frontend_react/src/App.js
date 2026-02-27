@@ -7,19 +7,21 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 
 import './App.css';
 
-import AppRoutes from "./routes/AppRoutes"; 
+import AppRoutes from "./routes/AppRoutes";
 import { BrowserRouter as Router } from 'react-router-dom';
 
-// Importa AuthProvider para manejar la autenticación en toda la app
-import { AuthProvider } from "./hooks/AuthContextx"; // Asegúrate de crear este archivo
+import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./components/carrito/CarritoContext";
+
 
 /*--- esto es para el manejo de rutas ---*/
 function App() {
   return (
     <Router>
-      {/* Envuelve toda la app con AuthProvider para que todos los componentes tengan acceso a la autenticación */}
       <AuthProvider>
-        <AppRoutes />
+        <CartProvider>
+          <AppRoutes />
+        </CartProvider>
       </AuthProvider>
     </Router>
   );

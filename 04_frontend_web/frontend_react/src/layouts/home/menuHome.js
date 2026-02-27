@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useFiltro } from "../../utils/FiltroContextx";
+import { useCart } from '../../components/carrito/CarritoContext';
 import { useResponsive } from "../../hooks/responsive/responsive";
-import useAuth from "../../hooks/token/useAuth"; // IMPORTANTE: Importar useAuth
+import useAuth from "../../hooks/token/useAuth";
 import "../../styles/home/menuHome.css";
 import "../../styles/home/menuMobile.css";
 
@@ -153,8 +154,8 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
                     position: 'relative'
                 }}
             >
-                <div className="mobile-search-header">
-                    <h5>Buscar productos</h5>
+                <div className="mobile-search-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                    <h5 style={{ margin: 0 }}>Buscar productos</h5>
                     <button
                         onClick={onClose}
                         type="button"
@@ -173,8 +174,8 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="mobile-search-form">
-                    <div className="mobile-search-input-container">
-                        <i className="bi bi-search"></i>
+                    <div className="mobile-search-input-container" style={{ display: 'flex', alignItems: 'center', borderBottom: '2px solid #007bff', marginBottom: '20px' }}>
+                        <i className="bi bi-search" style={{ color: '#666', marginRight: '10px' }}></i>
                         <input
                             ref={inputRef}
                             type="text"
@@ -203,28 +204,76 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
                                     color: '#666',
                                     fontSize: '1.2rem',
                                     cursor: 'pointer',
-                                    padding: '5px',
-                                    marginLeft: '10px'
+                                    padding: '5px'
                                 }}
                             >
                                 <i className="bi bi-x"></i>
                             </button>
                         )}
                     </div>
+
+                    {/* Sugerencias de categorías */}
+                    <div className="mobile-search-suggestions" style={{ marginBottom: '20px' }}>
+                        <h6 style={{ fontSize: '0.9rem', color: '#666', marginBottom: '10px' }}>Categorías populares</h6>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    onSearch('Mujer');
+                                    onClose();
+                                }}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '10px',
+                                    border: '1px solid #dee2e6',
+                                    borderRadius: '8px',
+                                    background: 'white',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                <i className="bi bi-gender-female" style={{ color: '#e83e8c' }}></i>
+                                <span>Mujer</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    onSearch('Hombre');
+                                    onClose();
+                                }}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '10px',
+                                    border: '1px solid #dee2e6',
+                                    borderRadius: '8px',
+                                    background: 'white',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                <i className="bi bi-gender-male" style={{ color: '#007bff' }}></i>
+                                <span>Hombre</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <button
                         type="submit"
                         className="mobile-search-submit"
                         disabled={!query.trim()}
                         style={{
                             width: '100%',
-                            background: '#007bff',
+                            background: !query.trim() ? '#6c757d' : '#007bff',
                             color: 'white',
                             border: 'none',
                             padding: '15px',
                             borderRadius: '8px',
                             fontSize: '1.1rem',
                             fontWeight: '600',
-                            cursor: 'pointer'
+                            cursor: !query.trim() ? 'not-allowed' : 'pointer',
+                            opacity: !query.trim() ? 0.65 : 1
                         }}
                     >
                         Buscar
@@ -240,10 +289,10 @@ const MenuHome = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { isMobile } = useResponsive();
-    const { isAuthenticated, userData, logout } = useAuth(); // Usar useAuth
+    const { isAuthenticated, userData, logout } = useAuth();
+    const { totalItems, clearCart } = useCart();
 
     const [activeMobileNav, setActiveMobileNav] = useState('home');
-    const [cartItems] = useState(0);
     const [notification, setNotification] = useState(null);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
@@ -258,6 +307,7 @@ const MenuHome = () => {
     }, [location]);
 
     const handleFiltro = (nuevoFiltro) => {
+        console.log("🔄 Cambiando filtro a:", nuevoFiltro);
         setFiltro(nuevoFiltro);
         navigate('/Catalogo');
         if (isMobile) {
@@ -273,6 +323,7 @@ const MenuHome = () => {
     // Función de búsqueda
     const handleSearch = (query) => {
         if (query.trim()) {
+            console.log("🔍 Buscando:", query);
             navigate(`/Catalogo?search=${encodeURIComponent(query)}`);
             showNotification(`Buscando: ${query}`);
         }
@@ -281,6 +332,7 @@ const MenuHome = () => {
     // Función para cerrar sesión
     const handleLogout = () => {
         logout();
+        clearCart();
         navigate('/loginpage');
         showNotification('Sesión cerrada');
     };
@@ -426,7 +478,7 @@ const MenuHome = () => {
                         <li className="nav-item" id="navBarHome-cart-item">
                             <Link className="nav-link" id="navBarHome-cart-link" to="/carrito">
                                 <i className="bi bi-cart-fill" id="navBarHome-cart-icon"></i>
-                                {cartItems > 0 && <span className="cart-badge">{cartItems}</span>}
+                                {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
                             </Link>
                         </li>
                     </ul>
@@ -435,7 +487,7 @@ const MenuHome = () => {
         </nav>
     );
 
-    // Mobile Navbar - DEJADO EXACTAMENTE COMO ESTABA ANTES
+    // Mobile Navbar
     const MobileNavbar = () => {
         const openMobileSearch = () => {
             setMobileSearchOpen(true);
@@ -469,7 +521,7 @@ const MenuHome = () => {
 
                             <Link to="/carrito" className="mobile-cart-btn">
                                 <i className="bi bi-cart-fill"></i>
-                                {cartItems > 0 && <span className="cart-badge">{cartItems}</span>}
+                                {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
                             </Link>
                         </div>
                     </div>
