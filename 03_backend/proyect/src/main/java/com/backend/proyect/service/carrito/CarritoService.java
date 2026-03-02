@@ -327,7 +327,7 @@ public class CarritoService {
         nuevoPedido.setMetodoPago(metodoPago);
 
         // ✅ USAR EL ENUM DIRECTAMENTE
-        nuevoPedido.setEstado(EstadoPedido.PENDIENTE);
+        nuevoPedido.setEstado(EstadoPedido.Pendiente);
 
         Pedido pedidoGuardado = pedidoRepository.save(nuevoPedido);
 

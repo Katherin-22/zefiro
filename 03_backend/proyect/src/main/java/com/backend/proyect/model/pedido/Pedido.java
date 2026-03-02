@@ -55,7 +55,7 @@ public class Pedido {
             fechaPedido = LocalDate.now();
         }
         if (estado == null) {
-            estado = EstadoPedido.PENDIENTE;
+            estado = EstadoPedido.Pendiente;
         }
         if (totalFinal == null) {
             totalFinal = BigDecimal.ZERO;

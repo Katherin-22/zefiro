@@ -436,14 +436,11 @@ const MenuHome = () => {
                                             <small className="text-muted">{userData?.email || ''}</small>
                                         </li>
                                         <li><hr className="dropdown-divider" /></li>
-                                        <li><Link className="dropdown-item" id="navBarHome-profile" to="/profile">
+                                            <li><Link className="dropdown-item" id="navBarHome-profile" to="/perfilUsuario">
                                             <i className="bi bi-person me-2"></i>Perfil
                                         </Link></li>
                                         <li><Link className="dropdown-item" id="navBarHome-orders" to="/profile/orders">
                                             <i className="bi bi-box-seam me-2"></i>Pedidos
-                                        </Link></li>
-                                        <li><Link className="dropdown-item" id="navBarHome-favorites" to="/favoritos">
-                                            <i className="bi bi-heart me-2"></i>Favoritos
                                         </Link></li>
                                         {/* Dashboard solo para administradores */}
                                         {userData?.rol === 2 && (
@@ -467,13 +464,13 @@ const MenuHome = () => {
                         </li>
 
                         {/* FAVORITOS - Solo mostrar si está autenticado */}
-                        {isAuthenticated && (
+                        {userData?.rol === 1 && isAuthenticated ? (
                             <li className="nav-item" id="navBarHome-favorites-item">
                                 <Link className="nav-link" id="navBarHome-favorites-link" to="/favoritos">
                                     <i className="bi bi-heart-fill" id="navBarHome-favorites-icon"></i>
                                 </Link>
                             </li>
-                        )}
+                        ) : null}
 
                         <li className="nav-item" id="navBarHome-cart-item">
                             <Link className="nav-link" id="navBarHome-cart-link" to="/carrito">

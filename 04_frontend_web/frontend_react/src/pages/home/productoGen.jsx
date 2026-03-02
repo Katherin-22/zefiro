@@ -1,4 +1,3 @@
-// pages/home/productoGen.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useGetStock } from "../../hooks/stock/useGetStock";
@@ -414,7 +413,7 @@ const ProductoGen = () => {
     };
 
     // ============================
-    // 1️⃣3️⃣ Función para manejar carrito (AGREGAR AL CARRITO) - VERSIÓN CORREGIDA
+    // 1️⃣3️⃣ Función para manejar carrito (AGREGAR AL CARRITO)
     // ============================
     const handleAddToCart = async () => {
         setCartError(null);
@@ -528,7 +527,7 @@ const ProductoGen = () => {
     // RENDER DEL BOTÓN DE FAVORITOS (con validación de rol)
     // ============================
     const renderBotonFavorito = () => {
-        // Si es admin, mostrar botón deshabilitado
+        // Si es admin, mostrar botón deshabilitado (aunque no debería llegar aquí)
         if (esAdmin) {
             return (
                 <button
@@ -945,11 +944,14 @@ const ProductoGen = () => {
                                         </div>
                                     )}
 
-                                    {/* BOTONES DE ACCIÓN */}
+                                    {/* BOTONES DE ACCIÓN - MODIFICADO: Botón de favoritos solo para rol 1 */}
                                     <div className="row producto-botones-fila justify-content-center mt-4" id="producto-botones-fila">
-                                        <div className="col-auto" id="producto-boton-favorito-col">
-                                            {renderBotonFavorito()}
-                                        </div>
+                                        {/* SOLO MOSTRAR BOTÓN DE FAVORITOS SI ES ROL 1 (CLIENTE) */}
+                                        {userData?.rol === 1 && (
+                                            <div className="col-auto" id="producto-boton-favorito-col">
+                                                {renderBotonFavorito()}
+                                            </div>
+                                        )}
 
                                         <div className="col-auto" id="producto-boton-comprar-col">
                                             <button
@@ -983,8 +985,8 @@ const ProductoGen = () => {
                                         </div>
                                     </div>
 
-                                    {/* ENLACE A FAVORITOS - Solo para clientes */}
-                                    {isAuthenticated && esCliente && !esModoAdmin && (
+                                    {/* ENLACE A FAVORITOS - Solo para clientes (rol 1) */}
+                                    {isAuthenticated && userData?.rol === 1 && !esModoAdmin && (
                                         <div className="row mt-3" id="producto-enlace-favoritos-fila">
                                             <div className="col-12 text-center" id="producto-enlace-favoritos-col">
                                                 <Link to="/favoritos" className="btn btn-link text-decoration-none" id="producto-enlace-favoritos">

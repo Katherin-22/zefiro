@@ -308,28 +308,30 @@ export default function Home() {
                     id={`home-${tipo}-card-container-${index + 1}`}>
 
                     {/* BOTÓN DE FAVORITOS */}
-                    <button
-                        className="btn btn-link text-decoration-none position-absolute top-0 end-0 p-3"
-                        onClick={() => handleFavoritoClick(producto)}
-                        disabled={cargando || loadingFavoritosGlobal}
-                        aria-label={esFavorito ? "Quitar de favoritos" : "Agregar a favoritos"}
-                        style={{ zIndex: 2 }}
-                        id={`home-${tipo}-favorite-btn-${index + 1}`}
-                        title={!isAuthenticated ? "Inicia sesión para agregar a favoritos" : (esFavorito ? "Quitar de favoritos" : "Agregar a favoritos")}
-                    >
-                        {cargando ? (
-                            <div className="spinner-border spinner-border-sm text-danger" role="status">
-                                <span className="visually-hidden">Cargando...</span>
-                            </div>
-                        ) : (
-                            <i className={`bi ${esFavorito ? 'bi-heart-fill text-danger' : 'bi-heart text-white'}`}
-                                style={{
-                                    fontSize: '1.5rem',
-                                    filter: esFavorito ? 'none' : 'drop-shadow(0px 0px 2px rgba(0,0,0,0.5))',
-                                    opacity: !isAuthenticated ? 0.5 : 1
-                                }}></i>
-                        )}
-                    </button>
+                    {userData?.rol === 1 && (
+                        <button
+                            className="btn btn-link text-decoration-none position-absolute top-0 end-0 p-3"
+                            onClick={() => handleFavoritoClick(producto)}
+                            disabled={cargando || loadingFavoritosGlobal}
+                            aria-label={esFavorito ? "Quitar de favoritos" : "Agregar a favoritos"}
+                            style={{ zIndex: 2 }}
+                            id={`home-${tipo}-favorite-btn-${index + 1}`}
+                            title={!isAuthenticated ? "Inicia sesión para agregar a favoritos" : (esFavorito ? "Quitar de favoritos" : "Agregar a favoritos")}
+                        >
+                            {cargando ? (
+                                <div className="spinner-border spinner-border-sm text-danger" role="status">
+                                    <span className="visually-hidden">Cargando...</span>
+                                </div>
+                            ) : (
+                                <i className={`bi ${esFavorito ? 'bi-heart-fill text-danger' : 'bi-heart text-white'}`}
+                                    style={{
+                                        fontSize: '1.5rem',
+                                        filter: esFavorito ? 'none' : 'drop-shadow(0px 0px 2px rgba(0,0,0,0.5))',
+                                        opacity: !isAuthenticated ? 0.5 : 1
+                                    }}></i>
+                            )}
+                        </button>
+                    )}
 
                     {/* IMAGEN DEL PRODUCTO */}
                     <div className="producto-imagen-container-home" id={`home-${tipo}-image-container-${index + 1}`}>

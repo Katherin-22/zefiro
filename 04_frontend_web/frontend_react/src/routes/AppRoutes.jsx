@@ -113,6 +113,10 @@ import PaymentPage from '../pages/metodoPagos/PaymentPage'   // metodos de pago
 ============================== */
 import Carrito from "../pages/carrito/Carrito";
 
+/*========================================
+  Ticket
+======================================== */
+import TicketCompra from "../pages/ticket/ticketCompra";
 
 
 
@@ -143,7 +147,13 @@ function AppRoutes() {
                <ProtectedRoute >
                   <FavoritosPage />
                </ProtectedRoute>
-            }/>
+            } />
+
+               <Route path="/ticket/:idPedido" element={
+                   <ProtectedRoute >
+                       <TicketCompra />
+                   </ProtectedRoute>
+               } />
             
             {/* 🔄 Gestión de devoluciones */}
             <Route path="/Administrador/Gestion_Devoluciones" element={
