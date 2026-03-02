@@ -48,7 +48,7 @@ public class PedidoService {
             dto.setCodigoReferencia(fila[3] != null ? (String) fila[3] : null);
             dto.setNombreProducto(fila[4] != null ? (String) fila[4] : null);
             dto.setNombreColor(fila[5] != null ? (String) fila[5] : null);
-            dto.setVariacion(fila[6] != null ? (String) fila[6] : null);
+            dto.setNombre(fila[6] != null ? (String) fila[6] : null);
             dto.setCantidad(fila[7] != null ? ((Number) fila[7]).intValue() : null);
             dto.setPrecioUnitario(fila[8] != null ? BigDecimal.valueOf(((Number) fila[8]).doubleValue()) : null);
             dto.setNombrePromocion(fila[9] != null ? (String) fila[9] : null);

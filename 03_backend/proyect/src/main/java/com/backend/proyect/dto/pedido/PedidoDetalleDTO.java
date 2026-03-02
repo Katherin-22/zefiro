@@ -14,7 +14,7 @@ public class PedidoDetalleDTO {
     private String codigoReferencia;
     private String nombreProducto;
     private String nombreColor;
-    private String variacion;
+    private String nombre;
     private Integer cantidad;
     private BigDecimal precioUnitario;
     private String nombrePromocion;
