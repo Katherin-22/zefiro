@@ -4,6 +4,7 @@ import MenuAdmin from "../../../layouts/administrador/menuAdmin";
 import "../../../styles/administrador/gestion_producto.css";
 import "../../../styles/administrador/inventario.css";
 import {createImagen, getImagenById, deleteImagen} from "../../../services/administrador/ImagenService.js";
+import api_url from "../../../services/administrador/api.js";
 
 export default function CreateImagen() {
 
@@ -135,7 +136,7 @@ export default function CreateImagen() {
                         {imagenes.map((imagen) => (
                             <tr key={imagen.idImagen}>
                             <td>
-                              <img src={`http://localhost:8080${imagen.urlImagen}`} alt="Producto" width="350" height="350"/>
+                              <img src={`${api_url}${imagen.urlImagen}`} alt="Producto" width="350" height="350"/>
                             </td>
                             <td><Link to={`/producto/${imagen.producto.idProducto}/imagen/${imagen.idImagen}`} id="boton_agregar" className="btn btn-light">Editar</Link>
                             <button

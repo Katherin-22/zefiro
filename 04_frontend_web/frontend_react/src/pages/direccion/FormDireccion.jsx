@@ -6,6 +6,7 @@ import "../../styles/home/formDireccion.css";
 import Footer from "../../layouts/home/footer";
 import { Container, Row, Col, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import BotonAtras from "../../hooks/boton/BotonAtras";
+import api_url from '../../services/administrador/api';
 
 function FormDireccion() {
     const { user } = useAuth();
@@ -28,7 +29,7 @@ function FormDireccion() {
                     return;
                 }
 
-                const response = await axios.get('http://localhost:8080/api/usuarios/perfil', {
+                const response = await api_url.get('/api/usuarios/perfil', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     }
@@ -83,7 +84,7 @@ function FormDireccion() {
                 estado_usuario: undefined,
             };
 
-            await axios.put('http://localhost:8080/api/usuarios/perfil', requestData, {
+            await api_url.put('/api/usuarios/perfil', requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",

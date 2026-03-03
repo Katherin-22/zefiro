@@ -8,6 +8,7 @@ import useAuth from "../../hooks/token/useAuth";  // Cambia esta línea
 import { useGetStock } from "../../hooks/stock/useGetStock";
 import { getImagenById } from "../../services/administrador/ImagenService.js";
 import "../../styles/home/favoritos.css";
+import api_url from "../../services/administrador/api.js";
 
 const FavoritosPage = () => {
   const navigate = useNavigate();
@@ -63,7 +64,7 @@ const FavoritosPage = () => {
             try {
               const response = await getImagenById(producto.idProducto);
               if (response.data && response.data.length > 0) {
-                imagenes[producto.idProducto] = `http://localhost:8080${response.data[0].urlImagen}`;
+                imagenes[producto.idProducto] = `${api_url}${response.data[0].urlImagen}`;
               } else {
                 // Buscar imagen en el stock local
                 const productoStock = stock.find(p => p.idProducto === producto.idProducto);

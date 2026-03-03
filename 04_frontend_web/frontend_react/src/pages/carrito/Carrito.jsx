@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { getImagenById } from "../../services/administrador/ImagenService";
 import "../../styles/Carrito/EstiloCarrito.css";
 import BotonAtras from "../../hooks/boton/BotonAtras";
+import api_url from "../../services/administrador/api";
 
 const Carrito = () => {
     const navigate = useNavigate();
@@ -74,7 +75,7 @@ const Carrito = () => {
             imagenFinal = imagenesProductos[idProducto];
         } else if (item.imagen || productoRef?.imagen) {
             const imgPath = item.imagen || productoRef.imagen;
-            imagenFinal = imgPath.startsWith('http') ? imgPath : `http://localhost:8080${imgPath}`;
+            imagenFinal = imgPath.startsWith('http') ? imgPath : `${api_url}${imgPath}`;
         }
 
         console.log(`=== RESULTADO FINAL ===`);
@@ -112,7 +113,7 @@ const Carrito = () => {
                         try {
                             const response = await getImagenById(idProducto);
                             if (response.data && response.data.length > 0) {
-                                nuevasImagenesParaAgregar[idProducto] = `http://localhost:8080${response.data[0].urlImagen}`;
+                                nuevasImagenesParaAgregar[idProducto] = `${api_url}${response.data[0].urlImagen}`;
                                 idsCargadosRef.current.add(idProducto);
                                 huboCambios = true;
                             }

@@ -9,6 +9,7 @@ import "../../styles/home/paginaInicio.css";
 import { useFavoritos } from "../../hooks/favorito/useFavorito";
 import useAuth from "../../hooks/token/useAuth";
 import BannerCarousel from "../../hooks/carrrousel/carrousel.js";
+import api_url from "../../services/administrador/api.js";
 
 export default function Home() {
     // ========== DEBUG INICIAL ==========
@@ -60,7 +61,7 @@ export default function Home() {
         console.log("📊 Estado inicial banners:", banners);
 
         // EXACTAMENTE IGUAL que en GestionPagina.js
-        fetch("http://localhost:8080/api/banners")
+        fetch(`${api_url}/api/banners`)
             .then((res) => {
                 console.log("📡 Fetch completado - Status:", res.status, res.statusText);
                 console.log("📡 Headers:", Object.fromEntries(res.headers.entries()));
@@ -214,7 +215,7 @@ export default function Home() {
         try {
             const response = await getImagenById(idProducto);
             if (response.data && response.data.length > 0) {
-                return `http://localhost:8080${response.data[0].urlImagen}`;
+                return `${api_url}${response.data[0].urlImagen}`;
             }
             return null;
         } catch (error) {

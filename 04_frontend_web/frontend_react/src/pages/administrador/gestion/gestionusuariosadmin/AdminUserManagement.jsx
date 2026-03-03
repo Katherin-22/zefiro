@@ -8,6 +8,7 @@ import MenuAdmin from "../../../../layouts/administrador/menuAdmin";
 import UserFormModal from "../../../../components/gestionusuarios/modals/UserFormModal";
 import '../../../../styles/administrador/inventario.css';
 import DeleteConfirmModal from "../../../../components/gestionusuarios/modals/DeleteConfirmModal";
+import api_url from "../../../../services/administrador/api";
 
 const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -33,8 +34,8 @@ const AdminUserManagement = () => {
       }
 
       // ➡️ Llamada GET al endpoint de usuarios
-      const response = await axios.get(
-        "http://localhost:8080/api/usuarios",
+      const response = await api_url.get(
+        "/api/usuarios",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -124,7 +125,7 @@ const AdminUserManagement = () => {
       }
 
       // Esta línea funciona porque userToDelete.id ya está NORMALIZADO
-      await axios.delete(`http://localhost:8080/api/usuarios/${userId}`, {
+      await api_url.delete(`/api/usuarios/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

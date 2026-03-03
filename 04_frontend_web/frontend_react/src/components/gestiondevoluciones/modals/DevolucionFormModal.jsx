@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import axios from "axios";
 import { ESTADOS, TIPOS_SOLICITUD } from "../constants/devolucionesConstants";
+import api_url from "../../../services/administrador/api";
 
 const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
   const [formData, setFormData] = useState({
@@ -83,15 +84,15 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
 
       if (devolucionToEdit) {
         const devolucionId = devolucionToEdit.id_devolucion;
-        await axios.put(
-          `http://localhost:8080/api/devoluciones/${devolucionId}`,
+        await api_url.put(
+          `/api/devoluciones/${devolucionId}`,
           payload,
           { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
         );
         setMessage("✅ Devolución actualizada correctamente.");
       } else {
-        await axios.post(
-          "http://localhost:8080/api/devoluciones",
+        await api_url.post(
+          "/api/devoluciones",
           { ...payload, estadoSolicitud: ESTADOS[0], fechaRespuesta: null },
           { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
         );

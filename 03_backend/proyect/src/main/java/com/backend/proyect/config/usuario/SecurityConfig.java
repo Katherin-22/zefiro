@@ -35,39 +35,35 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        // RUTAS PÚBLICAS - SIN AUTENTICACIÓN
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/publico/**").permitAll()
-                        .requestMatchers("/uploads/**").permitAll()
-
-                        // RUTAS DE COMENTARIOS - IMPORTANTE: usa /api/comentarios
-                        .requestMatchers("/api/comentarios/**").permitAll()
-                        .requestMatchers("/api/pedidos/**").permitAll()
-                        // Otras rutas públicas
-                        .requestMatchers(
-                                "/categoria/**",
-                                "/promocion/**",
-                                "/stock/**",
-                                "/producto/**",
-                                "/color/**",
-                                "/imagen/**",
-                                "/marca/**",
-                                "/material/**",
-                                "/api/banners/**"
-                        ).permitAll()
-
-                        // RUTAS QUE REQUIEREN AUTENTICACIÓN
-                        .requestMatchers("/api/usuarios/perfil").authenticated()
-
-                        // RUTAS DE ADMINISTRADOR
-                        .requestMatchers("/api/usuarios", "/api/usuarios/{id}").hasAuthority("ROLE_ADMINISTRADOR")
-
-                        // TODO lo demás requiere autenticación
-                        .anyRequest().authenticated()
+                // RUTAS PÚBLICAS - SIN AUTENTICACIÓN
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/publico/**").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
+                // RUTAS DE COMENTARIOS - IMPORTANTE: usa /api/comentarios
+                .requestMatchers("/api/comentarios/**").permitAll()
+                .requestMatchers("/api/pedidos/**").permitAll()
+                // Otras rutas públicas
+                .requestMatchers(
+                        "/categoria/**",
+                        "/promocion/**",
+                        "/stock/**",
+                        "/producto/**",
+                        "/color/**",
+                        "/imagen/**",
+                        "/marca/**",
+                        "/material/**",
+                        "/api/banners/**"
+                ).permitAll()
+                // RUTAS QUE REQUIEREN AUTENTICACIÓN
+                .requestMatchers("/api/usuarios/perfil").authenticated()
+                // RUTAS DE ADMINISTRADOR
+                .requestMatchers("/api/usuarios", "/api/usuarios/{id}").hasAuthority("ROLE_ADMINISTRADOR")
+                // TODO lo demás requiere autenticación
+                .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -76,7 +72,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("http://35.171.131.177:3000, http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("*"));

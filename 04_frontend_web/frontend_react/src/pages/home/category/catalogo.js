@@ -5,6 +5,7 @@ import MenuHome from "../../../layouts/home/menuHome";
 import { useFiltro } from "../../../utils/FiltroContextx";
 import { getImagenById } from "../../../services/administrador/ImagenService.js";
 import "../../../styles/home/canalogoHome.css";
+import api_url from "../../../services/administrador/api.js";
 
 const Catalogo = () => {
   const { stock } = useGetStock();
@@ -45,7 +46,7 @@ const Catalogo = () => {
             try {
               const response = await getImagenById(producto.idProducto);
               if (response.data && response.data.length > 0) {
-                todasImagenes[producto.idProducto] = `http://localhost:8080${response.data[0].urlImagen}`;
+                todasImagenes[producto.idProducto] = `${api_url}${response.data[0].urlImagen}`;
               } else {
                 todasImagenes[producto.idProducto] = producto.imagen || "/imagenes_prueba/default.jpg";
               }

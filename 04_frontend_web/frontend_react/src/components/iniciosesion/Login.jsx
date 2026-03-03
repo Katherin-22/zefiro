@@ -3,6 +3,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import api_url from "../../services/administrador/api";
 
 function Login({ stateOverride }) {
   const { login } = useAuth();
@@ -28,8 +29,8 @@ function Login({ stateOverride }) {
     console.log("DEBUG-CHECKOUT: pendingRoleCheck:", pendingRoleCheck);
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/login",
+      const response = await api_url.post(
+        "/api/auth/login",
         {
           email,
           password,

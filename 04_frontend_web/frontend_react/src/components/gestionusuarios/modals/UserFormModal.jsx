@@ -3,6 +3,7 @@ import axios from "axios";
 import { X } from "lucide-react";
 import { ROLES } from "../constants/roles";
 import "../../../styles/gestionusuarios/adminUsuarios.css";
+import api_url from "../../../services/administrador/api";
 
 const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
   const [formData, setFormData] = useState({
@@ -122,11 +123,11 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
           return;
         }
 
-        url = `http://localhost:8080/api/usuarios/${userId}`;
+        url = `${api_url}/api/usuarios/${userId}`;
         method = 'put';
       } else {
         // 🔹 Crear nuevo usuario (usando el endpoint de registro)
-        url = "http://localhost:8080/api/auth/register";
+        url = `${api_url}/api/auth/register`;
         method = 'post';
         // Asegurarse que haya contraseña para el registro
         if (!payload.password) {

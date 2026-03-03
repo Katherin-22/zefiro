@@ -3,6 +3,7 @@ import img1 from "../../assets/ModuloUsuarios/RegistrarUsuarios/img/img1.png";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api_url from "../../services/administrador/api";
 
 function RegistrarUsuarios() {
 
@@ -35,7 +36,7 @@ function RegistrarUsuarios() {
     }
 
     try {
-      const response = await axios.post("http://localhost:8080/api/auth/register", {
+      const response = await api_url.post("/api/auth/register", {
         nombreUsuario,
         primerApellido,
         segundoApellido,

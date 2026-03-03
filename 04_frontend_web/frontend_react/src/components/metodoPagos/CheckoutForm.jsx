@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useAuth } from "../../context/AuthContext";
+import api_url from "../../services/administrador/api";
 
 const CheckoutForm = ({ clientSecret, amount, idUsuario }) => {
     const stripe = useStripe();
@@ -42,7 +43,7 @@ const CheckoutForm = ({ clientSecret, amount, idUsuario }) => {
         if (paymentIntent && paymentIntent.status === "succeeded") {
             try {
                 // ✅ SOLO UNA VEZ - Llamar al checkout
-                const response = await fetch(`http://localhost:8080/api/carrito/checkout/${idUsuario}/1`, {
+                const response = await fetch(`${api_url}/api/carrito/checkout/${idUsuario}/1`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,

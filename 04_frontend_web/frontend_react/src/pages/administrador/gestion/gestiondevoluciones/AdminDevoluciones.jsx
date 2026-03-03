@@ -6,6 +6,7 @@ import DevolucionFormModal from "../../../../components/gestiondevoluciones/moda
 import DeleteConfirmModal from "../../../../components/gestiondevoluciones/modals/DeleteConfirmModal";
 import '../../../../styles/administrador/inventario.css';
 import MenuAdmin from "../../../../layouts/administrador/menuAdmin";
+import api_url from "../../../../services/administrador/api";
 
 const AdminDevoluciones = () => {
   const [devoluciones, setDevoluciones] = useState([]);
@@ -23,7 +24,7 @@ const AdminDevoluciones = () => {
       const token = localStorage.getItem("authToken")?.replace(/"/g, "");
       if (!token) { setFetchError("Token no encontrado."); setLoading(false); return; }
 
-      const response = await axios.get("http://localhost:8080/api/devoluciones", {
+      const response = await api_url.get("/api/devoluciones", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setDevoluciones(response.data);
@@ -45,7 +46,7 @@ const AdminDevoluciones = () => {
       const token = localStorage.getItem("authToken")?.replace(/"/g, "");
       if (!token) { alert("Token no encontrado."); return; }
 
-      await axios.delete(`http://localhost:8080/api/devoluciones/${devolucionId}`, { headers: { Authorization: `Bearer ${token}` } });
+      await api_url.delete(`/api/devoluciones/${devolucionId}`, { headers: { Authorization: `Bearer ${token}` } });
       fetchDevoluciones();
       console.log(`Devolución ${devolucionId} eliminada correctamente.`);
 

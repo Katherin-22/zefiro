@@ -130,7 +130,7 @@ const ProductoGen = () => {
                 const response = await getImagenById(producto.idProducto);
                 if (response.data && response.data.length > 0) {
                     setImagenesProducto(response.data);
-                    setImagenPrincipal(`http://localhost:8080${response.data[0].urlImagen}`);
+                    setImagenPrincipal(`${api_url}${response.data[0].urlImagen}`);
                 } else {
                     setImagenPrincipal(producto.imagen || "/imagenes_prueba/default.jpg");
                 }
@@ -737,10 +737,10 @@ const ProductoGen = () => {
                                                         {imagenesProducto.map((imagen, index) => (
                                                             <div key={index} className="col-auto" id={`producto-miniatura-col-${index}`}>
                                                                 <img
-                                                                    src={`http://localhost:8080${imagen.urlImagen}`}
+                                                                    src={`${api_url}${imagen.urlImagen}`}
                                                                     alt={`${producto.nombreProducto} ${index + 1}`}
-                                                                    className={`producto-miniatura img-thumbnail ${imagenPrincipal === `http://localhost:8080${imagen.urlImagen}` ? 'miniatura-activa' : ''}`}
-                                                                    onClick={() => cambiarImagenPrincipal(`http://localhost:8080${imagen.urlImagen}`)}
+                                                                    className={`producto-miniatura img-thumbnail ${imagenPrincipal === `${api_url}${imagen.urlImagen}` ? 'miniatura-activa' : ''}`}
+                                                                    onClick={() => cambiarImagenPrincipal(`${api_url}${imagen.urlImagen}`)}
                                                                     style={{ cursor: 'pointer', width: '60px', height: '60px', objectFit: 'cover' }}
                                                                     id={`producto-miniatura-${index}`}
                                                                 />

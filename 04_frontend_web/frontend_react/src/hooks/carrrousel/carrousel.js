@@ -1,4 +1,6 @@
-﻿// hooks/carrrousel/carrousel.js
+﻿import api_url from "../../services/administrador/api";
+
+// hooks/carrrousel/carrousel.js
 const BannerCarousel = ({ banners = [] }) => {
     console.log("🎬 BannerCarousel renderizado");
     console.log("📦 Banners recibidos:", banners);
@@ -34,11 +36,11 @@ const BannerCarousel = ({ banners = [] }) => {
 
                     // Si la URL es relativa, añadir el dominio
                     if (imageUrl && !imageUrl.startsWith('http')) {
-                        imageUrl = `http://localhost:8080${imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl}`;
+                        imageUrl = `${api_url}${imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl}`;
                     }
                     // Si no hay URL pero sí fileName
                     else if (!imageUrl && banner.fileName) {
-                        imageUrl = `http://localhost:8080/uploads/${banner.fileName}`;
+                        imageUrl = `${api_url}/uploads/${banner.fileName}`;
                     }
 
                     console.log(`   URL final ${index}:`, imageUrl);
