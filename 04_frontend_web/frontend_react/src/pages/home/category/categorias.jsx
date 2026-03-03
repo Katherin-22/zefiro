@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo , useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFiltro } from "../../../utils/FiltroContextx";
 import MenuHome from "../../../layouts/home/menuHome";
@@ -8,16 +8,16 @@ import "../../../styles/home/categoria.css";
 const CategoriasMobilePage = () => {
   const navigate = useNavigate();
   const { setFiltro } = useFiltro();
-  
+
   // Estados para las categorías del backend
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Icons para diferentes tipos de categorías
-  const iconosPorTipo = {
+  const iconosPorTipo = useMemo(() => ({
     'mujer': '👩',
-    'hombre': '👨', 
+    'hombre': '👨',
     'nino': '👶',
     'niño': '👶',
     'calzado': '👟',
@@ -28,10 +28,10 @@ const CategoriasMobilePage = () => {
     'ropa': '👕',
     'accesorio': '🧣',
     'default': '📦'
-  };
-  
+  }), []);
+
   // Colores para categorías
-  const coloresCategoria = [
+  const coloresCategoria = useMemo(() => [
     "#E0B253", // primary-color de tu tema
     "#FF6B9D", // rosa
     "#4A90E2", // azul
@@ -42,34 +42,45 @@ const CategoriasMobilePage = () => {
     "#50E3C2", // turquesa
     "#BD10E0", // magenta
     "#417505"  // verde oscuro
-  ];
+  ], []);
+
+    // Función para obtener icono basado en nombre de categoría
+  const obtenerIconoCategoria = useCallback((nombre) => {
+    if (!nombre) return iconosPorTipo.default;
+
+    const nombreLower = nombre.toLowerCase();
+
+    for (const [key, icono] of Object.entries(iconosPorTipo)) {
+      if (nombreLower.includes(key)) {
+        return icono;
+      }
+    }
+
+    return iconosPorTipo.default;
+  }, [iconosPorTipo]);
 
   // Obtener categorías del backend
   useEffect(() => {
     const fetchCategorias = async () => {
+      // [Contenido de la función fetchCategorias sin cambios]
       try {
         setLoading(true);
-        // LLAMADA A TU ENDPOINT DE CATEGORÍAS
-        const response = await api_url.get('/publico/categorias'); // Ajusta el endpoint según tu API
-        
-        // Mapear los datos del backend
+        const response = await api_url.get('/publico/categorias');
+
         const categoriasMapeadas = response.data.map((cat, index) => ({
           id: cat.idCategoria || cat.id || index,
           nombre: cat.nombreCategoria || cat.nombre || `Categoría ${index + 1}`,
           descripcion: cat.descripcion || `Productos de ${cat.nombreCategoria || 'esta categoría'}`,
           tipoProducto: cat.nombreTipoProducto || cat.tipo || '',
-          // Asignar icono basado en el nombre
           icono: obtenerIconoCategoria(cat.nombreCategoria || cat.nombre),
-          // Asignar color rotativo
           color: coloresCategoria[index % coloresCategoria.length]
         }));
-        
+
         setCategorias(categoriasMapeadas);
         setError(null);
       } catch (err) {
         console.error("Error al cargar categorías:", err);
         setError("No se pudieron cargar las categorías");
-        // Categorías de respaldo
         setCategorias(getCategoriasRespaldo());
       } finally {
         setLoading(false);
@@ -77,22 +88,9 @@ const CategoriasMobilePage = () => {
     };
 
     fetchCategorias();
-  }, []);
+  }, [coloresCategoria, obtenerIconoCategoria]); // Dependencias estables, sin warning
 
-  // Función para obtener icono basado en nombre de categoría
-  const obtenerIconoCategoria = (nombre) => {
-    if (!nombre) return iconosPorTipo.default;
-    
-    const nombreLower = nombre.toLowerCase();
-    
-    for (const [key, icono] of Object.entries(iconosPorTipo)) {
-      if (nombreLower.includes(key)) {
-        return icono;
-      }
-    }
-    
-    return iconosPorTipo.default;
-  };
+
 
   // Categorías de respaldo si falla el backend
   const getCategoriasRespaldo = () => {
@@ -106,10 +104,10 @@ const CategoriasMobilePage = () => {
   const seleccionarCategoria = (categoriaId) => {
     // Encontrar la categoría seleccionada
     const categoriaSeleccionada = categorias.find(cat => cat.id === categoriaId);
-    
+
     // Guardar en contexto el filtro (puedes usar ID o nombre según tu lógica)
     setFiltro(categoriaSeleccionada?.nombre || categoriaId);
-    
+
     // Navegar al catálogo
     navigate("/catalogo");
   };
@@ -141,12 +139,12 @@ const CategoriasMobilePage = () => {
   return (
     <div className="categorias-page-container">
       <MenuHome />
-      
+
       <div className="categorias-page-content">
         {/* HEADER */}
         <header className="categorias-page-header">
           <div className="categorias-header-content">
-            <button 
+            <button
               className="categorias-back-btn"
               onClick={() => navigate(-1)}// boton y funcionalidad para volver atras
               aria-label="Volver"
@@ -164,7 +162,7 @@ const CategoriasMobilePage = () => {
         {/* LISTA DE CATEGORÍAS */}
         <main className="categorias-grid-container">
           {categorias.map((cat) => (
-            <div 
+            <div
               key={cat.id}
               className="categoria-card-mobile"
               onClick={() => seleccionarCategoria(cat.id)}

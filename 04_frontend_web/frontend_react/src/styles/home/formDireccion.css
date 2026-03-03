@@ -1,0 +1,75 @@
+:root {
+    --primary-color: #E0B253;
+    --secondary-color: #000000;
+    --bg-body-dark: #000000;
+    --bg-body-light: #ffffff;
+    --text-light: #ffffff;
+    --text-dark: #000000;
+    --hover-color: #c89c3f;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
+}
+
+/*==================================== Formulaario direccion ===============================================*/
+.form-direccion {
+    margin-top: -70px;
+    width: 100%;
+    height: 103vh; /* Este es para móviles (por defecto) */
+    box-shadow: 0 0 20px rgba(224, 178, 83, 0.5) !important;
+    border-radius: 25px !important;
+}
+
+.text-dir {
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--primary-color) !important;
+    padding:10px 10px 25px;
+}
+
+.form-control {
+    border: 1px solid var(--primary-color) !important;
+}
+
+    .form-control:hover {
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 10px rgba(224, 178, 83, 0.8) !important;
+    }
+
+.form.control::placeholder {
+    color: var(--text-dark) !important;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 15px rgba(224, 178, 83, 0.8) !important;
+    background-color: color-mix(in srgb, var(--primary-color) 35%, transparent);
+}
+
+.bton-form {
+    padding: 10px 150px !important;
+    border: 2px solid var(--primary-color);
+    border-radius: 15px !important;
+    white-space: nowrap !important;
+}
+
+    .bton-form:hover {
+        background-color: color-mix(in srgb, var(--primary-color) 35%, transparent) !important;
+        color: var(--text-dark) !important;
+        box-shadow: 0 0 20px rgba(224, 178, 83, 0.8) !important;
+        border: 2px solid var(--primary-color);
+    }
+    /*========================================= responsive ==================================================*/
+
+
+    @media (min-width: 480px) and (max-width: 768px) {
+        .form-direccion {
+            height: 110%;
+            padding: 10px;
+        }
+
+        .row-form {
+            margin-top: -10px;
+            margin-bottom: 20px;
+            background: var(--bg-body-light) !important;
+        }
+    }

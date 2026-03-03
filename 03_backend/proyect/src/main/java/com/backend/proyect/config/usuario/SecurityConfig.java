@@ -43,7 +43,7 @@ public class SecurityConfig {
 
                         // RUTAS DE COMENTARIOS - IMPORTANTE: usa /api/comentarios
                         .requestMatchers("/api/comentarios/**").permitAll()
-
+                        .requestMatchers("/api/pedidos/**").permitAll()
                         // Otras rutas públicas
                         .requestMatchers(
                                 "/categoria/**",

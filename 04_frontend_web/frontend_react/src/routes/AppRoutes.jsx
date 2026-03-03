@@ -100,12 +100,26 @@ import PerfilUsuario from '../pages/usuario/PerfilUsuario'
 /* ==============================
    METODOS DE PAGO
 ============================== */
-import FormDireccion from '../pages/direccion/FormDireccion'   // metodos de pago
+import FormDireccion from '../pages/direccion/FormDireccion' 
+import PedidosUsuario from "../pages/home/pedidosUsuario";  // metodos de pago
 
 /* ==============================
    METODOS DE PAGO
 ============================== */
 import PaymentPage from '../pages/metodoPagos/PaymentPage'   // metodos de pago
+
+
+/* ==============================
+   carrito
+============================== */
+import Carrito from "../pages/carrito/Carrito";
+
+/*========================================
+  Ticket
+======================================== */
+import TicketCompra from "../pages/ticket/ticketCompra";
+
+
 
 function AppRoutes() {
    return (
@@ -134,7 +148,19 @@ function AppRoutes() {
                <ProtectedRoute >
                   <FavoritosPage />
                </ProtectedRoute>
-            }/>
+            } />
+
+               <Route path="/ticket/:idPedido" element={
+                   <ProtectedRoute >
+                       <TicketCompra />
+                   </ProtectedRoute>
+               } />
+
+               <Route path="/pedidos/:idUsuario" element={
+                   <ProtectedRoute >
+                       <PedidosUsuario />
+                   </ProtectedRoute>
+               } />
             
             {/* 🔄 Gestión de devoluciones */}
             <Route path="/Administrador/Gestion_Devoluciones" element={
@@ -368,7 +394,16 @@ function AppRoutes() {
                   <PerfilUsuario />
                </ProtectedRoute>
             }/>
+
+            {/* ========== CARRITO USUARIO ========== */}
             
+            <Route path="/carrito" element={<Carrito />} />
+
+            {/* Componente de metodos de pago */}
+            <Route path="/api/payments/create/:idUsuario" element={<PaymentPage/>}/>  
+
+            <Route path="/form-direccion" element={<FormDireccion/>}/>             
+
             {/* ========== PÁGINAS DE ERROR ========== */}
             {/* 🚫 Acceso denegado */}
             <Route path="/acceso-denegado" element={<AccessDenied />} />

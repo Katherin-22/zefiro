@@ -14,6 +14,9 @@ public interface StockRepository extends JpaRepository<Stock,Integer>{
 
     List<Stock> findByProductoIdProducto(Integer idProducto);
 
+    @Query("SELECT s FROM Stock s JOIN FETCH s.producto")
+    List<Stock> findAllWithProducto();
+
     @Query(value = """
     SELECT
         p.idProducto,

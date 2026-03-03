@@ -19,6 +19,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "Producto")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Autoincrement en MySQL
