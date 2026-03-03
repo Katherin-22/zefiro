@@ -2,7 +2,7 @@ import MenuAdmin from '../../../layouts/administrador/menuAdmin';
 import '../../../styles/administrador/gestion_producto.css';
 import '../../../styles/administrador/inventario.css';
 import React, { useState, useEffect } from 'react';
-import { getPedido } from "../../../services/administrador/pedidos";
+import { getPedido, actualizarEstadoPedido } from "../../../services/administrador/pedidos";
 import { Link } from "react-router-dom";
 
 const GestionPedido = () => {
@@ -10,6 +10,9 @@ const GestionPedido = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [pedidosExpandidos, setPedidosExpandidos] = useState({});
+    const [filtroEstado, setFiltroEstado] = useState('');
+    const [actualizandoEstado, setActualizandoEstado] = useState(null);
+    const [mensajeError, setMensajeError] = useState('');
 
     // 📌 FUNCIÓN PARA AGRUPAR PEDIDOS
     const agruparPedidos = (datos) => {
@@ -17,20 +20,17 @@ const GestionPedido = () => {
             const pedidoExistente = acc.find(p => p.idPedido === item.idPedido);
             
             if (pedidoExistente) {
-                // Si el pedido ya existe, agregamos el producto a su lista
                 pedidoExistente.productos.push({
                     nombreProducto: item.nombreProducto,
                     nombreColor: item.nombreColor,
-                    nombreVariacion: item.nombreVariacion,
+                    nombre: item.nombre,
                     cantidad: item.cantidad,
                     precioUnitario: item.precioUnitario,
                     codigoReferencia: item.codigoReferencia
                 });
-                // Actualizamos el total
                 pedidoExistente.totalFinal = (pedidoExistente.totalFinal || 0) + 
                     (item.cantidad * item.precioUnitario);
             } else {
-                // Si es un nuevo pedido, lo creamos con su primer producto
                 acc.push({
                     idPedido: item.idPedido,
                     fechaPedido: item.fechaPedido,
@@ -40,7 +40,7 @@ const GestionPedido = () => {
                     productos: [{
                         nombreProducto: item.nombreProducto,
                         nombreColor: item.nombreColor,
-                        nombreVariacion: item.nombreVariacion,
+                        nombre: item.nombre,
                         cantidad: item.cantidad,
                         precioUnitario: item.precioUnitario,
                         codigoReferencia: item.codigoReferencia
@@ -56,31 +56,17 @@ const GestionPedido = () => {
         const fetchPedido = async () => {
             try {
                 console.log("🔄 Cargando pedidos...");
-                
                 const response = await getPedido();
-                
-                console.log("📦 Respuesta completa:", response);
-                console.log("📊 Datos recibidos:", response.data);
                 
                 if (response?.data) {
                     const datosArray = Array.isArray(response.data) ? response.data : [response.data];
-                    
-                    // 👇 AGRUPAMOS LOS PEDIDOS
                     const pedidosAgrupados = agruparPedidos(datosArray);
-                    
                     setPedidos(pedidosAgrupados);
-                    console.log("✅ Pedidos agrupados:", pedidosAgrupados);
                 } else {
-                    console.warn("⚠️ No hay datos en la respuesta");
                     setPedidos([]);
                 }
-                
             } catch (error) {
-                console.error("❌ Error al cargar pedidos:", {
-                    message: error.message,
-                    response: error.response?.data,
-                    status: error.response?.status
-                });
+                console.error("❌ Error al cargar pedidos:", error);
                 setError(error.message);
             } finally {
                 setLoading(false);
@@ -98,6 +84,57 @@ const GestionPedido = () => {
         }));
     };
 
+ // 📌 FUNCIÓN PARA CAMBIAR ESTADO DEL PEDIDO (MEJORADA)
+const handleCambiarEstado = async (idPedido, nuevoEstado) => {
+    try {
+        setActualizandoEstado(idPedido);
+        setMensajeError('');
+        
+        console.log("🔄 Cambiando estado:", { idPedido, nuevoEstado });
+        
+        const response = await actualizarEstadoPedido(idPedido, nuevoEstado);
+        
+        console.log("📦 Respuesta del backend:", response);
+        console.log("📊 Datos:", response.data);
+        
+        if (response?.data) {
+            // Actualizar el estado local
+            setPedidos(prevPedidos => 
+                prevPedidos.map(pedido => 
+                    pedido.idPedido === idPedido 
+                        ? { ...pedido, estado: response.data.estado || nuevoEstado }
+                        : pedido
+                )
+            );
+            
+            alert(`✅ Estado del pedido #${idPedido} actualizado a: ${nuevoEstado}`);
+        }
+        
+    } catch (error) {
+        console.error("❌ Error:", error);
+        
+        // Extraer mensaje de error
+        let errorMsg = 'Error al actualizar el estado';
+        if (error.response?.data) {
+            errorMsg = typeof error.response.data === 'object' 
+                ? JSON.stringify(error.response.data) 
+                : error.response.data;
+        } else if (error.message) {
+            errorMsg = error.message;
+        }
+        
+        setMensajeError(`Error: ${errorMsg}`);
+        alert(`❌ Error: ${errorMsg}`);
+    } finally {
+        setActualizandoEstado(null);
+    }
+};
+    // 📌 FUNCIÓN PARA FILTRAR PEDIDOS POR ESTADO
+    const pedidosFiltrados = pedidos.filter(pedido => {
+        if (!filtroEstado) return true;
+        return pedido.estado === filtroEstado;
+    });
+
     // 📌 FUNCIONES PARA ACCIONES
     const handleVerPedido = (idPedido) => {
         console.log("Ver pedido:", idPedido);
@@ -107,8 +144,12 @@ const GestionPedido = () => {
         console.log("Editar pedido:", idPedido);
     };
 
-    const handleCambiarEstado = (idPedido, nuevoEstado) => {
-        console.log("Cambiar estado:", idPedido, nuevoEstado);
+    // 📌 FUNCIÓN PARA SELECCIONAR TODOS
+    const handleSelectAll = (e) => {
+        const checkboxes = document.querySelectorAll('.check-item');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = e.target.checked;
+        });
     };
 
     // 📌 RENDERIZADO CONDICIONAL
@@ -130,23 +171,6 @@ const GestionPedido = () => {
         );
     }
 
-    if (error) {
-        return (
-            <div className="all">
-                <MenuAdmin />
-                <div className="container-fluid" id='container-admin'>
-                    <div className="main-content">
-                        <div className="container">
-                            <div className="alert alert-danger" role="alert">
-                                Error al cargar los pedidos: {error}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="all">
             <MenuAdmin />
@@ -156,6 +180,18 @@ const GestionPedido = () => {
                         <div className="row border-bottom pb-2 mb-4">
                             <h2 className="text-center mb-4">Gestión Pedidos</h2>
                         </div>
+
+                        {/* Mensaje de error global */}
+                        {mensajeError && (
+                            <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                                {mensajeError}
+                                <button 
+                                    type="button" 
+                                    className="btn-close" 
+                                    onClick={() => setMensajeError('')}
+                                ></button>
+                            </div>
+                        )}
 
                         <div className="row row-cols-md g-4 mb-4">
                             <div className="col">
@@ -167,22 +203,23 @@ const GestionPedido = () => {
 
                         <div className="row row-cols-md-3 g-4 mb-4">
                             <div className="col">
-                                <select name="estado_pedido" id="estado_pedido" className="form-select">
+                                <select 
+                                    name="estado_pedido" 
+                                    id="estado_pedido" 
+                                    className="form-select"
+                                    value={filtroEstado}
+                                    onChange={(e) => setFiltroEstado(e.target.value)}
+                                >
                                     <option value="">Todos los estados</option>
                                     <option value="Pendiente">Pendiente</option>
-                                    <option value="En proceso">En proceso</option>
+                                    <option value="En_proceso">En proceso</option>
                                     <option value="Entregado">Entregado</option>
                                 </select>
                             </div>
                             <div className="col">
-                                <button type="button" className="btn btn-primary w-100">
-                                    Ver historial
-                                </button>
-                            </div>
-                            <div className="col">
-                                <button type="button" className="btn btn-success w-100">
-                                    Agregar Manualmente
-                                </button>
+                                <p className="text-muted">
+                                    Mostrando <strong>{pedidosFiltrados.length}</strong> de <strong>{pedidos.length}</strong> pedidos
+                                </p>
                             </div>
                         </div>
 
@@ -192,7 +229,11 @@ const GestionPedido = () => {
                                     <thead className="table-dark">
                                         <tr>
                                             <th style={{ width: '40px' }}>
-                                                <input type="checkbox" id="checkAll" />
+                                                <input 
+                                                    type="checkbox" 
+                                                    id="checkAll" 
+                                                    onChange={handleSelectAll}
+                                                />
                                             </th>
                                             <th>ID Pedido</th>
                                             <th>Cliente</th>
@@ -203,10 +244,9 @@ const GestionPedido = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {pedidos.length > 0 ? (
-                                            pedidos.map((pedido) => (
+                                        {pedidosFiltrados.length > 0 ? (
+                                            pedidosFiltrados.map((pedido) => (
                                                 <React.Fragment key={pedido.idPedido}>
-                                                    {/* Fila principal del pedido */}
                                                     <tr className="table-primary fw-bold">
                                                         <td>
                                                             <input 
@@ -222,7 +262,7 @@ const GestionPedido = () => {
                                                             >
                                                                 {pedidosExpandidos[pedido.idPedido] ? '▼' : '►'}
                                                             </button>
-                                                            {pedido.idPedido}
+                                                            #{pedido.idPedido}
                                                         </td>
                                                         <td>{pedido.nombreUsuario}</td>
                                                         <td>
@@ -230,13 +270,25 @@ const GestionPedido = () => {
                                                                 className="form-select form-select-sm"
                                                                 value={pedido.estado}
                                                                 onChange={(e) => handleCambiarEstado(pedido.idPedido, e.target.value)}
+                                                                disabled={actualizandoEstado === pedido.idPedido}
+                                                                style={{
+                                                                    backgroundColor: 
+                                                                        pedido.estado === 'Pendiente' ? '#fff3cd' :
+                                                                        pedido.estado === 'En proceso' ? '#cfe2ff' :
+                                                                        pedido.estado === 'Entregado' ? '#d1e7dd' : 'white'
+                                                                }}
                                                             >
                                                                 <option value="Pendiente">Pendiente</option>
                                                                 <option value="En proceso">En proceso</option>
                                                                 <option value="Entregado">Entregado</option>
                                                             </select>
+                                                            {actualizandoEstado === pedido.idPedido && (
+                                                                <small className="ms-2 text-primary">
+                                                                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                                </small>
+                                                            )}
                                                         </td>
-                                                        <td>{pedido.fechaPedido}</td>
+                                                        <td>{new Date(pedido.fechaPedido).toLocaleDateString()}</td>
                                                         <td>${pedido.totalFinal?.toFixed(2) || '0.00'}</td>
                                                         <td>
                                                             <button 
@@ -254,7 +306,6 @@ const GestionPedido = () => {
                                                         </td>
                                                     </tr>
                                                     
-                                                    {/* Productos del pedido (expandible) */}
                                                     {pedidosExpandidos[pedido.idPedido] && (
                                                         <tr>
                                                             <td colSpan="7" className="p-0">
@@ -272,7 +323,10 @@ const GestionPedido = () => {
                                                                     <tbody>
                                                                         {pedido.productos?.map((producto, idx) => (
                                                                             <tr key={`${pedido.idPedido}-${idx}`}>
-                                                                                <td>{producto.nombreProducto}</td>
+                                                                                <td>
+                                                                                    <small>{producto.codigoReferencia}</small><br/>
+                                                                                    {producto.nombreProducto}
+                                                                                </td>
                                                                                 <td>{producto.nombreColor || 'N/A'}</td>
                                                                                 <td>{producto.nombre || 'N/A'}</td>
                                                                                 <td>{producto.cantidad}</td>
@@ -296,27 +350,6 @@ const GestionPedido = () => {
                                         )}
                                     </tbody>
                                 </table>
-
-                                {/* Contador de pedidos */}
-                                <div className="d-flex justify-content-between align-items-center mt-3">
-                                    <p className="text-muted">
-                                        Total de pedidos: <strong>{pedidos.length}</strong>
-                                    </p>
-                                    <button 
-                                        className="btn btn-outline-primary btn-sm"
-                                        onClick={async () => {
-                                            try {
-                                                const { contarPedidos } = await import("../../../services/administrador/pedidos");
-                                                const response = await contarPedidos();
-                                                alert(`Total de pedidos en BD: ${response.data}`);
-                                            } catch (error) {
-                                                console.error("Error al contar pedidos:", error);
-                                            }
-                                        }}
-                                    >
-                                        Actualizar contador
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>

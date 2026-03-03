@@ -100,7 +100,8 @@ import PerfilUsuario from '../pages/usuario/PerfilUsuario'
 /* ==============================
    METODOS DE PAGO
 ============================== */
-import FormDireccion from '../pages/direccion/FormDireccion'   // metodos de pago
+import FormDireccion from '../pages/direccion/FormDireccion' 
+import PedidosUsuario from "../pages/home/pedidosUsuario";  // metodos de pago
 
 /* ==============================
    METODOS DE PAGO
@@ -152,6 +153,12 @@ function AppRoutes() {
                <Route path="/ticket/:idPedido" element={
                    <ProtectedRoute >
                        <TicketCompra />
+                   </ProtectedRoute>
+               } />
+
+               <Route path="/pedidos/:idUsuario" element={
+                   <ProtectedRoute >
+                       <PedidosUsuario />
                    </ProtectedRoute>
                } />
             

@@ -10,6 +10,8 @@ import "../../styles/home/menuMobile.css";
 // Componente separado para el input de búsqueda DESKTOP
 const SearchInputDesktop = ({ onSearch, initialValue = '' }) => {
     const [query, setQuery] = useState(initialValue);
+    const [activeTab, setActiveTab] = useState("");
+    const location = useLocation();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -18,6 +20,12 @@ const SearchInputDesktop = ({ onSearch, initialValue = '' }) => {
             setQuery('');
         }
     };
+
+    useEffect(() => {
+        const path = location.pathname;
+        if (path.includes("/Administrador/stock")) setActiveTab("Dashboard");
+        else if (path.includes("perfilUsuario")) setActiveTab("Actualizar perfil");
+    }, [location]);
 
     const handleClear = () => {
         setQuery('');
@@ -292,6 +300,9 @@ const MenuHome = () => {
     const { isAuthenticated, userData, logout } = useAuth();
     const { totalItems, clearCart } = useCart();
 
+    // ✅ Obtener userId de forma segura (maneja ambos formatos)
+    const userId = userData?.id || userData?.idUsuario || null;
+
     const [activeMobileNav, setActiveMobileNav] = useState('home');
     const [notification, setNotification] = useState(null);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -303,7 +314,8 @@ const MenuHome = () => {
         else if (path === '/catalogo' || path.includes('/catalogo')) setActiveMobileNav('catalog');
         else if (path === '/favoritos') setActiveMobileNav('favorites');
         else if (path === '/carrito') setActiveMobileNav('cart');
-        else if (path.includes('/profile') || path === '/loginpage') setActiveMobileNav('profile');
+        else if (path.includes('/pedidos/')) setActiveMobileNav('orders');
+        else if (path.includes('/perfilUsuario') || path === '/loginpage') setActiveMobileNav('profile');
     }, [location]);
 
     const handleFiltro = (nuevoFiltro) => {
@@ -436,12 +448,34 @@ const MenuHome = () => {
                                             <small className="text-muted">{userData?.email || ''}</small>
                                         </li>
                                         <li><hr className="dropdown-divider" /></li>
-                                            <li><Link className="dropdown-item" id="navBarHome-profile" to="/perfilUsuario">
-                                            <i className="bi bi-person me-2"></i>Perfil
-                                        </Link></li>
-                                        <li><Link className="dropdown-item" id="navBarHome-orders" to="/profile/orders">
-                                            <i className="bi bi-box-seam me-2"></i>Pedidos
-                                        </Link></li>
+                                        <li>
+                                            <Link 
+                                                className="dropdown-item" 
+                                                id="navBarHome-profile" 
+                                                to={`/perfilUsuario/${userId || ''}`}
+                                            >
+                                                <i className="bi bi-person me-2"></i>Perfil
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            {userId ? (
+                                                <Link 
+                                                    className="dropdown-item" 
+                                                    id="navBarHome-orders" 
+                                                    to={`/pedidos/${userId}`}
+                                                >
+                                                    <i className="bi bi-box-seam me-2"></i>Pedidos
+                                                </Link>
+                                            ) : (
+                                                <Link 
+                                                    className="dropdown-item" 
+                                                    id="navBarHome-orders" 
+                                                    to="/loginpage"
+                                                >
+                                                    <i className="bi bi-box-seam me-2"></i>Inicia sesión para ver pedidos
+                                                </Link>
+                                            )}
+                                        </li>
                                         {/* Dashboard solo para administradores */}
                                         {userData?.rol === 2 && (
                                             <li><Link className="dropdown-item" id="navBarHome-dashboard" to="/Administrador/stock">
@@ -556,23 +590,102 @@ const MenuHome = () => {
                             <span>Favoritos</span>
                         </Link>
 
-                        <Link
-                            to="/profile"
-                            className={`mobile-nav-item ${activeMobileNav === 'orders' ? 'active' : ''}`}
-                            onClick={() => setActiveMobileNav('orders')}
-                        >
-                            <i className="bi bi-box-seam"></i>
-                            <span>Pedidos</span>
-                        </Link>
+                        {/* Link a pedidos con validación */}
+                        {userId ? (
+                            <Link
+                                to={`/pedidos/${userId}`}
+                                className={`mobile-nav-item ${activeMobileNav === 'orders' ? 'active' : ''}`}
+                                onClick={() => setActiveMobileNav('orders')}
+                            >
+                                <i className="bi bi-box-seam"></i>
+                                <span>Pedidos</span>
+                            </Link>
+                        ) : (
+                            <Link
+                                to="/loginpage"
+                                className={`mobile-nav-item`}
+                                onClick={() => setActiveMobileNav('profile')}
+                            >
+                                <i className="bi bi-box-seam"></i>
+                                <span>Pedidos</span>
+                            </Link>
+                        )}
 
-                        <Link
-                            to="/profile"
-                            className={`mobile-nav-item ${activeMobileNav === 'profile' ? 'active' : ''}`}
-                            onClick={() => setActiveMobileNav('profile')}
-                        >
-                            <i className="bi bi-person"></i>
-                            <span>Perfil</span>
-                        </Link>
+                        {/* Más opciones (dropdown) */}
+                        <div id="mobile-nav-more" className="admin-mobile-nav-item admin-mobile-dropdown">
+                            <button 
+                                id="mobile-more-btn"
+                                className="admin-mobile-dropdown-btn"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    const dropdown = e.currentTarget.parentElement;
+                                    dropdown.classList.toggle("show");
+                                }}
+                            >
+                                <i className="bi bi-three-dots mobile-nav-icon"></i>
+                                <span className="mobile-nav-text">Perfil</span>
+                            </button>
+                            
+                            {!isAuthenticated ? (
+                                // USUARIO NO AUTENTICADO
+                                <div id="mobile-dropdown-menu" className="admin-mobile-dropdown-menu">
+                                    <Link 
+                                        id="dropdown-pagina"
+                                        to="/loginpage" 
+                                        className="dropdown-item"
+                                        onClick={() => {
+                                            document.querySelector('.admin-mobile-dropdown')?.classList.remove('show');
+                                        }}
+                                    >
+                                        <i className="bi bi-card-heading dropdown-icon"></i>
+                                        <span className="dropdown-text">Iniciar sesión</span>
+                                    </Link>
+                                </div>    
+                            ) : (
+                                // USUARIO AUTENTICADO
+                                <div id="mobile-dropdown-menu" className="admin-mobile-dropdown-menu">
+                                    <Link 
+                                        id="dropdown-pagina"
+                                        to={`/perfilUsuario/${userId || ''}`}
+                                        className="dropdown-item"
+                                        onClick={() => {
+                                            document.querySelector('.admin-mobile-dropdown')?.classList.remove('show');
+                                        }}
+                                    >
+                                        <i className="bi bi-card-heading dropdown-icon"></i>
+                                        <span className="dropdown-text">Actualizar perfil</span>
+                                    </Link>
+
+                                    {userData?.rol === 2 && (   
+                                        <Link 
+                                            id="dropdown-devoluciones"
+                                            to="/Administrador/stock" 
+                                            className="dropdown-item"
+                                            onClick={() => {
+                                                document.querySelector('.admin-mobile-dropdown')?.classList.remove('show');
+                                            }}
+                                        >
+                                            <i className="bi bi-box-seam dropdown-icon"></i>
+                                            <span className="dropdown-text">Dashboard</span>
+                                        </Link>
+                                    )}
+
+                                    <Link 
+                                        id="dropdown-logout"
+                                        to="/" 
+                                        className="dropdown-item logout"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            document.querySelector('.admin-mobile-dropdown')?.classList.remove('show');
+                                            handleLogout();
+                                        }}
+                                    >
+                                        <i className="bi bi-door-closed dropdown-icon"></i>
+                                        <span className="dropdown-text">Cerrar sesión</span>
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </nav>
 
