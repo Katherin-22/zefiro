@@ -46,6 +46,7 @@ CREATE TABLE Usuario (
   idTipoDeDocumento INT NOT NULL,
   idestado_usuario INT NOT NULL,
   verify_otp VARCHAR(255),
+  is_account_verified TINYINT(1) DEFAULT 0,
   verify_otp_expire_at BIGINT,
   reset_otp VARCHAR(255),
   reset_otp_expire_at BIGINT,
@@ -978,6 +979,8 @@ SELECT * FROM MetodoPago WHERE idMetodoPago = 2;
 
 -- 3. Verificar que el usuario 15 tenga un carrito ACTIVO con items
 SELECT * FROM Carrito WHERE idUsuario = 15 AND estadoCarrito = 'Activo';
+
+SELECT * FROM Usuario;
 
 
 
