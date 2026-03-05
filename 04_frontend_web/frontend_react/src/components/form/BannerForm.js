@@ -1,5 +1,4 @@
 ﻿import { useState } from "react";
-import api_url from "../../services/administrador/api";
 
 const BannerForm = ({ onUpload }) => {
     const [file, setFile] = useState(null);
@@ -20,7 +19,7 @@ const BannerForm = ({ onUpload }) => {
         formData.append("file", file);
 
         try {
-            const response = await fetch(`${api_url}/api/banners/upload`, {
+            const response = await fetch("http://35.171.131.177:8080/api/banners/upload", {
                 method: "POST",
                 body: formData,
             });

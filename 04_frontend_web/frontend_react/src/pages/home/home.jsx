@@ -61,7 +61,7 @@ export default function Home() {
         console.log("📊 Estado inicial banners:", banners);
 
         // EXACTAMENTE IGUAL que en GestionPagina.js
-        fetch(`${api_url}/api/banners`)
+        fetch(`http://35.171.131.177:8080/api/banners`)
             .then((res) => {
                 console.log("📡 Fetch completado - Status:", res.status, res.statusText);
                 console.log("📡 Headers:", Object.fromEntries(res.headers.entries()));

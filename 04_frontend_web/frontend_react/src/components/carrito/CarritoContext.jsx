@@ -1,20 +1,19 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
-import api_url from "../../services/administrador/api";
 
 // ==============================
 // CONFIG
 // ==============================
 const LOCAL_STORAGE_KEY = "Zéfiro_cart";
 
-const carritoApi = api_url.create({
-    baseURL: "/api/carrito",
+const api_url = axios.create({
+    baseURL: "http://35.171.131.177:8080/api/carrito",
     withCredentials: true
 });
 
 
-carritoApi.interceptors.request.use(
+api_url.interceptors.request.use(
     (config) => {
         const tokenRaw = localStorage.getItem("authToken");
         const token = tokenRaw ? tokenRaw.replace(/"/g, "") : null;
@@ -97,7 +96,7 @@ export const CartProvider = ({ children }) => {
 
         setLoading(true);
         try {
-            const response = await carritoApi.get(`/${userId}`);
+            const response = await api_url.get(`/${userId}`);
             // El backend devuelve los DetalleCarrito con toda la data anidada (JOIN FETCH)
 
             console.log("Estructura completa del carrito (Backend):", response.data);
@@ -131,7 +130,7 @@ export const CartProvider = ({ children }) => {
             }));
 
             // Llama al endpoint de sincronización
-            const response = await carritoApi.post(`/sincronizar/${userId}`, itemsToSync);
+            const response = await api_url.post(`/sincronizar/${userId}`, itemsToSync);
 
             localStorage.removeItem(LOCAL_STORAGE_KEY);
 
@@ -192,7 +191,7 @@ export const CartProvider = ({ children }) => {
             // Logueado: Llama al backend (que devuelve la data completa)
             setLoading(true);
             try {
-                const response = await carritoApi.post(`/agregar/${userId}`, { idStock: productoData.idStock, cantidad });
+                const response = await api_url.post(`/agregar/${userId}`, { idStock: productoData.idStock, cantidad });
                 setCartItems(response.data.detalles || []); // Asumo la estructura de respuesta
                 setError(null);
                 return true;
@@ -262,7 +261,7 @@ export const CartProvider = ({ children }) => {
 
         setLoading(true);
         try {
-            const response = await carritoApi.patch(`/${id}`, { cantidad: nuevaCantidad });
+            const response = await api_url.patch(`/${id}`, { cantidad: nuevaCantidad });
             setCartItems(response.data.detalles || []);
             return true;
         } catch (err) {
@@ -308,7 +307,7 @@ export const CartProvider = ({ children }) => {
         // Logueado: Llama al backend (usando idDetalleCarrito)
         setLoading(true);
         try {
-            await carritoApi.delete(`/eliminar/${userId}/${id}`);
+            await api_url.delete(`/eliminar/${userId}/${id}`);
             await fetchCartItems();
             return true;
         } catch {
@@ -333,7 +332,7 @@ export const CartProvider = ({ children }) => {
         // Logueado: Llama al backend
         setLoading(true);
         try {
-            await carritoApi.delete(`/vaciar/${userId}`);
+            await api_url.delete(`/vaciar/${userId}`);
             setCartItems([]);
             return true;
         } catch {

@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/banners")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8080"})
+@CrossOrigin(origins = {"http://35.171.131.177:3000", "http://35.171.131.177:8080"})
 public class BannerController {
 
     @Value("${upload.path}")

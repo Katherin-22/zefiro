@@ -5,7 +5,6 @@ import "../../../styles/administrador/inventario.css";
 import { useEffect, useState } from "react";
 import BannerForm from "../../../components/form/BannerForm.js";
 import BannerCarousel from "../../../hooks/carrrousel/carrousel.js";
-import api_url from "../../../services/administrador/api.js";
 
 const GestionPagina = () => {
     const [banners, setBanners] = useState([]);
@@ -17,7 +16,7 @@ const GestionPagina = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`${api_url}/api/banners`);
+            const response = await fetch("http://35.171.131.177:8080/api/banners");
             if (!response.ok) {
                 throw new Error(`Error ${response.status}: ${response.statusText}`);
             }
@@ -47,7 +46,7 @@ const GestionPagina = () => {
         }
 
         try {
-            const response = await fetch(`${api_url}/api/banners/${id}`, {
+            const response = await fetch(`http://35.171.131.177:8080/api/banners/${id}`, {
                 method: "DELETE",
             });
 
@@ -68,7 +67,7 @@ const GestionPagina = () => {
     // Función para obtener URL completa de la imagen
     const getImageUrl = (url) => {
         if (url.startsWith('http')) return url;
-        return `${api_url}${url}`;
+        return `http://35.171.131.177:8080${url}`;
     };
 
     return (
