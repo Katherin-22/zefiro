@@ -4,7 +4,7 @@ import axios from 'axios';
 import api_url from '../../services/administrador/api';
 
 // Crear instancia de axios aquí mismo
-const API_URL = `${api_url}/api/favoritos`;
+const API_URL = `http://35.171.131.177:8080/api/favoritos`;
 
 const favoritosApi = axios.create({
   baseURL: API_URL,

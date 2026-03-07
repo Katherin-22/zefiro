@@ -1,4 +1,3 @@
-
 package com.backend.proyect.config.usuario;
 
 import org.springframework.context.annotation.Bean;
@@ -48,12 +47,14 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/pedidos/**").permitAll()
 
+                        .requestMatchers("/api/banners/**").permitAll()
+
                         .requestMatchers(
                                 "/categoria", "/categoria/*", "/promocion", "/stock/*",
                                 "/stock/variaciones/*", "/stock/*", "/producto/*/stock/*", "/promocion/*",
                                 "/productos", "/producto", "/producto/*", "/producto/*/imagenes",
                                 "/producto/*/imagen/*", "/color", "/color/*", "/imagen/*",
-                                "/marca", "/marca/*", "/material/*", "/material", "/api/banners/*"
+                                "/marca", "/marca/*", "/material/*", "/material"
                         ).permitAll() // ajustar
 
                         .requestMatchers("/api/usuarios/perfil").authenticated()

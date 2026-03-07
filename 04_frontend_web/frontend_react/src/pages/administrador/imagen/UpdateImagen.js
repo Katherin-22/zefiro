@@ -101,7 +101,7 @@ export default function UpdateImagen() {
                             {imagen && (
                             <tr key={imagen.idImagen}>
                                 <td>
-                                <img src={`${api_url}${imagen.urlImagen}`} alt="Producto" width="250" height="350" />
+                                <img src={`http://35.171.131.177:8080${imagen.urlImagen}`} alt="Producto" width="250" height="350" />
                                 </td>
                             </tr>
                             )}

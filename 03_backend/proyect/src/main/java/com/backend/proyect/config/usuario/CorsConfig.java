@@ -1,4 +1,3 @@
-
 package com.backend.proyect.config.usuario;
 
 import org.springframework.context.annotation.Bean;
@@ -16,7 +15,10 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList("http://35.171.131.177:3000"));
+        configuration.setAllowedOrigins(Arrays.asList(            "http://35.171.131.177:3000",
+            "http://35.171.131.177:8080",
+            "http://localhost:3000",
+            "http://localhost:8080"));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 

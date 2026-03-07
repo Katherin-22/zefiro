@@ -136,7 +136,7 @@ export default function CreateImagen() {
                         {imagenes.map((imagen) => (
                             <tr key={imagen.idImagen}>
                             <td>
-                              <img src={`${api_url}${imagen.urlImagen}`} alt="Producto" width="350" height="350"/>
+                              <img src={`http://35.171.131.177:8080${imagen.urlImagen}`} alt="Producto" width="350" height="350"/>
                             </td>
                             <td><Link to={`/producto/${imagen.producto.idProducto}/imagen/${imagen.idImagen}`} id="boton_agregar" className="btn btn-light">Editar</Link>
                             <button

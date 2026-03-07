@@ -1,5 +1,5 @@
 // pages/home/home.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import MenuHome from "../../layouts/home/menuHome";
 import Footer from "../../layouts/home/footer";
 import { useGetStock } from "../../hooks/stock/useGetStock";
@@ -9,31 +9,42 @@ import "../../styles/home/paginaInicio.css";
 import { useFavoritos } from "../../hooks/favorito/useFavorito";
 import useAuth from "../../hooks/token/useAuth";
 import BannerCarousel from "../../hooks/carrrousel/carrousel.js";
-import api_url from "../../services/administrador/api.js";
 
 export default function Home() {
-    // ========== DEBUG INICIAL ==========
-    console.log("=== 🏠 HOME.JSX INICIADO ===");
-    console.log("📅 Hora:", new Date().toISOString());
-    // ===================================
+    // ========== CONTROL DE RENDERS ==========
+    const hasLogged = useRef(false);
+    const hasFetchedBanners = useRef(false);
+    const hasFetchedFavoritos = useRef(false);
+    const hasFetchedContador = useRef(false);
+    const hasFetchedProductos = useRef(false);
+    // ========================================
+
+    // ========== DEBUG INICIAL (SOLO UNA VEZ) ==========
+    if (!hasLogged.current) {
+        console.log("=== 🏠 HOME.JSX INICIADO ===");
+        console.log("📅 Hora:", new Date().toISOString());
+        hasLogged.current = true;
+    }
+    // ==================================================
 
     const { stock, loading, error } = useGetStock();
     const navigate = useNavigate();
 
     // Estados para los banners
     const [banners, setBanners] = useState([]);
-    const [loadingBanners, setLoadingBanners] = useState(false);
+    const [loadingBanners, setLoadingBanners] = useState(true); // Iniciar como true
     const [bannerError, setBannerError] = useState("");
 
     // Usa tu hook useAuth
     const { isAuthenticated, userData } = useAuth();
 
-    // Obtén el userId de userData
-    const userId = userData?.idUsuario;
-
-    console.log('Home - isAuthenticated:', isAuthenticated);
-    console.log('Home - userData:', userData);
-    console.log('Home - userId:', userId);
+       const userId = userData?.idUsuario;
+    // Log de autenticación (solo cuando cambien)
+    useEffect(() => {
+        console.log('Home - isAuthenticated:', isAuthenticated);
+        console.log('Home - userData:', userData);
+        console.log('Home - userId:', userData?.idUsuario);
+    }, [isAuthenticated, userData]);
 
     const [zapatos, setZapatos] = useState([]);
     const [bolsos, setBolsos] = useState([]);
@@ -54,38 +65,110 @@ export default function Home() {
     } = useFavoritos();
 
     // ============================
-    // CARGAR BANNERS - IDÉNTICO A GESTIÓN
+    // CARGAR BANNERS - VERSIÓN CORREGIDA
     // ============================
     useEffect(() => {
-        console.log("🔄 useEffect de banners EJECUTADO");
-        console.log("📊 Estado inicial banners:", banners);
+        // Evitar múltiples ejecuciones
+        if (hasFetchedBanners.current) return;
+        hasFetchedBanners.current = true;
+        
+        console.log("🔄 Iniciando carga de banners...");
+        setLoadingBanners(true);
 
-        // EXACTAMENTE IGUAL que en GestionPagina.js
-        fetch(`http://35.171.131.177:8080/api/banners`)
-            .then((res) => {
-                console.log("📡 Fetch completado - Status:", res.status, res.statusText);
-                console.log("📡 Headers:", Object.fromEntries(res.headers.entries()));
-                return res.json();
-            })
-            .then((data) => {
-                console.log("✅ Banners recibidos:", data);
-                console.log("📊 Tipo de datos:", typeof data);
-                console.log("📊 Es array?:", Array.isArray(data));
-                console.log("📊 Cantidad de banners:", data ? data.length : 0);
+        const fetchBanners = async () => {
+            try {
+                console.log('🔄 Intentando cargar banners...');
+                
+                // Opción 1: Endpoint principal
+                const response = await fetch('http://35.171.131.177:8080/api/banners');
+                
+                console.log('📡 Respuesta banners - Status:', response.status);
+                
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        console.log('❌ Acceso prohibido a banners - probando endpoint público');
+                        
+                        // Opción 2: Intentar con endpoint público
+                        try {
+                            const publicResponse = await fetch('http://35.171.131.177:8080/api/banners/public');
+                            
+                            if (publicResponse.ok) {
+                                const publicData = await publicResponse.json();
+                                console.log('✅ Banners públicos cargados:', publicData);
+                                setBanners(publicData);
+                                setBannerError("");
+                            } else {
+                                throw new Error(`Endpoint público respondió con ${publicResponse.status}`);
+                            }
+                        } catch (publicError) {
+                            console.log('❌ Endpoint público falló:', publicError.message);
+                            
+                            // Opción 3: Datos mock como fallback
+                            console.log('🔄 Usando datos mock de banners');
+                            const mockBanners = [
+                                {
+                                    id: 1,
+                                    titulo: 'Bienvenido a Zefiro',
+                                    imagen: 'https://via.placeholder.com/1920x600/3498db/ffffff?text=Zefiro',
+                                    urlDestino: '/catalogo',
+                                    activo: true
+                                },
+                                {
+                                    id: 2,
+                                    titulo: 'Nueva Colección',
+                                    imagen: 'https://via.placeholder.com/1920x600/e74c3c/ffffff?text=Nueva+Colección',
+                                    urlDestino: '/catalogo',
+                                    activo: true
+                                },
+                                {
+                                    id: 3,
+                                    titulo: 'Ofertas Especiales',
+                                    imagen: 'https://via.placeholder.com/1920x600/2ecc71/ffffff?text=Ofertas',
+                                    urlDestino: '/catalogo',
+                                    activo: true
+                                }
+                            ];
+                            setBanners(mockBanners);
+                            setBannerError("Usando banners de ejemplo - El servidor no responde");
+                        }
+                    } else {
+                        throw new Error(`Error HTTP ${response.status}`);
+                    }
+                } else {
+                    const data = await response.json();
+                    console.log('✅ Banners cargados:', data);
+                    setBanners(data);
+                    setBannerError("");
+                }
+            } catch (error) {
+                console.error('❌ Error cargando banners:', error);
+                setBannerError("Error al cargar banners promocionales");
+                
+                // Fallback con datos mock
+                setBanners([
+                    {
+                        id: 1,
+                        titulo: 'Bienvenido a Zefiro',
+                        imagen: 'https://via.placeholder.com/1920x600/3498db/ffffff?text=Zefiro',
+                        urlDestino: '/catalogo',
+                        activo: true
+                    }
+                ]);
+            } finally {
+                setLoadingBanners(false);
+                console.log("🏁 Carga de banners completada");
+            }
+        };
 
-                setBanners(data || []);
-            })
-            .catch((err) => {
-                console.error("❌ Error cargando banners:", err);
-                console.error("❌ Stack trace:", err.stack);
-                setBannerError("Error: " + err.message);
-            });
-    }, []);
+        fetchBanners();
+    }, []); // Dependencias vacías - solo se ejecuta UNA VEZ
 
     // ============================
     // 1. CARGAR CONTADOR DE FAVORITOS
     // ============================
     useEffect(() => {
+        if (hasFetchedContador.current) return;
+        
         const cargarContadorFavoritos = async () => {
             if (!userId) {
                 setContadorFavoritos(0);
@@ -95,6 +178,7 @@ export default function Home() {
             try {
                 const cantidad = await contarFavoritosUsuario(userId);
                 setContadorFavoritos(cantidad);
+                hasFetchedContador.current = true;
             } catch (error) {
                 console.error("Error cargando contador de favoritos:", error);
             }
@@ -107,6 +191,8 @@ export default function Home() {
     // 2. VERIFICAR FAVORITOS DE TODOS LOS PRODUCTOS
     // ============================
     useEffect(() => {
+        if (hasFetchedFavoritos.current || !stock.length) return;
+        
         const verificarFavoritosProductos = async () => {
             if (!userId || !stock.length) {
                 // Inicializar todos como false si no hay usuario
@@ -154,78 +240,19 @@ export default function Home() {
                     }));
                 }
             }
+            
+            hasFetchedFavoritos.current = true;
         };
 
         verificarFavoritosProductos();
     }, [userId, stock, verificarProductoEnFavoritos]);
 
     // ============================
-    // 3. MANEJAR CLIC EN CORAZÓN
+    // 3. FILTRAR PRODUCTOS Y CARGAR IMÁGENES
     // ============================
-    const handleFavoritoClick = async (producto) => {
-        if (!isAuthenticated || !userId) {
-            alert("Por favor inicia sesión para agregar productos a favoritos");
-            navigate('/loginpage');
-            return;
-        }
-
-        if (!producto.idProducto) return;
-
-        const productoId = producto.idProducto;
-        const esFavoritoActual = estadosFavoritos[productoId];
-
-        try {
-            // Marcar como cargando
-            setCargandoFavoritos(prev => ({
-                ...prev,
-                [productoId]: true
-            }));
-
-            if (esFavoritoActual) {
-                // Eliminar de favoritos
-                await eliminarFavorito(userId, productoId);
-                setEstadosFavoritos(prev => ({
-                    ...prev,
-                    [productoId]: false
-                }));
-                setContadorFavoritos(prev => Math.max(0, prev - 1));
-            } else {
-                // Agregar a favoritos
-                const requestData = { idProducto: productoId };
-                await agregarFavorito(userId, requestData);
-                setEstadosFavoritos(prev => ({
-                    ...prev,
-                    [productoId]: true
-                }));
-                setContadorFavoritos(prev => prev + 1);
-            }
-        } catch (error) {
-            console.error("Error al cambiar estado de favorito:", error);
-            alert(error.message || "Error al actualizar favoritos");
-        } finally {
-            setCargandoFavoritos(prev => ({
-                ...prev,
-                [productoId]: false
-            }));
-        }
-    };
-
-    // Función para cargar imágenes de un producto
-    const cargarImagenProducto = async (idProducto) => {
-        try {
-            const response = await getImagenById(idProducto);
-            if (response.data && response.data.length > 0) {
-                return `${api_url}${response.data[0].urlImagen}`;
-            }
-            return null;
-        } catch (error) {
-            console.error("Error al cargar imagen del producto:", error);
-            return null;
-        }
-    };
-
-    // Filtrar productos y cargar sus imágenes
     useEffect(() => {
+        if (hasFetchedProductos.current || !stock || !stock.length) return;
+        
         const filtrarYCargarImagenes = async () => {
             if (stock && stock.length > 0) {
                 // Filtrar zapatos
@@ -277,6 +304,7 @@ export default function Home() {
                 setImagenesProductos(todasImagenes);
                 setZapatos(zapatosFiltrados);
                 setBolsos(bolsosFiltrados);
+                hasFetchedProductos.current = true;
             } else {
                 setZapatos([]);
                 setBolsos([]);
@@ -286,6 +314,71 @@ export default function Home() {
 
         filtrarYCargarImagenes();
     }, [stock]);
+
+    // Función para cargar imágenes de un producto
+    const cargarImagenProducto = async (idProducto) => {
+        try {
+            const response = await getImagenById(idProducto);
+            if (response.data && response.data.length > 0) {
+                return `http://35.171.131.177:8080${response.data[0].urlImagen}`;
+            }
+            return null;
+        } catch (error) {
+            console.error("Error al cargar imagen del producto:", error);
+            return null;
+        }
+    };
+
+    // ============================
+    // MANEJAR CLIC EN CORAZÓN
+    // ============================
+    const handleFavoritoClick = async (producto) => {
+        if (!isAuthenticated || !userId) {
+            alert("Por favor inicia sesión para agregar productos a favoritos");
+            navigate('/loginpage');
+            return;
+        }
+
+        if (!producto.idProducto) return;
+
+        const productoId = producto.idProducto;
+        const esFavoritoActual = estadosFavoritos[productoId];
+
+        try {
+            // Marcar como cargando
+            setCargandoFavoritos(prev => ({
+                ...prev,
+                [productoId]: true
+            }));
+
+            if (esFavoritoActual) {
+                // Eliminar de favoritos
+                await eliminarFavorito(userId, productoId);
+                setEstadosFavoritos(prev => ({
+                    ...prev,
+                    [productoId]: false
+                }));
+                setContadorFavoritos(prev => Math.max(0, prev - 1));
+            } else {
+                // Agregar a favoritos
+                const requestData = { idProducto: productoId };
+                await agregarFavorito(userId, requestData);
+                setEstadosFavoritos(prev => ({
+                    ...prev,
+                    [productoId]: true
+                }));
+                setContadorFavoritos(prev => prev + 1);
+            }
+        } catch (error) {
+            console.error("Error al cambiar estado de favorito:", error);
+            alert(error.message || "Error al actualizar favoritos");
+        } finally {
+            setCargandoFavoritos(prev => ({
+                ...prev,
+                [productoId]: false
+            }));
+        }
+    };
 
     // Función para obtener la imagen de un producto
     const obtenerImagenProducto = (producto) => {
@@ -380,7 +473,6 @@ export default function Home() {
         );
     };
 
-
     // Estados de carga y error
     if (loading) {
         return (
@@ -431,20 +523,15 @@ export default function Home() {
                             <p className="text-white mt-2">Cargando banners promocionales...</p>
                         </div>
                     ) : bannerError ? (
-                        <div className="alert alert-danger text-center m-3">
+                        <div className="alert alert-warning text-center m-3">
                             <i className="bi bi-exclamation-triangle me-2"></i>
-                            Error: {bannerError}
+                            {bannerError}
                         </div>
                     ) : banners.length > 0 ? (
-                        <>
-                            <BannerCarousel banners={banners} />
-                            <div className="text-center mt-2 text-white bg-dark bg-opacity-50 py-1">
-                              
-                            </div>
-                        </>
+                        <BannerCarousel banners={banners} />
                     ) : (
-                        <div className="alert alert-warning text-center m-3">
-                            <i className="bi bi-exclamation-circle me-2"></i>
+                        <div className="alert alert-info text-center m-3">
+                            <i className="bi bi-info-circle me-2"></i>
                             No hay banners para mostrar
                         </div>
                     )}
