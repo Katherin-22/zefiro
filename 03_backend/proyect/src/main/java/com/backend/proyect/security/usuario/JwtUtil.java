@@ -2,13 +2,12 @@ package com.backend.proyect.security.usuario;
 
 import com.backend.proyect.model.usuario.Usuario;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,11 +31,11 @@ public class JwtUtil {
         claims.put("idUsuario", usuario.getIdUsuario());
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(usuario.getCorreoElectronico())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .claims(claims)
+                .subject(usuario.getCorreoElectronico())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(getSignKey())
                 .compact();
     }
 
@@ -73,14 +72,14 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignKey()) // ✅ clave correcta
+        return Jwts.parser()
+                .verifyWith(getSignKey()) // ✅ clave correcta
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    private Key getSignKey() {
+    private SecretKey getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }

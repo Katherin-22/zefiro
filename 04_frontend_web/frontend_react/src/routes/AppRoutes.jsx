@@ -89,6 +89,8 @@ import UpdateMaterial from "../pages/administrador/material/UpdateMaterial"; // 
 import LoginPage from '../pages/usuario/LoginPage'                          // Página de login
 import RegistrarUsuarios from '../pages/usuario/RegistrarUsuarios'          // Registro
 import RecuperarContraseña from '../pages/usuario/RecuperarContraseña'      // Recuperar contraseña
+import EmailVerify from "../pages/usuario/contraseña/EmailVerify";   
+import ResetPassword from "../pages/usuario/contraseña/ResetPassword";
 import Login from '../components/iniciosesion/Login'                        // Componente login
 
 /* ==============================
@@ -364,6 +366,9 @@ function AppRoutes() {
             
             {/* 🔓 Recuperación de contraseña */}
             <Route path='/recuperarContraseña' element={<RecuperarContraseña/>}/>
+            <Route path='/email-verify' element={<EmailVerify/>}/>
+            <Route path='/reset-password' element={<ResetPassword/>}/>
+
             
             {/* 👤 Componente de login */}
             <Route path='/login' element={<Login/>}/>
