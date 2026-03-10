@@ -33,30 +33,32 @@ CREATE TABLE estado_usuario (
 
 -- Tabla usuario
 CREATE TABLE Usuario (
-  idUsuario INT AUTO_INCREMENT NOT NULL,
+  idUsuario INT AUTO_INCREMENT NOT NULL UNIQUE,
   numeroDocumento INT NOT NULL,
   nombreUsuario VARCHAR(45) NOT NULL,
   primerApellido VARCHAR(45) NOT NULL,
   segundoApellido VARCHAR(45) NULL,
   telefono VARCHAR(45) NOT NULL,
   password VARCHAR(255) NOT NULL,
-  correoElectronico VARCHAR(45) NOT NULL,
+  correoElectronico VARCHAR(45) NOT NULL UNIQUE,
   Direccion VARCHAR(45) NOT NULL,
   idRol INT NOT NULL,
   idTipoDeDocumento INT NOT NULL,
   idestado_usuario INT NOT NULL,
-  created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-  reset_otp VARCHAR(255) NULL,
-  reset_otp_expire_at TIMESTAMP NULL,
-  updated_at TIMESTAMP NULL,
-  verify_otp VARCHAR(255) NULL,
-  verify_otp_expire_at TIMESTAMP NULL,
+  verify_otp VARCHAR(255),
+  is_account_verified TINYINT(1) DEFAULT 0,
+  verify_otp_expire_at BIGINT,
+  reset_otp VARCHAR(255),
+  reset_otp_expire_at BIGINT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
   PRIMARY KEY(idUsuario),
-  FOREIGN KEY (idRol) REFERENCES rol(idRol),
+  FOREIGN KEY (idRol) REFERENCES rol( idRol),
   FOREIGN KEY (idTipoDeDocumento) REFERENCES tipo_de_documento(idTipoDeDocumento),
   FOREIGN KEY (idestado_usuario) REFERENCES estado_usuario(idestado_usuario)
-);
+  
+) ;
 -- -----------------------------------------------------
 -- MÓDULO DE PROMOCIONES Y DESCUENTOS            			1.1
 -- -----------------------------------------------------
