@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
             const storedToken = localStorage.getItem("authToken")?.replace(/"/g, "");
             if (!storedToken) return;
 
-            const response = await axios.get('http://localhost:8080/api/usuarios/perfil', {
+            const response = await axios.get('http://35.171.131.177:8080/api/usuarios/perfil', {
                 headers: {
                     Authorization: `Bearer ${storedToken}`,
                     "Content-Type": "application/json",
