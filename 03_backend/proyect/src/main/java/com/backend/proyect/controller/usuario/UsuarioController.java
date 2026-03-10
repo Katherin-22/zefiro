@@ -8,6 +8,7 @@ import com.backend.proyect.repository.usuario.RolRepository;
 import com.backend.proyect.repository.usuario.TipoDocumentoRepository;
 import com.backend.proyect.repository.usuario.UsuarioRepository;
 import com.backend.proyect.service.usuario.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -69,7 +70,7 @@ public class UsuarioController {
      * Endpoint para actualizar el perfil del usuario logeado (PUT /api/usuarios/perfil).
      */
     @PutMapping("/perfil")
-    public ResponseEntity<Usuario> actualizarMiPerfil(@RequestBody UsuarioRequest usuarioRequest) {
+    public ResponseEntity<Usuario> actualizarMiPerfil(@Valid @RequestBody UsuarioRequest usuarioRequest) {
         // 1. Obtener el ID del usuario logeado del contexto de seguridad
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UsuarioPrincipal usuarioPrincipalWrapper = (UsuarioPrincipal) authentication.getPrincipal();
@@ -132,7 +133,7 @@ public class UsuarioController {
 
     // Crear un usuario
     @PostMapping
-    public ResponseEntity<Usuario> guardarUsuario(@RequestBody UsuarioRequest usuarioRequest) {
+    public ResponseEntity<Usuario> guardarUsuario(@Valid @RequestBody UsuarioRequest usuarioRequest) {
         Usuario usuario =  new Usuario();
 
         usuario.setNumeroDocumento(usuarioRequest.getNumeroDocumento());
@@ -161,7 +162,7 @@ public class UsuarioController {
     // El administrador puede actualizar cualquier perfil.
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') or #id.equals(authentication.principal.getUsuario().idUsuario)")
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Integer id, @RequestBody UsuarioRequest usuarioRequest) {
+    public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Integer id, @Valid  @RequestBody UsuarioRequest usuarioRequest) {
 
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
 
