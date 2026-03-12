@@ -280,7 +280,7 @@ CREATE TABLE Pedido (
   idUsuario INT NOT NULL,
   idCarrito INT NOT NULL,
   idPromocion INT  NULL,
-  estado enum('Pendiente','En proceso','Entregado')default 'Pendiente',
+  estado enum('Pendiente','Procesando','Entregado')default 'Pendiente',
   total_final DECIMAL(10,2) NOT NULL DEFAULT 0,
   idMetodoPago INT NOT NULL,
   
