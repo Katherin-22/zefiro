@@ -90,16 +90,16 @@ public class PedidoService {
             case "Pendiente":
                 nuevoEstado = EstadoPedido.Pendiente;
                 break;
-            case "En proceso":
+            case "Procesando":
                 // Mapear "En proceso" (con espacio) a "En_proceso" (con guión bajo)
-                nuevoEstado = EstadoPedido.En_proceso;
+                nuevoEstado = EstadoPedido.Procesando;
                 break;
             case "Entregado":
                 nuevoEstado = EstadoPedido.Entregado;
                 break;
             default:
                 throw new RuntimeException("Estado no válido: '" + nuevoEstadoStr +
-                        "'. Debe ser: Pendiente, En proceso o Entregado");
+                        "'. Debe ser: Pendiente, Procesando o Entregado");
         }
 
         // 3. Asignar el nuevo estado

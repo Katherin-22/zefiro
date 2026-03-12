@@ -212,7 +212,7 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                                 >
                                     <option value="">Todos los estados</option>
                                     <option value="Pendiente">Pendiente</option>
-                                    <option value="En_proceso">En proceso</option>
+                                    <option value="Procesando">Procesando</option>
                                     <option value="Entregado">Entregado</option>
                                 </select>
                             </div>
@@ -274,12 +274,12 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                                                                 style={{
                                                                     backgroundColor: 
                                                                         pedido.estado === 'Pendiente' ? '#fff3cd' :
-                                                                        pedido.estado === 'En proceso' ? '#cfe2ff' :
+                                                                        pedido.estado === 'Procesando' ? '#cfe2ff' :
                                                                         pedido.estado === 'Entregado' ? '#d1e7dd' : 'white'
                                                                 }}
                                                             >
                                                                 <option value="Pendiente">Pendiente</option>
-                                                                <option value="En proceso">En proceso</option>
+                                                                <option value="Procesando">Procesando</option>
                                                                 <option value="Entregado">Entregado</option>
                                                             </select>
                                                             {actualizandoEstado === pedido.idPedido && (
