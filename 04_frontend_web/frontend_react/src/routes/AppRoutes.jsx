@@ -11,9 +11,7 @@ import Home from "../pages/home/home";                      // Página principal
 import Catalogo from "../pages/home/category/catalogo";     // Catálogo de productos
 import ProductoGen from "../pages/home/productoGen";        // Detalle de producto
 import CategoriasMobilePage from "../pages/home/category/categorias";
-import FavoritosPage from "../pages/home/favoritos";
-import EmailVerify from "../pages/usuario/contraseña/EmailVerify";
-import ResetPassword from "../pages/usuario/contraseña/ResetPassword";
+import FavoritosPage  from "../pages/home/favoritos";
 /* ==============================
    ADMINISTRACIÓN - GENERAL
    (Dashboard principal)
@@ -126,11 +124,7 @@ import TicketCompra from "../pages/ticket/ticketCompra";
 function AppRoutes() {
    return (
       <FiltroProvider>
-           <Routes>
-
-            <Route path='/email-verify' element={<EmailVerify />} />
-            <Route path='/reset-password' element={<ResetPassword />} />
-
+         <Routes>
             
             {/* ========== RUTAS PÚBLICAS ========== */}
             {/* 🏠 Página principal - Acceso libre */}

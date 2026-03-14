@@ -2,7 +2,6 @@ package com.backend.proyect.model.usuario;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,7 +12,6 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Builder
 @Entity
 @Table(name = "Usuario")
 
@@ -21,7 +19,7 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idUsuario", unique = true )
+    @Column(name = "idUsuario" )
     private Integer idUsuario;
 
     @Column(name = "numeroDocumento", nullable = false)
@@ -42,7 +40,7 @@ public class Usuario {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "correoElectronico" , unique = true)
+    @Column(name = "correoElectronico")
     private String correoElectronico;
 
     @Column(name = "Direccion")
@@ -51,17 +49,14 @@ public class Usuario {
     @Column(name = "verify_otp")
     private String verify_otp;
 
-    @Column(name = "is_account_verified", columnDefinition = "TINYINT(1) DEFAULT 0")
-    private Boolean isAccountVerified;
-
     @Column(name = "verify_otp_expire_at")
-    private Long verify_otp_expire_at;
+    private Timestamp verify_otp_expire_at;
 
     @Column(name = "reset_otp")
     private String reset_otp;
 
     @Column(name = "reset_otp_expire_at")
-    private Long reset_otp_expire_at;
+    private Timestamp reset_otp_expire_at;
 
     @ManyToOne
     @JoinColumn(name = "idRol", referencedColumnName = "idRol")

@@ -1,86 +1,55 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import { createContext, useContext, useState, useEffect } from "react";
 
 // Creamos el contexto de autenticación para manejar el estado global del usuario
 const AuthContext = createContext();
 
 // Proveedor del contexto: Este componente envuelve la aplicación y proporciona acceso al estado de autenticación
 export const AuthProvider = ({ children }) => {
-    // Estado que almacenará los datos del usuario, inicialmente está vacío (sin usuario)
-    const [user, setUser] = useState(null);
-    const [token, setToken] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+  // Estado que almacenará los datos del usuario, inicialmente está vacío (sin usuario)
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null); 
+  const [isLoading, setIsLoading] = useState(true);
 
-    // Función para cerrar sesión
-    const logout = useCallback(() => {
-        setUser(null); // Limpiamos el estado del usuario
-        setToken(null) // Al actualizar el estado, React avisa a todos los componentes
-        localStorage.removeItem("userData"); // Eliminamos los datos del usuario de localStorage
-        localStorage.removeItem("authToken"); // Eliminamos el token de localStorage también, por seguridad
-    }, []);
+  // useEffect que se ejecuta una sola vez cuando el componente se monta
+  // Intenta cargar los datos del usuario desde localStorage si existen
+  useEffect(() => {
+    const storedUser = localStorage.getItem("userData"); // Recuperamos el usuario desde localStorage
+    const storedToken = localStorage.getItem("authToken");
 
+    if (storedUser && storedToken) {
+      try {
+        setUser(JSON.parse(storedUser)); // Si existe, lo parseamos y lo seteamos en el estado
+        setToken(storedToken); // Seteamos el token en el estado
+      } catch (error) {
+        console.error("Error al cargar datos de sesión:", error);
+        localStorage.clear();
+      }
+    }
+    setIsLoading(false);
+  }, []); // La dependencia vacía asegura que esto se ejecute solo una vez al inicio
 
-    // Función para obtener datos frescos del perfil desde el backend
-    const getUserData = useCallback(async () => {
-        try {
-            const storedToken = localStorage.getItem("authToken")?.replace(/"/g, "");
-            if (!storedToken) return;
+  // Función para guardar al usuario en el estado y en el localStorage cuando hace login
+  const login = (userData, token) => {
+    setUser(userData); // Establecemos el estado del usuario
+    setToken(token); // Al actualizar el estado, React avisa a todos los componentes
+    localStorage.setItem("userData", JSON.stringify(userData)); // Guardamos los datos del usuario en localStorage
+    localStorage.setItem("authToken", token); // <--- NUEVO
+  };
 
-            const response = await axios.get('http://localhost:8080/api/usuarios/perfil', {
-                headers: {
-                    Authorization: `Bearer ${storedToken}`,
-                    "Content-Type": "application/json",
-                }
-            });
+  // Función para cerrar sesión
+  const logout = () => {
+    setUser(null); // Limpiamos el estado del usuario
+    setToken(null) // Al actualizar el estado, React avisa a todos los componentes
+    localStorage.removeItem("userData"); // Eliminamos los datos del usuario de localStorage
+    localStorage.removeItem("authToken"); // Eliminamos el token de localStorage también, por seguridad
+  };
 
-            if (response.status === 200) {
-                setUser(response.data);
-                localStorage.setItem("userData", JSON.stringify(response.data));
-            }
-        } catch (error) {
-            console.error("Error al recuperar perfil:", error);
-            // Si el servidor dice que el token no vale (401 o 403), cerramos sesión
-            if (error.response?.status === 401 || error.response?.status === 403) {
-                logout();
-            }
-
-        }
-    }, [logout]);
-
-    // useEffect que se ejecuta una sola vez cuando el componente se monta
-    // Intenta cargar los datos del usuario desde localStorage si existen
-    useEffect(() => {
-        const storedUser = localStorage.getItem("userData"); // Recuperamos el usuario desde localStorage
-        const storedToken = localStorage.getItem("authToken");
-
-        if (storedUser && storedToken) {
-            try {
-                setUser(JSON.parse(storedUser)); // Si existe, lo parseamos y lo seteamos en el estado
-                setToken(storedToken); // Seteamos el token en el estado
-                getUserData();
-            } catch (error) {
-                console.error("Error al cargar datos de sesión:", error);
-                localStorage.clear();
-            }
-        }
-        setIsLoading(false);
-    }, [getUserData]); // La dependencia vacía asegura que esto se ejecute solo una vez al inicio
-
-
-    // Función para guardar al usuario en el estado y en el localStorage cuando hace login
-    const login = (userData, token) => {
-        setUser(userData); // Establecemos el estado del usuario
-        setToken(token); // Al actualizar el estado, React avisa a todos los componentes
-        localStorage.setItem("userData", JSON.stringify(userData)); // Guardamos los datos del usuario en localStorage
-        localStorage.setItem("authToken", token); // <--- NUEVO
-    };
-
-    return (
-        // Proveedor del contexto que pasa los valores del estado y funciones a los componentes hijos
-        <AuthContext.Provider value={{ user, token, isAuthenticated: !!token, login, logout, isLoading, getUserData }}>
-            {children} {/* Renderiza los componentes hijos que estarán dentro de este proveedor */}
-        </AuthContext.Provider>
-    );
+  return (
+    // Proveedor del contexto que pasa los valores del estado y funciones a los componentes hijos
+    <AuthContext.Provider value={{ user, token,  isAuthenticated: !!token, login, logout , isLoading }}>
+      {children} {/* Renderiza los componentes hijos que estarán dentro de este proveedor */}
+    </AuthContext.Provider>
+  );
 };
 
 // Hook personalizado para utilizar el contexto de autenticación en cualquier parte de la aplicación

@@ -6,8 +6,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,7 +15,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import com.backend.proyect.security.usuario.JwtFilter;
 
 @Configuration
-@EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
@@ -32,7 +29,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> csrf.disable()) // desactiva CSRF
 
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
 
@@ -64,18 +61,15 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/payments/**").authenticated()
 
-                        .requestMatchers("/api/carrito/**", "/api/carrito/agregar/**", "/api/carrito/sincronizar/**").authenticated()
-
                         .requestMatchers("/api/usuarios", "/api/usuarios/{id}").hasAuthority("ROLE_ADMINISTRADOR") //Rutas de Administración (Requieren el rol explícito)
+
+                        .requestMatchers("/api/carrito/**", "/api/carrito/agregar/**", "/api/carrito/sincronizar/**").authenticated()
 
                         .anyRequest().authenticated() // lo demás requiere autenticación
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // sin sesiones
                 )
-
-                .logout(AbstractHttpConfigurer::disable)
-
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
