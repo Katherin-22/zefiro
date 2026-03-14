@@ -30,7 +30,7 @@ const MenuAdmin = () => {
     else if (path.includes("/Administrador/Usuarios")) setActiveTab("usuarios");
     else if (path.includes("/Administrador/Gestion_Pedido")) setActiveTab("pedidos");
     else if (path.includes("/Administrador/Gestion_Devoluciones")) setActiveTab("devoluciones");
-    else if (path.includes("/Administrador/Inbox")) setActiveTab("chat");
+    else if (path.includes("/Administrador/Dashboard")) setActiveTab("Dashboard");
   }, [location]);
 
 
@@ -50,6 +50,13 @@ const MenuAdmin = () => {
       <div id="admin-menu-container" className="menu-bar">
         <div id="admin-main-menu" className="menu">
           <ul id="admin-menu-list" className="menu-links">
+            <li id="admin-menu-chat" className={`nav link ${activeTab === "chat" ? "active" : ""}`}>
+              <Link to="/Administrador/Dashboard" className="admin-menu-link">
+                <i className="bi bi-chat-dots-fill admin-menu-icon"></i>
+                <span className="text nav-text admin-menu-text">Dashboard</span>
+              </Link>
+            </li>
+
             <li id="admin-menu-inventario" className={`nav link ${activeTab === "inventario" ? "active" : ""}`}>
               <Link to="/Administrador/stock" className="admin-menu-link">
                 <i className="bi bi-bag-fill admin-menu-icon"></i>
@@ -85,12 +92,6 @@ const MenuAdmin = () => {
               </Link>
             </li>
 
-            <li id="admin-menu-chat" className={`nav link ${activeTab === "chat" ? "active" : ""}`}>
-              <Link to="/Administrador/Inbox" className="admin-menu-link">
-                <i className="bi bi-chat-dots-fill admin-menu-icon"></i>
-                <span className="text nav-text admin-menu-text">Chat</span>
-              </Link>
-            </li>
           </ul>
         </div>
 

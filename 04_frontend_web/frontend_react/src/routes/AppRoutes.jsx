@@ -22,6 +22,7 @@ import GestionCambios from "../pages/administrador/gestion/gestionCambios"; // C
 import GestionPagina from "../pages/administrador/gestion/gestionPagina";   // Configuración web
 import GestionPedido from "../pages/administrador/gestion/gestionPedido";   // Pedidos
 import AdminUserManagement from "../pages/administrador/gestion/gestionusuariosadmin/AdminUserManagement"; // Usuarios
+import DashboardAdmin from "../pages/administrador/DashBoard/Dashboardamdim";
 
 /* ==============================
    ADMINISTRACIÓN - STOCK
@@ -166,6 +167,12 @@ function AppRoutes() {
             <Route path="/Administrador/Gestion_Devoluciones" element={
                <ProtectedRoute requireAdmin={true}>
                   <AdminDevoluciones />
+               </ProtectedRoute>
+            } />
+
+            <Route path="/Administrador/Dashboard" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <DashboardAdmin />
                </ProtectedRoute>
             } />
             
