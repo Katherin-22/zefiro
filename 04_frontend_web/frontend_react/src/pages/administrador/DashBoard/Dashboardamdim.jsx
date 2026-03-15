@@ -393,7 +393,7 @@ const DashboardAdmin = () => {
                             <div className="col-md-3 mb-3">
                                 <div className="card text-white bg-success">
                                     <div className="card-body">
-                                        <h6 className="card-title">Clientes (Rol 1)</h6>
+                                        <h6 className="card-title">Clientes</h6>
                                         <h3>{metricas.totalClientes}</h3>
                                         <small>Usuarios registrados</small>
                                     </div>
@@ -586,7 +586,7 @@ const DashboardAdmin = () => {
                             <div className="col-12">
                                 <div className="card">
                                     <div className="card-header bg-dark text-white">
-                                        <h5 className="mb-0">Clientes registrados (Rol 1)</h5>
+                                        <h5 className="mb-0">Clientes registrados</h5>
                                     </div>
                                     <div className="card-body">
                                         {usuarios.length > 0 ? (
