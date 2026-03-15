@@ -75,7 +75,7 @@ function Login({ stateOverride }) {
           localStorage.setItem("userData", JSON.stringify(userData));
 
           if (userData.rol === ROL_ADMIN) {
-            redirectPath = "/Administrador/stock";
+            redirectPath = "/Administrador/Dashboard";
           } else {
             redirectPath = "/";
           }

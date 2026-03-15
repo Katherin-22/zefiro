@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 import MenuAdmin from '../../../layouts/administrador/menuAdmin';
 import api_url from "../../../services/administrador/api";
 import '../../../styles/administrador/inventario.css';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import PdfDashboard from './PDFesatadisticas.js';
+
 
 // Servicios
 import { getPedido } from "../../../services/administrador/pedidos";
@@ -10,7 +13,7 @@ import { getPedido } from "../../../services/administrador/pedidos";
 const DashboardAdmin = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+    const [generandoPDF, setGenerandoPDF] = useState(false);
     // Estados para los datos
     const [pedidos, setPedidos] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
@@ -297,6 +300,34 @@ const DashboardAdmin = () => {
                                     <i className="bi bi-bar-chart-fill me-2"></i>
                                     Dashboard Administrativo
                                 </h2>
+                        <div className="col-auto">
+                                <PDFDownloadLink
+                                    document={
+                                        <PdfDashboard
+                                            pedidos={pedidosFiltrados}
+                                            usuarios={usuarios}
+                                            metricas={metricas}
+                                            filtros={{
+                                                fechaInicio: filtroFecha.inicio,
+                                                fechaFin: filtroFecha.fin,
+                                                estado: filtroEstado,
+                                                producto: filtroProducto
+                                            }}
+                                            topProductos={topProductos}
+                                            estadosStats={estadosStats}
+                                        />
+                                    }
+                                    fileName={`Reporte_${new Date().toISOString().split('T')[0]}.pdf`}
+                                    className="btn btn-danger"
+                                >
+                                    {({ loading }) => (
+                                        <>
+                                            <i className="bi bi-file-pdf me-2"></i>
+                                            {loading ? 'Generando PDF...' : 'Descargar PDF'}
+                                        </>
+                                    )}
+                                </PDFDownloadLink>
+                            </div>  
                                 <p className="text-center text-muted">
                                     {pedidosFiltrados.length} pedidos en el período seleccionado
                                 </p>

@@ -109,7 +109,6 @@ useEffect(() => {
             console.log("📦 response.data:", response.data);
             
             if (response?.data) {
-                // ✅ CORRECCIÓN: Si response.data es un array, tomar el primer elemento
                 const datosPedido = Array.isArray(response.data) ? response.data[0] : response.data;
                 
                 console.log("🔍 Datos a procesar:", datosPedido);
