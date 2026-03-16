@@ -5,6 +5,8 @@ import com.backend.proyect.exception.usuario.ResourceNotFoundException;
 import com.backend.proyect.model.devoluciones.DevolucionesCambios;
 import com.backend.proyect.model.usuario.Usuario;
 import com.backend.proyect.repository.devoluciones.DevolucionesCambiosRepository;
+import com.backend.proyect.repository.pedido.pedidoRepository;
+import com.backend.proyect.repository.productos.ProductoRepository;
 import com.backend.proyect.repository.usuario.UsuarioRepository;
 import com.backend.proyect.security.usuario.UsuarioPrincipal;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,13 @@ public class DevolucionesCambiosController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private pedidoRepository pedidoRepository;
+
+    @Autowired
+    private ProductoRepository productoRepository;
+
 
     // Ver todas las devoluciones
     // El administrador puede ver  todas las devoluciones
@@ -85,7 +94,15 @@ public class DevolucionesCambiosController {
     // Crear una devolucion
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') or hasAuthority('ROLE_CLIENTE')")
     @PostMapping
-    public ResponseEntity<DevolucionesCambios> guardarDevolucion(@RequestBody DevolucionesCambiosRequest devolucionesCambiosRequest) {
+    public ResponseEntity<?> guardarDevolucion(@RequestBody DevolucionesCambiosRequest devolucionesCambiosRequest) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UsuarioPrincipal usuarioPrincipalWrapper = (UsuarioPrincipal) authentication.getPrincipal();
+        Usuario usuarioPrincipal = usuarioPrincipalWrapper.getUsuario();
+
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
+
+
         DevolucionesCambios devolucionescambios =  new DevolucionesCambios();
 
         devolucionescambios.setMotivo(devolucionesCambiosRequest.getMotivo());
@@ -94,13 +111,38 @@ public class DevolucionesCambiosController {
         devolucionescambios.setFechaSolicitud(devolucionesCambiosRequest.getFechaSolicitud());
         devolucionescambios.setFechaRespuesta(devolucionesCambiosRequest.getFechaRespuesta());
 
-        // 🔹 Cargar las tablas con el id
-        Usuario usuario = usuarioRepository.findById(devolucionesCambiosRequest.getIdUsuario())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        devolucionescambios.setUsuario(usuario);
+        if (devolucionesCambiosRequest.getIdProducto() != null) {
+            devolucionescambios.setProducto(productoRepository.findById(devolucionesCambiosRequest.getIdProducto())
+                    .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado")));
+        }
 
-        DevolucionesCambios newDevolucionesCambios = devolucionesCambiosRepository.save(devolucionescambios);
-        return new ResponseEntity<>(newDevolucionesCambios, HttpStatus.CREATED);
+        if (devolucionesCambiosRequest.getIdPedido() != null) {
+            devolucionescambios.setPedido(pedidoRepository.findById(devolucionesCambiosRequest.getIdPedido())
+                    .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado")));
+        }
+
+        if (isAdmin) {
+            // 🔹 Cargar las tablas con el id
+            Usuario usuario = usuarioRepository.findById(devolucionesCambiosRequest.getIdUsuario())
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            devolucionescambios.setUsuario(usuario);
+            devolucionescambios.setEstadoSolicitud(devolucionesCambiosRequest.getEstadoSolicitud());
+            devolucionescambios.setFechaRespuesta(devolucionesCambiosRequest.getFechaRespuesta());
+
+        }else {
+
+            devolucionescambios.setUsuario(usuarioPrincipal);
+            devolucionescambios.setEstadoSolicitud("Pendiente");
+            devolucionescambios.setFechaRespuesta(null);
+        }
+
+        devolucionesCambiosRepository.save(devolucionescambios);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "¡Devolución registrada exitosamente!");
+        response.put("id", devolucionescambios.getId_devolucion());
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     // Actualizar devolucion
@@ -122,28 +164,35 @@ public class DevolucionesCambiosController {
 
         boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
 
-        if (isOwner || isAdmin) {
+        if (isAdmin) {
 
-          devolucionescambios.setMotivo(devolucionesCambiosRequest.getMotivo());
-          devolucionescambios.setTipoSolicitud(devolucionesCambiosRequest.getTipoSolicitud());
-          devolucionescambios.setEstadoSolicitud(devolucionesCambiosRequest.getEstadoSolicitud());
-          devolucionescambios.setFechaSolicitud(devolucionesCambiosRequest.getFechaSolicitud());
-          devolucionescambios.setFechaRespuesta(devolucionesCambiosRequest.getFechaRespuesta());
+            devolucionescambios.setMotivo(devolucionesCambiosRequest.getMotivo());
+            devolucionescambios.setTipoSolicitud(devolucionesCambiosRequest.getTipoSolicitud());
+            devolucionescambios.setEstadoSolicitud(devolucionesCambiosRequest.getEstadoSolicitud());
+            devolucionescambios.setFechaSolicitud(devolucionesCambiosRequest.getFechaSolicitud());
+            devolucionescambios.setFechaRespuesta(devolucionesCambiosRequest.getFechaRespuesta());
 
-          // 🔹 Cargar de nuevo las relaciones
-          if (devolucionesCambiosRequest.getIdUsuario() != null) {
-             Usuario usuario = usuarioRepository.findById(devolucionesCambiosRequest.getIdUsuario())
-                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-             devolucionescambios.setUsuario(usuario);
-          }
+            // 🔹 Cargar de nuevo las relaciones
+            if (devolucionesCambiosRequest.getIdUsuario() != null) {
+                Usuario usuario = usuarioRepository.findById(devolucionesCambiosRequest.getIdUsuario())
+                        .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+                devolucionescambios.setUsuario(usuario);
+            }
+        } else if (isOwner) {
 
-          DevolucionesCambios devolucionActualizada = devolucionesCambiosRepository.save(devolucionescambios);
-          return ResponseEntity.ok(devolucionActualizada);
-
+            if (!devolucionescambios.getEstadoSolicitud().equalsIgnoreCase("Pendiente")) {
+                throw new AccessDeniedException("No puedes editar una solicitud que ya está en proceso o finalizada.");
+            }
+            devolucionescambios.setMotivo(devolucionesCambiosRequest.getMotivo());
+            devolucionescambios.setTipoSolicitud(devolucionesCambiosRequest.getTipoSolicitud());
+            
         } else {
             // 7. Lanzar Acceso Denegado si la verificación falla
             throw new AccessDeniedException("No tiene permiso para actualizar esta devolucion. Solo puede actualizar sus propias devoluciones.");
         }
+
+        DevolucionesCambios devolucionActualizada = devolucionesCambiosRepository.save(devolucionescambios);
+        return ResponseEntity.ok(devolucionActualizada);
     }
 
     // Eliminar devolucion

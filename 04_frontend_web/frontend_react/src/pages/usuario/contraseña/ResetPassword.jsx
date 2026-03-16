@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import logo from "../../../assets/logo.png";
 import axios from 'axios';
 import { toast } from "react-toastify";
+import "../../../styles/gestionusuarios/ResetPassword.css"; 
 
 const ResetPassword = () => {
 
@@ -15,6 +16,7 @@ const ResetPassword = () => {
   const [isCorreoElectronicoSent, setIsCorreoElectronicoSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [isOtpSubmitted, setIsOtpSubmitted] = useState(false);
+  const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).*$/;
 
   const handleChange = (e, index) => {
     const value = e.target.value.replace(/\D/, "");
@@ -81,6 +83,16 @@ const ResetPassword = () => {
       return;
     }
 
+    if (newPassword.length < 8 || newPassword.length > 20) {
+      toast.error("La contraseña debe tener entre 8 y 20 caracteres.");
+      return;
+    }
+
+    if (!passwordRegex.test(newPassword)) {
+      toast.error("Debe incluir mayúsculas, minúsculas, números y símbolos (@#$%^&+=!).");
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await axios.post('http://localhost:8080/api/auth/reset-password', {
@@ -91,7 +103,7 @@ const ResetPassword = () => {
 
       if (response.status === 200) {
         toast.success("Password reset successfully.");
-        navigate("/login")
+        navigate("/loginpage")
       } else {
         toast.error("Something  went wrong, please try again.");
       }
@@ -103,35 +115,33 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="d-flex align-items-center justify-content-center vh-100 position-relative"
-      style={{ background: "linear-gradient(90deg, #6a5af9, #8268f9)", border: "none" }}>
+    <div className="reset-password-container">
 
-      <Link to="/" className="position-absolute top-0 start-0 p-4 d-flex aling-items-center gap-2 text-decoration-none">
+      <Link to="/" className="auth-logo-link">
         <img src={logo} alt="logo" height={32} width={32} />
-        <span className='fs-4 fw-semibold text-bg-light'>Authify</span>
+        <span className='authify-text'>Zéfiro</span>
       </Link>
 
       {/* Reset password card*/}
       {!isCorreoElectronicoSent && (
-        <div className="rounded-4 p-5 text-center bg-white" style={{ width: "100%", maxWidth: "400px" }}>
-          <h4 className='mb-2'>Reset Password</h4>
-          <p className="mb-4">Enter your registered email address</p>
+        <div className="auth-card">
+          <h4>Reset Password</h4>
+          <p>Enter your registered email address</p>
           <form onSubmit={onSubmitEmail}>
-            <div className="input-group mb-4 bg-secondary bg-opacity-10 rounded-pill">
-              <span className="input-group-text bg-transparent border-0 ps-4">
+            <div className="input-pill-wrapper">
+              <span className="input-pill-icon">
                 <i className="bi bi-envelope "></i>
               </span>
 
               <input type="email"
-                className="form-control bg-transparent border-0  ps-1 pe-4 rounded-end"
+                className="input-pill-field"
                 placeholder='Enter your email adress'
-                style={{ height: "50px" }}
                 onChange={(e) => setCorreoElectronico(e.target.value)}
                 value={correoElectronico}
                 required
               />
             </div>
-            <button className="btn btn-primary w-100 py-2" type='submit'>
+            <button className="btn-auth" type='submit'>
               Submit
             </button>
           </form>
@@ -140,19 +150,17 @@ const ResetPassword = () => {
       {/* OTP Card */}
       {!isOtpSubmitted && isCorreoElectronicoSent && (
 
-        <div className="p-5 rounded-4 shadow bg-white" style={{ width: "400px" }}>
-          <h4 className='text-center fw-bold mb-2'>Email Verify OTP </h4>
-          <p className='text-center  mb-4'>
-            Enter the 6-digit code sent to your email.
-          </p>
+        <div className="auth-card" >
+          <h4>Email Verify OTP </h4>
+          <p> Enter the 6-digit code sent to your email. </p>
 
-          <div className="d-flex justify-content-between gap-2 mb-4 text-center text-white-50 mb-2">
+          <div className="otp-inputs-container">
             {[...Array(6)].map((_, i) => (
               <input
                 key={i}
                 type='text'
                 maxLength={1}
-                className='form-control text-center fs-4 otp-input'
+                className='otp-field'
                 ref={(el) => (inputRef.current[i] = el)}
                 onChange={(e) => handleChange(e, i)}
                 onKeyDown={(e) => handleKeyDown(e, i)}
@@ -162,7 +170,7 @@ const ResetPassword = () => {
 
           </div>
 
-          <button className="btn btn-primary w-100 fw-semibold" disabled={loading} onClick={handleVerify}>
+          <button className="btn-auth" disabled={loading} onClick={handleVerify}>
             {loading ? "Verifying..." : "Verify email"}
           </button>
 
@@ -171,42 +179,42 @@ const ResetPassword = () => {
 
       {/* New password form */}
       {isOtpSubmitted && isCorreoElectronicoSent && (
-        <div className="rounded-4 p-4 text-center bg-white" style={{ width: "100%", maxWidth: "400px" }}>
+        <div className="auth-card">
           <h4>New Password</h4>
-          <p className="mb-4">Enter the new password below</p>
+          <p>Enter the new password below</p>
           <form onSubmit={onSubmitNewPassword} >
-            <div className="input-group mb-4 bg-secondary bg-opacity-10 rounded-pill">
-              <span className="input-group-text bg-transparent border-0 ps-4">
+            <div className="input-pill-wrapper">
+              <span className="input-pill-icon">
                 <i className="bi bi-person-fill-lock"></i>
               </span>
               <input
                 type="password"
-                className="form-control bg-transparent border-0 ps-1 ps-4 rounded-end"
-                placeholder='=**********'
-                style={{ height: "50px" }}
+                className="input-pill-field"
+                placeholder='***********'
                 onChange={(e) => setNewPassword(e.target.value)}
                 value={newPassword}
+                maxLength={20}
                 required
               />
             </div>
 
             {/* Campo Confirmar Contraseña) */}
-            <div className="input-group mb-4 bg-secondary bg-opacity-10 rounded-pill border">
-              <span className="input-group-text bg-transparent border-0 ps-4">
+            <div className="input-pill-wrapper" style={{ border: "1px solid #dee2e6" }}>
+              <span className="input-pill-icon">
                 <i className="bi bi-shield-check"></i>
               </span>
               <input
                 type="password"
-                className="form-control bg-transparent border-0 ps-1 pe-4"
+                className="input-pill-field"
                 placeholder='Confirm Password'
-                style={{ height: "50px" }}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 value={confirmPassword}
+                maxLength={20}
                 required
               />
             </div>
 
-            <button type='submit' className='btn btn-primary w-100' disabled={loading}>
+            <button type='submit' className='btn-auth' disabled={loading}>
               {loading ? "Updating..." : "Change Password"}
             </button>
           </form>

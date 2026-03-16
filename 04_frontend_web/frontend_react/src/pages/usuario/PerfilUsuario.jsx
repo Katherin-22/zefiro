@@ -28,7 +28,7 @@ function PerfilUsuario() {
                     setLoading(false);
                     return;
                 }
-                
+
                 // Endpoint: GET /api/usuarios/perfil
                 const response = await axios.get('http://localhost:8080/api/usuarios/perfil', {
                     headers: {
@@ -76,7 +76,7 @@ function PerfilUsuario() {
         setError(null);
 
         const token = localStorage.getItem("authToken")?.replace(/"/g, "");
-        
+
         if (!token) {
             setError("No se encontró el token de autenticación para actualizar. Inicie sesión.");
             setLoading(false);
@@ -84,22 +84,30 @@ function PerfilUsuario() {
         }
 
         try {
+
+            const idRol = formData.rol?.idRol || formData.idRol;
+            const idTipoDeDocumento = formData.tipo_de_documento?.idTipoDeDocumento || formData.idTipoDeDocumento;
+            const idEstadoUsuario = formData.estado_usuario?.idestado_usuario || formData.idEstadoUsuario;
+
+            const { rol, tipo_de_documento, estado_usuario, ...restOfData } = formData;
+
             // 1. Crear el DTO a enviar al backend
             const requestData = {
-                ...formData,
+                ...restOfData,
                 // Incluimos la nueva contraseña solo si se ha escrito algo.
                 password: newPassword || null,
 
-                // Eliminamos los objetos de relación anidados para el DTO.
-                rol: undefined,
-                tipo_de_documento: undefined,
-                estado_usuario: undefined,
+                // // Pasamos los IDs que el backend pide.
+                idRol: idRol,                // Nombre exacto que pide el log
+                idTipoDeDocumento: idTipoDeDocumento,
+                idEstadoUsuario: idEstadoUsuario
+
             };
 
             // Endpoint: PUT /api/usuarios/perfil
-            await axios.put('http://localhost:8080/api/usuarios/perfil', requestData, { 
+            await axios.put('http://localhost:8080/api/usuarios/perfil', requestData, {
                 headers: {
-                    Authorization: `Bearer ${token}`, 
+                    Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 }
             });
@@ -183,11 +191,6 @@ function PerfilUsuario() {
                 </button>
             </form>
 
-            <div className="read-only-info">
-                {/* Muestra el Rol y Tipo de Documento actual (solo lectura) */}
-                <p><strong>Rol:</strong> {formData.rol?.nombreRol || 'N/A'}</p>
-                <p><strong>Tipo de Documento:</strong> {formData.tipo_de_documento?.nombreTipoDeDocumento || 'N/A'}</p>
-            </div>
         </div>
     )
 }

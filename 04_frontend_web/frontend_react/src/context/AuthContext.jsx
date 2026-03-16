@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
     // Función para cerrar sesión
   const logout = useCallback(() => {
     setUser(null); // Limpiamos el estado del usuario
-    setToken(null) // Al actualizar el estado, React avisa a todos los componentes
+    setToken(null); // Al actualizar el estado, React avisa a todos los componentes
     localStorage.removeItem("userData"); // Eliminamos los datos del usuario de localStorage
     localStorage.removeItem("authToken"); // Eliminamos el token de localStorage también, por seguridad
   }, []);
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
         logout(); 
       }
 
-    }
+    } 
   }, [logout]);
 
   // useEffect que se ejecuta una sola vez cuando el componente se monta

@@ -89,7 +89,7 @@ const ProductoGen = () => {
     // **useMemo para Stock:** Se llama incondicionalmente, pero su lógica maneja el caso de producto no encontrado/no seleccionado.
     const { stockActual: stockDisponible, idStock: idStockSeleccionado, stockEspecifico } = useMemo(() => {
         if (!producto || !colorSeleccionado || !tallaSeleccionada) {
-            return { stockActual: 0, idStock: null };
+            return { stockActual: 0, idStock: null, stockEspecifico: [] };
         }
 
         console.log("Primer item del stock:", listaStockCompleta[0]);
@@ -129,7 +129,7 @@ const ProductoGen = () => {
     }, [listaStockCompleta, producto, colorSeleccionado, tallaSeleccionada, colores]);
 
     const nombreProductoStock = useMemo(() => {
-        return stockEspecifico.length > 0 ? stockEspecifico[0].nombreProducto : "";
+        return stockEspecifico?.length > 0 ? stockEspecifico[0].nombreProducto : "";
     }, [stockEspecifico]);
 
     useEffect(() => {

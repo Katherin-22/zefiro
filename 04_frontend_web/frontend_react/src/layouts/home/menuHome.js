@@ -157,7 +157,7 @@ const MenuHome = () => {
                 <li><span className="dropdown-item text-muted">Hola, {user.name || 'Usuario'}</span></li>
                 <li><hr className="dropdown-divider" id="navBarHome-profile-divider-1" /></li>
                 <li><Link className="dropdown-item" id="navBarHome-login" to="/loginpage">Iniciar sesión</Link></li>
-                <li><Link className="dropdown-item" id="navBarHome-profile" to="/profile">Perfil</Link></li>
+                <li><Link className="dropdown-item" id="navBarHome-profile" to="/perfilUsuario">Perfil</Link></li>
                 <li><Link className="dropdown-item" id="navBarHome-orders" to="/profile">Pedidos</Link></li>
                 {user.rol === 2 && (
                   <li><Link className="dropdown-item" id="navBarHome-dashboard" to="/Administrador/stock">Dashboard</Link></li>

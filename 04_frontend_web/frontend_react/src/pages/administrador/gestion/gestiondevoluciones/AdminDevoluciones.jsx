@@ -58,12 +58,23 @@ const AdminDevoluciones = () => {
   const filteredDevoluciones = useMemo(() => {
     if (!searchTerm) return devoluciones;
     const lower = searchTerm.toLowerCase();
-    return devoluciones.filter(d =>
-      (d.motivo || '').toLowerCase().includes(lower) ||
-      (d.tipoSolicitud || '').toLowerCase().includes(lower) ||
-      (d.estadoSolicitud || '').toLowerCase().includes(lower) ||
-      (d.usuario?.idUsuario?.toString() || '').includes(lower)
-    );
+    return devoluciones.filter((d) => {
+
+      const nombreCliente = d.usuario?.nombreUsuario || '';
+      const apellidoCliente = d.usuario?.primerApellido || '';
+      const nombreCompleto = `${nombreCliente} ${apellidoCliente}`.toLowerCase();
+
+      return (
+
+        nombreCompleto.includes(lower) ||
+        (d.motivo || '').toLowerCase().includes(lower) ||
+        (d.tipoSolicitud || '').toLowerCase().includes(lower) ||
+        (d.estadoSolicitud || '').toLowerCase().includes(lower) ||
+        (d.producto?.nombreProducto || '').toLowerCase().includes(lower) ||
+        String(d.pedido?.idPedido || '').includes(lower) ||
+        String(d.usuario?.idUsuario || '').includes(lower)
+      );
+    });
   }, [devoluciones, searchTerm]);
 
   if (loading) return <div className="admin-container"><p className="loading-text">Cargando devoluciones...</p></div>;
@@ -71,62 +82,66 @@ const AdminDevoluciones = () => {
 
   return (
     <div className="admin2-theme">
-          <nav>
-      <MenuAdmin />
-    </nav>
-    <div className="container-fluid" id='container-admin'>
-      <div className="admin-container">
-        <div className="admin-header">
-          <h2>Panel de Gestión de Devoluciones</h2>
-          <p>Vista de Administrador: Control total sobre los registros de devoluciones y cambios.</p>
-        </div>
-
-        <div className="admin-actions">
-          <button className="btn-crear" onClick={() => { setDevolucionToEdit(null); setIsModalOpen(true); }}>
-            <UserPlusIcon size={18} /> Crear Nueva Devolución
-          </button>
-          <div className="search-box">
-            <Search className="icon-search" size={18} />
-            <input type="text" placeholder="Buscar por motivo, estado, o ID de usuario..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+      <nav>
+        <MenuAdmin />
+      </nav>
+      <div className="container-fluid" id='container-admin'>
+        <div className="admin-container">
+          <div className="admin-header">
+            <h2>Panel de Gestión de Devoluciones</h2>
+            <p>Vista de Administrador: Control total sobre los registros de devoluciones y cambios.</p>
           </div>
-        </div>
 
-        <div className="table-container">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Usuario ID</th>
-                <th>Motivo</th>
-                <th>Tipo Solicitud</th>
-                <th>Estado</th>
-                <th>Fecha Solicitud</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredDevoluciones.length > 0 ? filteredDevoluciones.map(d => (
-                <tr key={d.id_devolucion}>
-                  <td>{d.id_devolucion}</td>
-                  <td>{d.usuario.idUsuario}</td>
-                  <td>{d.motivo.substring(0, 50) + (d.motivo.length > 50 ? '...' : '')}</td>
-                  <td><span className={d.tipoSolicitud.toLowerCase() === 'cambio' ? 'tipo-cambio' : 'tipo-devolucion'}>{d.tipoSolicitud}</span></td>
-                  <td><span className={`estado-${d.estadoSolicitud.toLowerCase().replace(' ', '-')}`}>{d.estadoSolicitud}</span></td>
-                  <td>{d.fechaSolicitud}</td>
-                  <td>
-                    <button className="btn-editar" onClick={() => { setDevolucionToEdit(d); setIsModalOpen(true); }}><PencilIcon size={16} /></button>
-                    <button className="btn-eliminar" onClick={() => setDevolucionToDelete(d)}><TrashIcon size={16} /></button>
-                  </td>
+          <div className="admin-actions">
+            <button className="btn-crear" onClick={() => { setDevolucionToEdit(null); setIsModalOpen(true); }}>
+              <UserPlusIcon size={18} /> Crear Nueva Devolución
+            </button>
+            <div className="search-box">
+              <Search className="icon-search" size={18} />
+              <input type="text" placeholder="Buscar por motivo, estado, o ID de usuario..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+            </div>
+          </div>
+
+          <div className="table-container">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Usuario </th>
+                  <th>Pedido</th>
+                  <th>Producto</th>
+                  <th>Tipo Solicitud</th>
+                  <th>Motivo</th>
+                  <th>Estado</th>
+                  <th>Fecha Solicitud</th>
+                  <th>Acciones</th>
                 </tr>
-              )) : <tr><td colSpan="7" className="no-users">No se encontraron devoluciones.</td></tr>}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filteredDevoluciones.length > 0 ? filteredDevoluciones.map(d => (
+                  <tr key={d.id_devolucion}>
+                    <td>{d.id_devolucion}</td>
+                    <td>{d.usuario?.nombre || d.usuario?.idUsuario}</td>
+                    <td>#{d.pedido?.idPedido}</td>
+                    <td>{d.producto?.nombreProducto}</td>
+                    <td><span className={d.tipoSolicitud.toLowerCase() === 'cambio' ? 'tipo-cambio' : 'tipo-devolucion'}>{d.tipoSolicitud}</span></td>
+                    <td>{d.motivo.substring(0, 50) + (d.motivo.length > 50 ? '...' : '')}</td>
+                    <td><span className={`estado-${d.estadoSolicitud.toLowerCase().replace(' ', '-')}`}>{d.estadoSolicitud}</span></td>
+                    <td>{d.fechaSolicitud}</td>
+                    <td>
+                      <button className="btn-editar" onClick={() => { setDevolucionToEdit(d); setIsModalOpen(true); }}><PencilIcon size={16} /></button>
+                      <button className="btn-eliminar" onClick={() => setDevolucionToDelete(d)}><TrashIcon size={16} /></button>
+                    </td>
+                  </tr>
+                )) : <tr><td colSpan="7" className="no-users">No se encontraron devoluciones.</td></tr>}
+              </tbody>
+            </table>
+          </div>
 
-        <DevolucionFormModal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setDevolucionToEdit(null); }} onSave={handleSaveDevolucion} devolucionToEdit={devolucionToEdit} />
-        <DeleteConfirmModal isOpen={!!devolucionToDelete} onClose={() => setDevolucionToDelete(null)} devolucionName={devolucionToDelete?.id_devolucion || ""} onConfirm={handleDeleteDevolucion} />
+          <DevolucionFormModal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setDevolucionToEdit(null); }} onSave={handleSaveDevolucion} devolucionToEdit={devolucionToEdit} userRole="admin" />
+          <DeleteConfirmModal isOpen={!!devolucionToDelete} onClose={() => setDevolucionToDelete(null)} devolucionName={devolucionToDelete?.id_devolucion || ""} onConfirm={handleDeleteDevolucion} />
+        </div>
       </div>
-    </div>
     </div>
   );
 };

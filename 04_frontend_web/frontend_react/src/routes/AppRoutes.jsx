@@ -99,6 +99,10 @@ import Login from '../components/iniciosesion/Login'                        // C
 ============================== */
 import PerfilUsuario from '../pages/usuario/PerfilUsuario'                  // Perfil usuario
 
+/* ==============================
+   DEVOPLUCIONES USUARIO
+============================== */
+import UserDevoluciones from '../pages/usuario/UserDevoluciones'                  // Perfil usuario
 
 /* ==============================
    carrito
@@ -380,6 +384,9 @@ function AppRoutes() {
                   <PerfilUsuario />
                </ProtectedRoute>
             }/>
+
+            {/* 🔓 Devoluciones usuarios */}
+            <Route path='/userdevoluciones' element={<UserDevoluciones/>}/>
 
             {/* ========== CARRITO USUARIO ========== */}
             

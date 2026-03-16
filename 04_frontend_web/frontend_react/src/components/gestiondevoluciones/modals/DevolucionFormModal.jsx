@@ -3,7 +3,9 @@ import { X } from "lucide-react";
 import axios from "axios";
 import { ESTADOS, TIPOS_SOLICITUD } from "../constants/devolucionesConstants";
 
-const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
+const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit, userRole = "cliente" }) => {
+  const isClient = userRole === "cliente";
+
   const [formData, setFormData] = useState({
     id: null,
     motivo: "",
@@ -27,6 +29,8 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
         fechaSolicitud: devolucionToEdit.fechaSolicitud || new Date().toISOString().substring(0, 10),
         fechaRespuesta: devolucionToEdit.fechaRespuesta || null,
         idUsuario: devolucionToEdit.usuario?.idUsuario || "",
+        idProducto: devolucionToEdit.producto?.idProducto || "",
+        idPedido: devolucionToEdit.pedido?.idPedido || "",
       });
     } else {
       setFormData({
@@ -37,6 +41,8 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
         fechaSolicitud: new Date().toISOString().substring(0, 10),
         fechaRespuesta: null,
         idUsuario: "",
+        idProducto: "",
+        idPedido: "",
       });
     }
     setIsError("");
@@ -55,7 +61,7 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
     setIsError("");
     setMessage("");
 
-    if (!formData.idUsuario || isNaN(Number(formData.idUsuario))) {
+    if (!isClient && (!formData.idUsuario || isNaN(Number(formData.idUsuario)))) {
       setIsError("❌ El ID de Usuario es obligatorio y debe ser un número.");
       return;
     }
@@ -75,11 +81,18 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
       const payload = {
         motivo: formData.motivo,
         tipoSolicitud: formData.tipoSolicitud,
-        estadoSolicitud: formData.estadoSolicitud,
+        estadoSolicitud: isClient ? 'Pendiente' : formData.estadoSolicitud,
         fechaSolicitud: formData.fechaSolicitud || now,
-        fechaRespuesta: formData.estadoSolicitud === 'Pendiente' ? null : (formData.fechaRespuesta || now),
-        idUsuario: Number(formData.idUsuario),
+        fechaRespuesta: isClient || formData.estadoSolicitud === 'Pendiente' ? null : (formData.fechaRespuesta || now),
+        idUsuario: isClient ? null : Number(formData.idUsuario),
+        idProducto: Number(formData.idProducto),
+        idPedido: Number(formData.idPedido),
       };
+
+      if (!formData.idPedido || !formData.idProducto) {
+        setIsError("❌ Error: No se ha seleccionado un pedido o producto válido.");
+        return;
+      }
 
       if (devolucionToEdit) {
         const devolucionId = devolucionToEdit.id_devolucion;
@@ -129,43 +142,85 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
                   {TIPOS_SOLICITUD.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
-              <div className="field">
-                <label>Estado de la Solicitud *</label>
-                <select name="estadoSolicitud" value={formData.estadoSolicitud} onChange={handleChange} required>
-                  {ESTADOS.map(e => <option key={e} value={e}>{e}</option>)}
-                </select>
-              </div>
+
+              {/* Solo el administrador puede ver y editar el estado */}
+              {!isClient && (
+                <div className="field">
+                  <label>Estado de la Solicitud *</label>
+                  <select name="estadoSolicitud" value={formData.estadoSolicitud} onChange={handleChange} required>
+                    {ESTADOS.map(e => <option key={e} value={e}>{e}</option>)}
+                  </select>
+                </div>
+              )}
             </div>
 
-            <div className="form-group">
-              <div className="field">
-                <label>ID de Usuario *</label>
-                <input type="number" name="idUsuario" value={formData.idUsuario} onChange={handleChange} required min="1" />
+            {!isClient && (
+              <div className="form-group">
+                <div className="field">
+                  <label>ID de Usuario *</label>
+                  <input type="number" name="idUsuario" value={formData.idUsuario} onChange={handleChange} required={!isClient} min="1" />
+                </div>
+                <div className="field">
+                  <label>Fecha de Solicitud *</label>
+                  <input type="date" name="fechaSolicitud" value={formData.fechaSolicitud} onChange={handleChange} required />
+                </div>
               </div>
-              <div className="field">
-                <label>Fecha de Solicitud *</label>
-                <input type="date" name="fechaSolicitud" value={formData.fechaSolicitud} onChange={handleChange} required />
-              </div>
-            </div>
+            )}
 
-            {formData.estadoSolicitud !== 'Pendiente' && (
+            {!isClient && formData.estadoSolicitud !== 'Pendiente' && (
               <div className="form-group full-width">
                 <label>Fecha de Respuesta</label>
                 <input type="date" name="fechaRespuesta" value={formData.fechaRespuesta || new Date().toISOString().substring(0, 10)} onChange={handleChange} />
               </div>
             )}
 
+            {userRole === "admin" ? (
+              <div className="form-group">
+                <div className="field">
+                  <label>ID del Pedido</label>
+                  <input
+                    type="number"
+                    name="idPedido"
+                    value={formData.idPedido}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="field">
+                  <label>ID del Producto</label>
+                  <input
+                    type="number"
+                    name="idProducto"
+                    value={formData.idProducto}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            ) : (
+              <>
+                <input type="hidden" name="idPedido" value={formData.idPedido} />
+                <input type="hidden" name="idProducto" value={formData.idProducto} />
+              </>
+            )}
+
             {isError && <p className="error-text">{isError}</p>}
             {message && <p className="success-text">{message}</p>}
 
+            {isClient && devolucionToEdit && devolucionToEdit.estadoSolicitud !== 'Pendiente' && (
+              <p style={{ color: '#666', fontSize: '0.85rem', textAlign: 'center', marginBottom: '10px' }}>
+                ℹ️ Esta solicitud está en estado <strong>{devolucionToEdit.estadoSolicitud}</strong> y no puede ser modificada.
+              </p>
+            )}
+
             <div className="modal-footer full-width">
               <button type="button" onClick={onClose} className="btn-cancelar">Cancelar</button>
-              <button type="submit" className="btn-guardar">{devolucionToEdit ? "Guardar Cambios" : "Crear Devolución"}</button>
+              <button type="submit" className="btn-guardar" disabled={isClient && devolucionToEdit && devolucionToEdit.estadoSolicitud !== 'Pendiente'}>
+                {devolucionToEdit ? "Guardar Cambios" : "Crear Devolución"}
+              </button>
             </div>
           </form>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

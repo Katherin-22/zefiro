@@ -49,15 +49,16 @@ function Login({ stateOverride }) {
 
         // 🔐 PRIORIDAD ABSOLUTA: COMPRA
         if (pendingRoleCheck) {
-          // Limpiar intención
-          sessionStorage.removeItem("pendingCheckoutRedirect");
-          sessionStorage.removeItem("requireClientRole");
-
+          
           // ⛔ BLOQUEAR ANTES DE LOGIN
           if (userData.rol !== ROL_CLIENTE) {
             setIsError("Solo los clientes pueden realizar compras.");
             return; // ❌ NO LOGIN, NO REDIRECCIÓN
           }
+
+          // Limpiar intención
+          sessionStorage.removeItem("pendingCheckoutRedirect");
+          sessionStorage.removeItem("requireClientRole");
 
           // ✅ Login permitido
           login(userData, token);
@@ -86,13 +87,20 @@ function Login({ stateOverride }) {
         setIsError(response.data.message || "No se pudo iniciar sesión.");
       }
     } catch (err) {
-      if (err.response?.status === 401)
+      if (err.response?.status === 401 && err.response?.data?.notVerified ) {
+        setIsError("Debes verificar tu cuenta primero. Redirigiendo...");
+        setTimeout(() => {
+        navigate("/email-verify", { state: { email: email, tipo: "verify" } });
+        }, 2000);
+      } else if(err.response?.status === 401) {
         setIsError("Credenciales inválidas.");
-      else if (err.response?.status === 404)
+      } else if (err.response?.status === 404) {
         setIsError("El email no está registrado.");
-      else if (err.response?.status === 500)
+      } else if (err.response?.status === 500) {
         setIsError("Error del servidor.");
-      else setIsError("Error de conexión.");
+      } else { 
+        setIsError("Error de conexión.") 
+      };
 
       console.error("Error login:", err);
     }
@@ -139,11 +147,12 @@ function Login({ stateOverride }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          maxLength={20}
         />
 
         <div className={styles.opciones}>
           <p>
-            <Link to="/recuperarContraseña">¿Olvidó su Contraseña?</Link>
+            <Link to="/reset-password">¿Olvidó su Contraseña?</Link>
           </p>
         </div>
 
