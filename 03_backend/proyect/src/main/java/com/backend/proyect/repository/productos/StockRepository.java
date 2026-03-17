@@ -18,31 +18,32 @@ public interface StockRepository extends JpaRepository<Stock,Integer>{
     List<Stock> findAllWithProducto();
 
     @Query(value = """
-    SELECT
-        p.idProducto,
-        p.codigoReferencia,
-        p.nombreProducto,
-        p.descripcion,
-        tp.nombreTipoProducto,
-        tpub.nombrePublico,
-        c.nombreCategoria,
-        m.nombreMaterial,
-        p.estadoProducto AS activo,
-        GROUP_CONCAT(DISTINCT v.nombre SEPARATOR ', ') AS variaciones,
-        SUM(s.stockActual) AS stockActual,
-        p.precio
-    FROM Producto p
-    LEFT JOIN TipoProducto tp ON tp.idTipoProducto = p.idCategoria
-    LEFT JOIN Categoria c ON c.idCategoria = p.idCategoria
-    LEFT JOIN Material m ON m.idMaterial = p.idMaterial
-    LEFT JOIN TipoPublico tpub ON tpub.idPublico = p.idPublico
-    LEFT JOIN Stock s ON s.idProducto = p.idProducto
-    LEFT JOIN Variacion v ON v.idVariacion = s.idVariacion
-    LEFT JOIN Color col ON col.idColor = s.idColor
-    GROUP BY p.idProducto, p.codigoReferencia, p.nombreProducto, p.descripcion, 
-            tp.nombreTipoProducto, tpub.nombrePublico, c.nombreCategoria, 
-            m.nombreMaterial, p.estadoProducto, p.precio
-    ORDER BY p.nombreProducto ASC;
+SELECT 
+    p.idProducto,                    -- ✅ Producto es el principal
+    p.codigoReferencia,
+    p.nombreProducto,
+    p.descripcion,
+    p.precio,
+    p.estadoProducto,
+    c.nombreCategoria,
+    tp.nombreTipoProducto,
+    m.nombreMaterial,
+    tpub.nombrePublico,
+    -- Datos del stock (pueden ser NULL si no hay stock)
+    s.idStock,
+    s.stockActual,
+    s.stockMinimo,
+    col.nombreColor,
+    v.nombre AS nombreTalla
+FROM Producto p                          
+LEFT JOIN Categoria c ON p.idCategoria = c.idCategoria
+LEFT JOIN TipoProducto tp ON c.idTipoProducto = tp.idTipoProducto
+LEFT JOIN Material m ON p.idMaterial = m.idMaterial
+LEFT JOIN TipoPublico tpub ON p.idPublico = tpub.idPublico
+LEFT JOIN Stock s ON s.idProducto = p.idProducto    -- LEFT JOIN para incluir productos sin stock
+LEFT JOIN Color col ON s.idColor = col.idColor
+LEFT JOIN Variacion v ON s.idVariacion = v.idVariacion
+ORDER BY p.nombreProducto ASC, col.nombreColor ASC, v.nombre ASC;
     """, nativeQuery = true)
     List<StockGeneralProjection> obtenerStockAgrupado();
 

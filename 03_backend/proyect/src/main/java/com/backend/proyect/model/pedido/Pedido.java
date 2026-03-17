@@ -43,7 +43,7 @@ public class Pedido {
     private MetodoPago metodoPago;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "estado", columnDefinition = "ENUM('Pendiente','En proceso','Entregado')")
+    @Column(name = "estado", columnDefinition = "ENUM('Pendiente','Procesando','Entregado')")
     private EstadoPedido estado;
 
     @Column(name = "total_final", nullable = false, precision = 10, scale = 2)

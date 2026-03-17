@@ -26,7 +26,8 @@ export default function Stock() {
 
     fetchStock();
   }, []);
-
+  
+  
   // Función para eliminar un stock directamente desde el service
   const handleDeleteStock = async (idStock) => {
     console.log("Intentando eliminar idStock:", idStock); // <--- revisa esto
@@ -65,40 +66,41 @@ export default function Stock() {
     </div>      
         <div className="row">
             <div className="col">
-                <table>
-                    <thead>
-                        <tr>
-                        <th>Código</th>
-                        <th>Nombre</th>
-                        <th>Tipo Producto</th>
-                        <th>Precio de Venta</th>
-                        <th>Talla Disponible</th>
-                        <th>Color Disponible</th>
-                        <th>Stock Actual</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                        </tr>
-                    </thead>
-                        <tbody>
-                        {stock.map((s) => (
-                            <tr>
-                            <td>{s.codigoReferencia}</td>
-                            <td>{s.nombreProducto}</td>
-                            <td>{s.nombreTipoProducto}</td>
-                            <td>{s.precio}</td>
-                            <td>{s.nombre}</td>
-                            <td>{s.nombreColor}</td>
-                            <td>{s.stockActual}</td>
-                            <td>{s.estadoProducto}</td>
-                            <td>
-                            <Link to={`/stock/producto/${s.idProducto}`} id="boton_eliminar" className="btn btn-light">Agregar Stock</Link>
-                            </td>
-
-                            </tr>
-                        ))}
-                        </tbody>
-                </table>
-            </div>
+<thead>
+    <tr>
+        <th>Código</th>
+        <th>Nombre</th>
+        <th>Categoría</th>           {/* ← Cambiado de "Tipo Producto" a "Categoría" */}
+        <th>Material</th>             {/* ← NUEVA columna */}
+        <th>Precio de Venta</th>
+        <th>Talla Disponible</th>
+        <th>Color Disponible</th>
+        <th>Stock Actual</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+    </tr>
+</thead>
+<tbody>
+    {stock.map((s) => (
+        <tr key={s.idProducto || s.codigoReferencia}>
+            <td>{s.codigoReferencia}</td>
+            <td>{s.nombreProducto}</td>
+            <td>{s.nombreCategoria}</td>              {/* Categoría */}
+            <td>{s.nombreMaterial}</td>                {/* Material */}
+            <td>${s.precio}</td>                       {/* Precio */}
+            <td>{s.nombreTalla || 'Talla única'}</td>  {/* Talla */}
+            <td>{s.nombreColor || 'No especificado'}</td> {/* Color */}
+            <td>{s.stockActual}</td>                    {/* Stock */}
+            <td>{s.estadoProducto}</td>                 {/* Estado */}
+            <td>
+                <Link to={`/stock/producto/${s.idProducto}`} className="btn btn-light">
+                    Agregar Stock
+                </Link>
+            </td>
+        </tr>
+    ))}
+</tbody>         
+   </div>
         </div>
 </div>
 </div>

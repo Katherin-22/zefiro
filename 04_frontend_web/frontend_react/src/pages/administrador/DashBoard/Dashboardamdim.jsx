@@ -36,6 +36,7 @@ const DashboardAdmin = () => {
     const agruparPedidos = (datos) => {
         return datos.reduce((acc, item) => {
             const pedidoExistente = acc.find(p => p.idPedido === item.idPedido);
+             console.log('Estado del pedido:', item.estado); // Este es el log que quieres ver
             
             if (pedidoExistente) {
                 pedidoExistente.productos.push({
@@ -53,7 +54,7 @@ const DashboardAdmin = () => {
                     idPedido: item.idPedido,
                     fechaPedido: item.fechaPedido,
                     nombreUsuario: item.nombreUsuario,
-                    estado: item.estado || 'Pendiente',
+                    estado: item.estado,
                     totalFinal: item.cantidad * item.precioUnitario,
                     productos: [{
                         nombreProducto: item.nombreProducto,
@@ -209,7 +210,7 @@ const DashboardAdmin = () => {
     const statsPorEstado = () => {
         const stats = {
             Pendiente: 0,
-            En_proceso: 0,
+            Procesando: 0,
             Entregado: 0
         };
         
@@ -252,7 +253,7 @@ const DashboardAdmin = () => {
             sum + (p.productos?.reduce((s, prod) => s + (prod.cantidad || 0), 0) || 0), 0),
         ingresosTotales: pedidosFiltrados.reduce((sum, p) => sum + (p.totalFinal || 0), 0),
         pedidosPendientes: pedidosFiltrados.filter(p => p.estado === 'Pendiente').length,
-        pedidosEnProceso: pedidosFiltrados.filter(p => p.estado === 'En_proceso').length,
+        pedidosEnProceso: pedidosFiltrados.filter(p => p.estado === 'Procesando').length,
         pedidosEntregados: pedidosFiltrados.filter(p => p.estado === 'Entregado').length,
         ticketPromedio: pedidosFiltrados.length > 0 
             ? pedidosFiltrados.reduce((sum, p) => sum + (p.totalFinal || 0), 0) / pedidosFiltrados.length 
@@ -363,7 +364,7 @@ const DashboardAdmin = () => {
                                 >
                                     <option value="todos">Todos los estados</option>
                                     <option value="Pendiente">Pendiente</option>
-                                    <option value="En_proceso">En proceso</option>
+                                    <option value="Procesando">En proceso</option>
                                     <option value="Entregado">Entregado</option>
                                 </select>
                             </div>
@@ -508,7 +509,7 @@ const DashboardAdmin = () => {
                                             <div className="list-group-item d-flex justify-content-between align-items-center">
                                                 En proceso
                                                 <span className="badge bg-info rounded-pill">
-                                                    {estadosStats.En_proceso}
+                                                    {estadosStats.Procesando}
                                                 </span>
                                             </div>
                                             <div className="list-group-item d-flex justify-content-between align-items-center">
@@ -590,7 +591,7 @@ const DashboardAdmin = () => {
                                                                 <td>
                                                                     <span className={`badge ${
                                                                         p.estado === 'Entregado' ? 'bg-success' :
-                                                                        p.estado === 'En_proceso' ? 'bg-info' :
+                                                                        p.estado === 'Procesando' ? 'bg-info' :
                                                                         'bg-warning'
                                                                     }`}>
                                                                         {p.estado}
