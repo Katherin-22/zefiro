@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {getStock, deleteStock  } from "../../../services/administrador/StockService";
 import MenuAdmin from "../../../layouts/administrador/menuAdmin";
 
+import "../../../styles/administrador/stockgeneral.css"
 import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
 import { Link, useParams } from 'react-router-dom';
+
 
 export default function Stock() {
   const [stock, setStock] = useState([]);
@@ -51,18 +53,21 @@ export default function Stock() {
     <nav>
         <MenuAdmin />
     </nav>
-  <div className="container-fluid" id='container-admin'>
+  <div className="container-fluid" id='container-admin-stockGen'>
     <div className="header">    
-        <div className="row custom-header">
+        <div className="row custom-header ">
             <div className="col-3 d-flex align-items-center justify-content-between">
                 <h1 className="mb-0">STOCK GENERAL</h1>
             </div>
-            <div className="col-9 d-flex align-items-end px-1 gap-2 w-50">
-                <Link to="/ver_categoria" className="btn custom-btn btn-light">Categoria</Link>
-                <Link to="/ver_producto" className="btn custom-btn btn-light">Producto</Link>
-                <Link to="/ver_promocion" className="btn custom-btn btn-light">Promoción</Link>
+          </div>
+            <div className='row '>
+            <div className="col-9 d-flex align-items-end px-1 gap-2 w-50 isla-StockGen">
+                <Link to="/ver_categoria" className="btn custom-btn-genStock btn-light">Categoria</Link>
+                <Link to="/ver_producto" className="btn custom-btn-genStock btn-light">Producto</Link>
+                <Link to="/ver_promocion" className="btn custom-btn-genStock btn-light">Promoción</Link>
             </div>
-        </div>
+            </div>
+        
     </div>      
         <div className="row">
             <div className="col">

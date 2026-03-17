@@ -23,7 +23,7 @@ const SearchInputDesktop = ({ onSearch, initialValue = '' }) => {
 
     useEffect(() => {
         const path = location.pathname;
-        if (path.includes("/Administrador/stock")) setActiveTab("Dashboard");
+        if (path.includes("/Administrador/Dashboard")) setActiveTab("Dashboard");
         else if (path.includes("perfilUsuario")) setActiveTab("Actualizar perfil");
     }, [location]);
 
@@ -478,7 +478,7 @@ const MenuHome = () => {
                                         </li>
                                         {/* Dashboard solo para administradores */}
                                         {userData?.rol === 2 && (
-                                            <li><Link className="dropdown-item" id="navBarHome-dashboard" to="/Administrador/stock">
+                                            <li><Link className="dropdown-item" id="navBarHome-dashboard" to="/Administrador/Dashboard">
                                                 <i className="bi bi-speedometer2 me-2"></i>Dashboard
                                             </Link></li>
                                         )}
@@ -659,7 +659,7 @@ const MenuHome = () => {
                                     {userData?.rol === 2 && (   
                                         <Link 
                                             id="dropdown-devoluciones"
-                                            to="/Administrador/stock" 
+                                            to="/Administrador/Dashboard" 
                                             className="dropdown-item"
                                             onClick={() => {
                                                 document.querySelector('.admin-mobile-dropdown')?.classList.remove('show');
