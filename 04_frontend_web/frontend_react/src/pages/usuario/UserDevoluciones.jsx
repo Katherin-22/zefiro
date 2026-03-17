@@ -3,19 +3,19 @@ import { Truck, CheckCircle, Clock, XCircle, RefreshCw, Eye, Edit3 } from 'lucid
 import { useAuth } from "../../context/AuthContext"; // 1. IMPORTA TU HOOK
 import axios from "axios";
 import DevolucionFormModal from "../../components/gestiondevoluciones/modals/DevolucionFormModal";
-import "../../styles/gestionusuarios/userDevoluciones.css"; 
+import "../../styles/gestionusuarios/userDevoluciones.css";
 
 // --- COMPONENTE AUXILIAR: ETIQUETA DE ESTADO ---
 const EstadoDevolucion = ({ estado }) => {
   let Icon = Clock;
   let className = 'status-pendiente';
-  
+
   switch (estado) {
-    case 'Pendiente': Icon = Clock;className = 'status-pendiente'; break;
-    case 'En proceso': Icon = RefreshCw; className = 'status-warning';  break;
-    case 'Aprobada': Icon = CheckCircle; className = 'status-success';  break;
-    case 'Rechazada': Icon = XCircle; className = 'status-error';  break;
-    case 'Completada': Icon = Truck; className = 'status-info';  break;
+    case 'Pendiente': Icon = Clock; className = 'status-pendiente'; break;
+    case 'En proceso': Icon = RefreshCw; className = 'status-warning'; break;
+    case 'Aprobada': Icon = CheckCircle; className = 'status-success'; break;
+    case 'Rechazada': Icon = XCircle; className = 'status-error'; break;
+    case 'Completada': Icon = Truck; className = 'status-info'; break;
     default: Icon = Clock;
   }
 
@@ -38,14 +38,21 @@ const UserDevoluciones = () => {
 
   // Cargar las devoluciones del usuario logueado
   const fetchMisDevoluciones = async () => {
+    const token = localStorage.getItem("authToken")?.replace(/"/g, "");
+
+    if (!token) {
+      console.error("No hay token disponible");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
-      const token = localStorage.getItem("authToken")?.replace(/"/g, "");
-      
+
       const res = await axios.get('http://localhost:8080/api/devoluciones/mis-devoluciones', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       setDevoluciones(res.data);
     } catch (error) {
       console.error("Error al obtener mis devoluciones", error);
@@ -55,19 +62,19 @@ const UserDevoluciones = () => {
   };
 
   useEffect(() => {
-   fetchMisDevoluciones();
+    fetchMisDevoluciones();
   }, []);
 
   const handleOpenModal = (data = null) => {
     setSelectedDevolucion(data);
     setIsModalOpen(true);
   };
-  
+
   const renderHistorial = () => {
     if (isLoading) {
       return <div className="loading">Cargando tu historial de devoluciones... 🔄</div>;
     }
-    
+
     if (devoluciones.length === 0) {
       return (
         <div className="no-data">
@@ -75,7 +82,7 @@ const UserDevoluciones = () => {
         </div>
       );
     }
-    
+
     return (
       <table className="devoluciones-table">
         <thead>
@@ -102,12 +109,12 @@ const UserDevoluciones = () => {
               <td><EstadoDevolucion estado={dev.estadoSolicitud} /></td>
               <td>
                 <div className="action-buttons">
-                    <button className="btn-view" onClick={() => handleOpenModal(dev)} title="Ver detalles" > <Eye size={16} /> </button>
-                    
-                    {/* Lógica del controlador: solo editar si está Pendiente */}
-                    {dev.estadoSolicitud === 'Pendiente' && (
-                        <button className="btn-edit"  onClick={() => handleOpenModal(dev)} title="Editar solicitud"> <Edit3 size={16} /> </button>
-                    )}
+                  <button className="btn-view" onClick={() => handleOpenModal(dev)} title="Ver detalles" > <Eye size={16} /> </button>
+
+                  {/* Lógica del controlador: solo editar si está Pendiente */}
+                  {dev.estadoSolicitud === 'Pendiente' && (
+                    <button className="btn-edit" onClick={() => handleOpenModal(dev)} title="Editar solicitud"> <Edit3 size={16} /> </button>
+                  )}
                 </div>
               </td>
             </tr>
@@ -125,19 +132,19 @@ const UserDevoluciones = () => {
           <CheckCircle size={18} />  Crear Nueva Devolución
         </button>
       </header>
-      
+
       <div className="tab-content">
         {renderHistorial()}
       </div>
 
-      <DevolucionFormModal 
+      <DevolucionFormModal
         isOpen={isModalOpen}
-        onClose={() => {setIsModalOpen(false); setSelectedDevolucion(null); }}
+        onClose={() => { setIsModalOpen(false); setSelectedDevolucion(null); }}
         onSave={fetchMisDevoluciones}
         devolucionToEdit={selectedDevolucion}
         userRole={userRoleActual}
       />
-      
+
     </div>
   );
 };

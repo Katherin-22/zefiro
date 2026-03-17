@@ -4,7 +4,7 @@ import { getStockById, updateStock } from "../../../services/administrador/Stock
 import {useGetColor} from "../../../hooks/color/useGetColor";
 import {useGetVariacionPorProducto} from "../../../hooks/stock/useVariacionStock";
 import MenuAdmin from "../../../layouts/administrador/menuAdmin";
-import AlertMessage from "../../../components/admi/AlertMessage";
+import AlertMessage from "../../../components/AlertMessage";
 import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
 
