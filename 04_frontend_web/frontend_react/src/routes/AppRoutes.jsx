@@ -12,6 +12,7 @@ import Catalogo from "../pages/home/category/catalogo";     // Catálogo de prod
 import ProductoGen from "../pages/home/productoGen";        // Detalle de producto
 import CategoriasMobilePage from "../pages/home/category/categorias";
 import FavoritosPage  from "../pages/home/favoritos";
+import CatalogoMobile from "../pages/home/category/catalogoMovil";
 /* ==============================
    ADMINISTRACIÓN - GENERAL
    (Dashboard principal)
@@ -137,6 +138,7 @@ function AppRoutes() {
             {/* 👟 Detalle de producto - Acceso libre */}
             <Route path="/home/:codigoReferencia" element={<ProductoGen />} />
             
+            <Route path="/home/catalogo" element={<CatalogoMobile />} />
             {/* ========== RUTAS DE ADMINISTRACIÓN ========== */}
             {/* ✉️ Bandeja de entrada admin */}
             <Route path="/Administrador/Inbox" element={
