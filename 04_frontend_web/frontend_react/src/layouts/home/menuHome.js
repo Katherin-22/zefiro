@@ -80,7 +80,7 @@ const SearchInputDesktop = ({ onSearch, initialValue = '' }) => {
     );
 };
 
-// Componente separado para el modal de búsqueda MOBILE - VERSIÓN CORREGIDA (SOLO ESTO CAMBIA)
+// Componente separado para el modal de búsqueda MOBILE - VERSIÓN FIJA (NO SE MUEVE)
 const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
     const [query, setQuery] = useState('');
     const inputRef = useRef(null);
@@ -102,12 +102,22 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
             }
         }, 100);
 
-        const originalStyle = window.getComputedStyle(document.body).overflow;
-        document.body.style.overflow = 'hidden';
+        // Prevenir scroll del body - mantener todo fijo
+        const scrollY = window.scrollY;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.width = '100%';
 
         return () => {
             clearTimeout(timer);
-            document.body.style.overflow = originalStyle;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            document.body.style.width = '';
+            window.scrollTo(0, scrollY);
         };
     }, [isOpen]);
 
@@ -147,61 +157,22 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
         <div
             className="mobile-search-modal"
             onClick={handleOverlayClick}
-            style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                zIndex: 1050,
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'center',
-                paddingTop: '56px', // Altura fija del header móvil
-                height: '100vh', // Altura fija
-                maxHeight: '100vh', // Evitar que cambie
-                overflow: 'hidden' // Evitar scroll
-            }}
         >
             <div
                 ref={modalRef}
                 className="mobile-search-content"
                 onClick={handleContentClick}
-                style={{
-                    background: 'white',
-                    width: '90%',
-                    maxWidth: '500px',
-                    borderRadius: '12px',
-                    padding: '20px',
-                    position: 'relative',
-                    transform: 'none', // Eliminar transformaciones
-                    transition: 'none', // Eliminar transiciones
-                    marginTop: 0
-                }}
             >
-                <div className="mobile-search-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                    <h5 style={{ margin: 0 }}>Buscar productos</h5>
-                    <button
-                        onClick={onClose}
-                        type="button"
-                        aria-label="Cerrar"
-                        style={{
-                            background: 'none',
-                            border: 'none',
-                            fontSize: '1.5rem',
-                            color: '#666',
-                            cursor: 'pointer',
-                            padding: '5px'
-                        }}
-                    >
+                <div className="mobile-search-header">
+                    <h5>Buscar productos</h5>
+                    <button onClick={onClose} type="button" aria-label="Cerrar">
                         <i className="bi bi-x-lg"></i>
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="mobile-search-form">
-                    <div className="mobile-search-input-container" style={{ display: 'flex', alignItems: 'center', borderBottom: '2px solid #007bff', marginBottom: '20px' }}>
-                        <i className="bi bi-search" style={{ color: '#666', marginRight: '10px' }}></i>
+                    <div className="mobile-search-input-container">
+                        <i className="bi bi-search"></i>
                         <input
                             ref={inputRef}
                             type="text"
@@ -209,15 +180,10 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             className="mobile-search-input"
-                            style={{
-                                fontSize: '16px',
-                                border: 'none',
-                                background: 'transparent',
-                                padding: '15px 0',
-                                flex: 1,
-                                outline: 'none'
-                            }}
                             autoComplete="off"
+                            autoCorrect="off"
+                            autoCapitalize="off"
+                            spellCheck="false"
                         />
                         {query && (
                             <button
@@ -225,42 +191,23 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
                                 className="mobile-search-clear"
                                 onClick={handleClear}
                                 aria-label="Limpiar búsqueda"
-                                style={{
-                                    background: 'none',
-                                    border: 'none',
-                                    color: '#666',
-                                    fontSize: '1.2rem',
-                                    cursor: 'pointer',
-                                    padding: '5px'
-                                }}
                             >
                                 <i className="bi bi-x"></i>
                             </button>
                         )}
                     </div>
 
-                    {/* Sugerencias de categorías */}
-                    <div className="mobile-search-suggestions" style={{ marginBottom: '20px' }}>
-                        <h6 style={{ fontSize: '0.9rem', color: '#666', marginBottom: '10px' }}>Categorías populares</h6>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                    <div className="mobile-search-suggestions">
+                        <h6>Categorías populares</h6>
+                        <div className="suggestion-buttons">
                             <button
                                 type="button"
                                 onClick={() => {
                                     onSearch('Mujer');
                                     onClose();
                                 }}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    padding: '10px',
-                                    border: '1px solid #dee2e6',
-                                    borderRadius: '8px',
-                                    background: 'white',
-                                    cursor: 'pointer'
-                                }}
                             >
-                                <i className="bi bi-gender-female" style={{ color: '#e83e8c' }}></i>
+                                <i className="bi bi-gender-female"></i>
                                 <span>Mujer</span>
                             </button>
                             <button
@@ -269,18 +216,8 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
                                     onSearch('Hombre');
                                     onClose();
                                 }}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    padding: '10px',
-                                    border: '1px solid #dee2e6',
-                                    borderRadius: '8px',
-                                    background: 'white',
-                                    cursor: 'pointer'
-                                }}
                             >
-                                <i className="bi bi-gender-male" style={{ color: '#007bff' }}></i>
+                                <i className="bi bi-gender-male"></i>
                                 <span>Hombre</span>
                             </button>
                         </div>
@@ -290,18 +227,6 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
                         type="submit"
                         className="mobile-search-submit"
                         disabled={!query.trim()}
-                        style={{
-                            width: '100%',
-                            background: !query.trim() ? '#6c757d' : '#007bff',
-                            color: 'white',
-                            border: 'none',
-                            padding: '15px',
-                            borderRadius: '8px',
-                            fontSize: '1.1rem',
-                            fontWeight: '600',
-                            cursor: !query.trim() ? 'not-allowed' : 'pointer',
-                            opacity: !query.trim() ? 0.65 : 1
-                        }}
                     >
                         Buscar
                     </button>

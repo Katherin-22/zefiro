@@ -1,4 +1,4 @@
-// hooks/useAuth.js - VERSIÓN CORREGIDA (sin intervalo)
+// hooks/useAuth.js - VERSIÓN CORREGIDA
 import { useState, useEffect } from 'react';
 
 const useAuth = () => {
