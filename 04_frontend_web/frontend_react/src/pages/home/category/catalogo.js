@@ -193,7 +193,7 @@ const Catalogo = () => {
       });
     }
 
-    // SEGUNDO: Aplicar filtros avanzados
+    // SEGUNDO: Aplicar filtros avanzados SIEMPRE (sin importar el tipo de producto)
     // FILTRO DE COLOR - Usando el nombreColor que ya está en cada producto
     if (filtrosAvanzados.color) {
       filtrados = filtrados.filter(producto => {
@@ -228,7 +228,7 @@ const Catalogo = () => {
       );
     }
 
-    // FILTRO ESPECÍFICO PARA BOLSOS
+    // FILTRO ESPECÍFICO PARA BOLSOS (solo aplica si es necesario)
     if (tipoProductoActual === 'bolsos' && filtrosAvanzados.tipoBolso) {
       filtrados = filtrados.filter(producto => {
         const nombreLower = producto.nombreProducto?.toLowerCase() || '';
@@ -376,21 +376,19 @@ const Catalogo = () => {
             </form>
           </div>
 
-          {/* FILTROS AVANZADOS */}
-          {tipoProductoActual && (
-            <FiltrosAvanzados
-              tipoProducto={tipoProductoActual}
-              filtros={filtrosAvanzados}
-              onCambioFiltro={manejarCambioFiltro}
-              onLimpiarFiltros={limpiarFiltros}
-              coloresDisponibles={coloresUnicos}
-              materialesDisponibles={materialesUnicos}
-              publicosDisponibles={publicosUnicos}
-              mostrar={!isMobile || mostrarFiltros}
-              isMobile={isMobile}
-              cargando={cargandoColores}
-            />
-          )}
+          {/* FILTROS AVANZADOS - AHORA SIEMPRE SE MUESTRAN */}
+          <FiltrosAvanzados
+            tipoProducto={tipoProductoActual}
+            filtros={filtrosAvanzados}
+            onCambioFiltro={manejarCambioFiltro}
+            onLimpiarFiltros={limpiarFiltros}
+            coloresDisponibles={coloresUnicos}
+            materialesDisponibles={materialesUnicos}
+            publicosDisponibles={publicosUnicos}
+            mostrar={!isMobile || mostrarFiltros}
+            isMobile={isMobile}
+            cargando={cargandoColores}
+          />
 
           {/* GRILLA DE PRODUCTOS - EXACTAMENTE IGUAL A TU ORIGINAL */}
           <div className="products-grid" id="products-grid">

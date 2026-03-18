@@ -80,162 +80,6 @@ const SearchInputDesktop = ({ onSearch, initialValue = '' }) => {
     );
 };
 
-// Componente separado para el modal de búsqueda MOBILE - VERSIÓN FIJA (NO SE MUEVE)
-const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
-    const [query, setQuery] = useState('');
-    const inputRef = useRef(null);
-    const modalRef = useRef(null);
-    const wasOpen = useRef(false);
-
-    useEffect(() => {
-        if (isOpen) {
-            wasOpen.current = true;
-        }
-    }, [isOpen]);
-
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const timer = setTimeout(() => {
-            if (inputRef.current) {
-                inputRef.current.focus();
-            }
-        }, 100);
-
-        // Prevenir scroll del body - mantener todo fijo
-        const scrollY = window.scrollY;
-        document.body.style.position = 'fixed';
-        document.body.style.top = `-${scrollY}px`;
-        document.body.style.left = '0';
-        document.body.style.right = '0';
-        document.body.style.width = '100%';
-
-        return () => {
-            clearTimeout(timer);
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.left = '';
-            document.body.style.right = '';
-            document.body.style.width = '';
-            window.scrollTo(0, scrollY);
-        };
-    }, [isOpen]);
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (query.trim()) {
-            onSearch(query);
-            setQuery('');
-            onClose();
-        }
-    };
-
-    const handleClear = () => {
-        setQuery('');
-        if (inputRef.current) {
-            inputRef.current.focus();
-        }
-    };
-
-    const handleContentClick = (e) => {
-        e.stopPropagation();
-    };
-
-    const handleOverlayClick = (e) => {
-        if (modalRef.current && !modalRef.current.contains(e.target)) {
-            onClose();
-        }
-    };
-
-    if (!isOpen && !wasOpen.current) return null;
-    if (!isOpen && wasOpen.current) {
-        wasOpen.current = false;
-        return null;
-    }
-
-    return (
-        <div
-            className="mobile-search-modal"
-            onClick={handleOverlayClick}
-        >
-            <div
-                ref={modalRef}
-                className="mobile-search-content"
-                onClick={handleContentClick}
-            >
-                <div className="mobile-search-header">
-                    <h5>Buscar productos</h5>
-                    <button onClick={onClose} type="button" aria-label="Cerrar">
-                        <i className="bi bi-x-lg"></i>
-                    </button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="mobile-search-form">
-                    <div className="mobile-search-input-container">
-                        <i className="bi bi-search"></i>
-                        <input
-                            ref={inputRef}
-                            type="text"
-                            placeholder="Buscar en el catálogo..."
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            className="mobile-search-input"
-                            autoComplete="off"
-                            autoCorrect="off"
-                            autoCapitalize="off"
-                            spellCheck="false"
-                        />
-                        {query && (
-                            <button
-                                type="button"
-                                className="mobile-search-clear"
-                                onClick={handleClear}
-                                aria-label="Limpiar búsqueda"
-                            >
-                                <i className="bi bi-x"></i>
-                            </button>
-                        )}
-                    </div>
-
-                    <div className="mobile-search-suggestions">
-                        <h6>Categorías populares</h6>
-                        <div className="suggestion-buttons">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    onSearch('Mujer');
-                                    onClose();
-                                }}
-                            >
-                                <i className="bi bi-gender-female"></i>
-                                <span>Mujer</span>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    onSearch('Hombre');
-                                    onClose();
-                                }}
-                            >
-                                <i className="bi bi-gender-male"></i>
-                                <span>Hombre</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="mobile-search-submit"
-                        disabled={!query.trim()}
-                    >
-                        Buscar
-                    </button>
-                </form>
-            </div>
-        </div>
-    );
-};
-
 const MenuHome = () => {
     const { setFiltro } = useFiltro();
     const navigate = useNavigate();
@@ -249,7 +93,6 @@ const MenuHome = () => {
 
     const [activeMobileNav, setActiveMobileNav] = useState('home');
     const [notification, setNotification] = useState(null);
-    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
     // Detectar ruta activa
     useEffect(() => {
@@ -276,7 +119,7 @@ const MenuHome = () => {
         setTimeout(() => setNotification(null), 3000);
     };
 
-    // Función de búsqueda
+    // Función de búsqueda (solo desktop)
     const handleSearch = (query) => {
         if (query.trim()) {
             console.log("🔍 Buscando:", query);
@@ -358,7 +201,7 @@ const MenuHome = () => {
                         </li>
                     </ul>
 
-                    {/* BÚSQUEDA - COMPONENTE SEPARADO */}
+                    {/* BÚSQUEDA - SOLO DESKTOP */}
                     <div className="d-flex me-3">
                         <SearchInputDesktop onSearch={handleSearch} />
                     </div>
@@ -462,21 +305,8 @@ const MenuHome = () => {
         </nav>
     );
 
-    // Mobile Navbar
+    // Mobile Navbar - SIN BOTÓN DE BÚSQUEDA
     const MobileNavbar = () => {
-        const openMobileSearch = () => {
-            setMobileSearchOpen(true);
-        };
-
-        const closeMobileSearch = () => {
-            setMobileSearchOpen(false);
-        };
-
-        const handleMobileSearch = (query) => {
-            handleSearch(query);
-            closeMobileSearch();
-        };
-
         return (
             <>
                 <nav className="mobile-top-nav" id="mobileTopNav">
@@ -486,14 +316,8 @@ const MenuHome = () => {
                         </Link>
 
                         <div className="mobile-header-search">
-                            <button
-                                className="mobile-search-btn"
-                                onClick={openMobileSearch}
-                                type="button"
-                            >
-                                <i className="bi bi-search"></i>
-                            </button>
-
+                            {/* BOTÓN DE BÚSQUEDA ELIMINADO - ESPACIO LIBERADO */}
+                            
                             <Link to="/carrito" className="mobile-cart-btn">
                                 <i className="bi bi-cart-fill"></i>
                                 {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
@@ -632,13 +456,6 @@ const MenuHome = () => {
                         </div>
                     </div>
                 </nav>
-
-                {/* MODAL DE BÚSQUEDA MOBILE */}
-                <MobileSearchModal
-                    isOpen={mobileSearchOpen}
-                    onClose={closeMobileSearch}
-                    onSearch={handleMobileSearch}
-                />
 
                 {notification && (
                     <div className="mobile-notification">
