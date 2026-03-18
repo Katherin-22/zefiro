@@ -5,6 +5,7 @@ import api_url from "../../../services/administrador/api";
 import '../../../styles/administrador/inventario.css';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import PdfDashboard from './PDFesatadisticas.js';
+import "../../../styles/administrador/dashboard.css"
 
 
 // Servicios
@@ -290,18 +291,26 @@ const DashboardAdmin = () => {
     return (
         <div className="all">
             <MenuAdmin />
-            <div className="container-fluid" id='container-admin'>
-                <div className="main-content">
+            <div className="container-fluid-dash" id='container-admin-dashboard'>
+                <div className="main-content-dash">
                     <div className="container-fluid p-4">
-                        
                         {/* TÍTULO */}
-                        <div className="row mb-4">
+                        <div className="row mb-4 island-dash">
                             <div className="col">
-                                <h2 className="text-center">
-                                    <i className="bi bi-bar-chart-fill me-2"></i>
+                                <h2 className=" tit text-center">
+                                    <i className=" bi bi-bar-chart-fill me-2"></i>
                                     Dashboard Administrativo
                                 </h2>
-                        <div className="col-auto">
+
+                                <p className="text-center text-muted ped">
+                                    {pedidosFiltrados.length} pedidos en el período seleccionado
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <div className='row btn-down'>
+                          <div className="col-auto">
                                 <PDFDownloadLink
                                     document={
                                         <PdfDashboard
@@ -329,10 +338,6 @@ const DashboardAdmin = () => {
                                     )}
                                 </PDFDownloadLink>
                             </div>  
-                                <p className="text-center text-muted">
-                                    {pedidosFiltrados.length} pedidos en el período seleccionado
-                                </p>
-                            </div>
                         </div>
 
                         {/* FILTROS */}

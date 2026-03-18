@@ -128,13 +128,73 @@ h1{
     box-shadow: 0 0 20px rgba(224, 178, 83, 0.8);
 }
 
-/*======================== REWSPONSIVE ============================0*/
+/*======================== RESPONSIVE ============================*/
 @media (min-width: 480px) and (max-width: 768px) {
-    #container-admin-stockGen{
-    width: 100%;
-    margin: 5px !important;
-    padding: 18 px;
-}
+    #container-admin-stockGen {
+        width: 80%;
+        margin: 30% !important;
+        padding: 18px;
+    }
+
+    .isla-StockGen {
+        width: 80% !important;
+        padding: 15px !important;
+        margin: 0 !important;
+    }
 }
 
+/* Móviles pequeños (menos de 480px) */
+@media (max-width: 479px) {
+    #container-admin-stockGen {
+        width: 100%;
+        margin: 10px !important;
+        padding: 10px;
+    }
 
+    .custom-header {
+        white-space: normal;
+        padding: 15px 10px;
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .isla-StockGen {
+        width: 100% !important;
+        height: auto;
+        padding: 10px !important;
+        margin: 10px 0 !important;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .custom-btn-genStock {
+        width: 100%;
+        justify-content: center;
+        padding: 10px;
+        margin-bottom: 0;
+    }
+
+    .table-responsive {
+        margin: 10px 0;
+    }
+
+    .table tbody td {
+        padding: 10px;
+    }
+
+    .table .btn-light {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
+/* Tablets en modo vertical */
+@media (min-width: 769px) and (max-width: 1024px) {
+    #container-admin-stockGen {
+        width: 75%;
+        margin-left: 22% !important;
+    }
+}
