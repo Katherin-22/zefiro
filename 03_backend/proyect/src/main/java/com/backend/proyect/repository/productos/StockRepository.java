@@ -19,31 +19,29 @@ public interface StockRepository extends JpaRepository<Stock,Integer>{
 
     @Query(value = """
 SELECT 
-    p.idProducto,                    -- ✅ Producto es el principal
-    p.codigoReferencia,
-    p.nombreProducto,
-    p.descripcion,
-    p.precio,
-    p.estadoProducto,
-    c.nombreCategoria,
-    tp.nombreTipoProducto,
-    m.nombreMaterial,
-    tpub.nombrePublico,
-    -- Datos del stock (pueden ser NULL si no hay stock)
-    s.idStock,
-    s.stockActual,
-    s.stockMinimo,
-    col.nombreColor,
-    v.nombre AS nombreTalla
-FROM Producto p                          
-LEFT JOIN Categoria c ON p.idCategoria = c.idCategoria
-LEFT JOIN TipoProducto tp ON c.idTipoProducto = tp.idTipoProducto
-LEFT JOIN Material m ON p.idMaterial = m.idMaterial
-LEFT JOIN TipoPublico tpub ON p.idPublico = tpub.idPublico
-LEFT JOIN Stock s ON s.idProducto = p.idProducto    -- LEFT JOIN para incluir productos sin stock
-LEFT JOIN Color col ON s.idColor = col.idColor
-LEFT JOIN Variacion v ON s.idVariacion = v.idVariacion
-ORDER BY p.nombreProducto ASC, col.nombreColor ASC, v.nombre ASC;
+    p.idProducto,
+    ANY_VALUE(p.codigoReferencia) AS codigoReferencia,
+    ANY_VALUE(p.nombreProducto) AS nombreProducto,
+    ANY_VALUE(p.descripcion) AS descripcion,
+    ANY_VALUE(tp.nombreTipoProducto) AS nombreTipoProducto, 
+	ANY_VALUE(tpb.nombrePublico) AS nombrePublico, 
+    ANY_VALUE(cat.nombreCategoria) AS nombreCategoria, 
+    ANY_VALUE(mat.nombreMaterial) AS nombreMaterial, 
+    ANY_VALUE(p.precio) AS precio,
+    GROUP_CONCAT(DISTINCT v.nombre SEPARATOR ', ') AS nombre,
+    GROUP_CONCAT(DISTINCT c.nombreColor SEPARATOR ', ') AS nombreColor,
+    SUM(s.stockActual) AS stockActual,
+    ANY_VALUE(p.estadoProducto) AS estadoProducto
+FROM Stock s
+JOIN Producto p ON s.idProducto = p.idProducto
+JOIN Categoria cat ON p.idCategoria = cat.idCategoria
+JOIN TipoProducto tp ON cat.idTipoProducto = tp.idTipoProducto
+JOIN Material mat ON p.idMaterial = mat.idMaterial
+JOIN TipoPublico tpb ON p.idPublico = tpb.idPublico
+LEFT JOIN Variacion v ON v.idVariacion = s.idVariacion
+LEFT JOIN Color c ON c.idColor = s.idColor
+GROUP BY p.idProducto
+ORDER BY p.nombreProducto ASC;
     """, nativeQuery = true)
     List<StockGeneralProjection> obtenerStockAgrupado();
 

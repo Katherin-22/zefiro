@@ -93,7 +93,7 @@ export default function Stock() {
             <td>{s.nombreCategoria}</td>              {/* Categoría */}
             <td>{s.nombreMaterial}</td>                {/* Material */}
             <td>${s.precio}</td>                       {/* Precio */}
-            <td>{s.nombreTalla || 'Talla única'}</td>  {/* Talla */}
+            <td>{s.nombre || 'No especificado'}</td>  {/* Talla */}
             <td>{s.nombreColor || 'No especificado'}</td> {/* Color */}
             <td>{s.stockActual}</td>                    {/* Stock */}
             <td>{s.estadoProducto}</td>                 {/* Estado */}
