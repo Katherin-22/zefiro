@@ -80,7 +80,7 @@ const SearchInputDesktop = ({ onSearch, initialValue = '' }) => {
     );
 };
 
-// Componente separado para el modal de búsqueda MOBILE - VERSIÓN CORREGIDA
+// Componente separado para el modal de búsqueda MOBILE - VERSIÓN CORREGIDA (SOLO ESTO CAMBIA)
 const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
     const [query, setQuery] = useState('');
     const inputRef = useRef(null);
@@ -158,7 +158,10 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
                 display: 'flex',
                 alignItems: 'flex-start',
                 justifyContent: 'center',
-                paddingTop: '20vh'
+                paddingTop: '56px', // Altura fija del header móvil
+                height: '100vh', // Altura fija
+                maxHeight: '100vh', // Evitar que cambie
+                overflow: 'hidden' // Evitar scroll
             }}
         >
             <div
@@ -171,7 +174,10 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
                     maxWidth: '500px',
                     borderRadius: '12px',
                     padding: '20px',
-                    position: 'relative'
+                    position: 'relative',
+                    transform: 'none', // Eliminar transformaciones
+                    transition: 'none', // Eliminar transiciones
+                    marginTop: 0
                 }}
             >
                 <div className="mobile-search-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>

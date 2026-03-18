@@ -1,4 +1,4 @@
-// hooks/useAuth.js - VERSIÓN CORREGIDA
+// hooks/useAuth.js - VERSIÓN CORREGIDA (sin intervalo)
 import { useState, useEffect } from 'react';
 
 const useAuth = () => {
@@ -66,7 +66,6 @@ const useAuth = () => {
 
         checkAuth();
 
-        // SOLO escuchar cambios en localStorage, sin intervalo
         const handleStorageChange = () => {
             checkAuth();
         };
@@ -76,7 +75,7 @@ const useAuth = () => {
         return () => {
             window.removeEventListener('storage', handleStorageChange);
         };
-    }, []); // Dependencias vacías - solo se ejecuta una vez
+    }, []);
 
     const logout = () => {
         localStorage.removeItem('authToken');
