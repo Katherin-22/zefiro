@@ -63,6 +63,71 @@ h1{
         color: var(--text-dark);
 }
 
+/* Contenedor de la tabla para mejor visualización */
+.table-responsive {
+    overflow-x: auto;
+    margin: 20px 0;
+    border-radius: 15px 15px 0 0;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+/* Estilos para la tabla */
+.table {
+    width: 100%;
+    border-collapse: separate;  /* ¡CLAVE para border-radius! */
+    border-spacing: 0;
+    background-color: white;
+    box-shadow: 0 5px 20px rgba(224, 178, 83, 0.5);
+    margin-top: 10px;
+}
+
+
+.table thead th {
+    padding: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 14px;
+}
+
+/* Estilo del tbody */
+.table tbody tr {
+    border-bottom: 1px solid #edf2f7;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table tbody td {
+    padding: 12px 15px;
+    vertical-align: middle;
+}
+
+/* Efecto hover en filas */
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Botones de acción */
+.table .btn-light {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold !important;
+    white-space: nowrap;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: all 0.3s;
+}
+
+.table .btn-light:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-1px);
+    box-shadow: 0 0 20px rgba(224, 178, 83, 0.8);
+}
+
 /*======================== REWSPONSIVE ============================0*/
 @media (min-width: 480px) and (max-width: 768px) {
     #container-admin-stockGen{

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useFiltro } from "../../utils/FiltroContextx";
 import { useCart } from '../../components/carrito/CarritoContext';
@@ -80,11 +80,18 @@ const SearchInputDesktop = ({ onSearch, initialValue = '' }) => {
     );
 };
 
-// Componente separado para el modal de búsqueda MOBILE
+// Componente separado para el modal de búsqueda MOBILE - VERSIÓN CORREGIDA
 const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
     const [query, setQuery] = useState('');
     const inputRef = useRef(null);
     const modalRef = useRef(null);
+    const wasOpen = useRef(false);
+
+    useEffect(() => {
+        if (isOpen) {
+            wasOpen.current = true;
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -108,6 +115,7 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
         e.preventDefault();
         if (query.trim()) {
             onSearch(query);
+            setQuery('');
             onClose();
         }
     };
@@ -129,7 +137,11 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
         }
     };
 
-    if (!isOpen) return null;
+    if (!isOpen && !wasOpen.current) return null;
+    if (!isOpen && wasOpen.current) {
+        wasOpen.current = false;
+        return null;
+    }
 
     return (
         <div
@@ -199,6 +211,7 @@ const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
                                 flex: 1,
                                 outline: 'none'
                             }}
+                            autoComplete="off"
                         />
                         {query && (
                             <button
@@ -537,7 +550,7 @@ const MenuHome = () => {
             <>
                 <nav className="mobile-top-nav" id="mobileTopNav">
                     <div className="mobile-top-container">
-                        <Link className="mobile-brand" to="/" onClick={() => setFiltro('todos')}>
+                        <Link className="mobile-brand" to="/" onClick={() => handleFiltro('todos')}>
                             Zéfiro
                         </Link>
 
@@ -565,7 +578,7 @@ const MenuHome = () => {
                             className={`mobile-nav-item ${activeMobileNav === 'home' ? 'active' : ''}`}
                             onClick={() => {
                                 setActiveMobileNav('home');
-                                setFiltro('todos');
+                                handleFiltro('todos');
                             }}
                         >
                             <i className="bi bi-house"></i>

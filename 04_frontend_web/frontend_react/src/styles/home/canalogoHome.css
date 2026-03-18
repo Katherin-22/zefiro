@@ -20,6 +20,10 @@
   background: var(--bg-body-light); /* CAMBIADO: de negro a blanco */
 }
 
+.catalogo-header{
+  margin-top: 5%;
+}
+
 .catalogo-background {
   background-color: var(--bg-body-light) !important; /* CAMBIADO: de negro a blanco */
   padding: 2rem ;
@@ -192,6 +196,9 @@
   
   .categoria-titulo {
     font-size: 1.5rem;
+  }
+  .catalogo-header{
+    margin-top: 10%;
   }
 }
 
