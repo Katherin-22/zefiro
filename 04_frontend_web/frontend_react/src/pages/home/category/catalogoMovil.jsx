@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useGetStock } from "../../../hooks/stock/useGetStock";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import MenuHome from "../../../layouts/home/menuHome";
-import { useFiltro } from "../../../utils/FiltroContextx";
+import { useFiltro } from "../../../utils/FiltroContextx.jsx";
 import { getImagenById } from "../../../services/administrador/ImagenService.js";
-import { getProductos } from "../../../services/administrador/ProductoService";
 import { useResponsive } from "../../../hooks/responsive/responsive";
 import "../../../styles/home/canalogoHome.css";
 import "../../../styles/home/catalogoMobile.css";
@@ -16,8 +15,6 @@ const CatalogoMobile = () => {
   const { isMobile } = useResponsive();
   const [productosFiltrados, setProductosFiltrados] = useState([]);
   const [imagenesProductos, setImagenesProductos] = useState({});
-  const [productos, setProductos] = useState([]);
-  const [productosMap, setProductosMap] = useState({});
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -40,57 +37,45 @@ const CatalogoMobile = () => {
   const [publicosUnicos, setPublicosUnicos] = useState([]);
   const [cargandoFiltros, setCargandoFiltros] = useState(true);
 
-  // Cargar productos para obtener marcas
-  useEffect(() => {
-    const fetchProductos = async () => {
-      try {
-        const response = await getProductos();
-        setProductos(response.data);
-        const map = {};
-        response.data.forEach(p => {
-          map[p.idProducto] = p;
-        });
-        setProductosMap(map);
-      } catch (error) {
-        console.error("Error al cargar productos", error);
-      }
-    };
-    fetchProductos();
-  }, []);
+  // Función para extraer marca del producto (primera palabra del nombre como fallback)
+  const extraerMarca = (producto) => {
+    if (!producto) return null;
+    if (producto.nombreMarca) return producto.nombreMarca;
+    if (producto.nombreProducto) {
+      const primeraPalabra = producto.nombreProducto.split(' ')[0];
+      return primeraPalabra;
+    }
+    return null;
+  };
 
-  // Obtener valores únicos combinando stock y productos
+  // Obtener valores únicos de los productos
   useEffect(() => {
-    if (!stock || stock.length === 0 || !productos.length) {
+    if (!stock || stock.length === 0) {
       setCargandoFiltros(false);
       return;
     }
     
     setCargandoFiltros(true);
-    console.log("📦 Procesando stock para obtener marcas, cantidad:", stock.length);
     
     const marcasSet = new Set();
     const materialesSet = new Set();
     const publicosSet = new Set();
     
-    for (const item of stock) {
-      const producto = productosMap[item.idProducto];
-      
-      // Marca desde producto
-      if (producto && producto.nombreMarca) {
-        marcasSet.add(producto.nombreMarca);
+    // Procesar cada producto del stock
+    for (const producto of stock) {
+      // Marca
+      const marca = extraerMarca(producto);
+      if (marca) {
+        marcasSet.add(marca);
       }
       
-      // Material desde item o producto
-      if (item.nombreMaterial) {
-        materialesSet.add(item.nombreMaterial);
-      } else if (producto && producto.nombreMaterial) {
+      // Materiales
+      if (producto.nombreMaterial) {
         materialesSet.add(producto.nombreMaterial);
       }
       
-      // Público desde item o producto
-      if (item.nombrePublico) {
-        publicosSet.add(item.nombrePublico);
-      } else if (producto && producto.nombrePublico) {
+      // Públicos
+      if (producto.nombrePublico) {
         publicosSet.add(producto.nombrePublico);
       }
     }
@@ -100,8 +85,8 @@ const CatalogoMobile = () => {
     setPublicosUnicos([...publicosSet].sort());
     setCargandoFiltros(false);
     
-    console.log("✅ Marcas únicas encontradas:", [...marcasSet].sort());
-  }, [stock, productos, productosMap]);
+    console.log("Marcas únicas:", [...marcasSet].sort());
+  }, [stock]);
 
   // Detectar tipo de producto según el filtro principal
   useEffect(() => {
@@ -145,7 +130,7 @@ const CatalogoMobile = () => {
     cargarImagenes();
   }, [stock, productosFiltrados]);
 
-  // FUNCIÓN DE FILTRADO PRINCIPAL
+  // FUNCIÓN DE FILTRADO PRINCIPAL (basada en tu Catalogo.js)
   useEffect(() => {
     if (!stock || stock.length === 0) {
       setProductosFiltrados([]);
@@ -154,12 +139,9 @@ const CatalogoMobile = () => {
 
     let filtrados = [...stock];
 
-    // PRIMERO: Aplicar filtro principal (categoría general)
+    // PRIMERO: Aplicar filtro principal (categoría general) - IGUAL QUE EN CATALOGO.JS
     if (filtro !== 'todos') {
-      filtrados = filtrados.filter(item => {
-        const producto = productosMap[item.idProducto];
-        if (!producto) return false;
-        
+      filtrados = filtrados.filter(producto => {
         const publicoLower = producto.nombrePublico?.toLowerCase() || '';
         const tipoLower = producto.nombreTipoProducto?.toLowerCase() || '';
         const nombreLower = producto.nombreProducto?.toLowerCase() || '';
@@ -190,57 +172,54 @@ const CatalogoMobile = () => {
     }
 
     // SEGUNDO: Aplicar filtros avanzados
-    // FILTRO DE MARCA (desde producto)
+    // FILTRO DE MARCA
     if (filtrosAvanzados.marca) {
-      filtrados = filtrados.filter(item => {
-        const producto = productosMap[item.idProducto];
-        return producto?.nombreMarca?.toLowerCase() === filtrosAvanzados.marca.toLowerCase();
+      filtrados = filtrados.filter(producto => {
+        const marca = extraerMarca(producto);
+        return marca?.toLowerCase() === filtrosAvanzados.marca.toLowerCase();
       });
     }
 
     // FILTRO DE MATERIAL
     if (filtrosAvanzados.material) {
-      filtrados = filtrados.filter(item => {
-        const producto = productosMap[item.idProducto];
-        const material = item.nombreMaterial || producto?.nombreMaterial;
-        return material?.toLowerCase() === filtrosAvanzados.material.toLowerCase();
-      });
+      filtrados = filtrados.filter(producto => 
+        producto.nombreMaterial?.toLowerCase() === filtrosAvanzados.material.toLowerCase()
+      );
     }
 
     // FILTRO DE PÚBLICO
     if (filtrosAvanzados.publico) {
-      filtrados = filtrados.filter(item => {
-        const producto = productosMap[item.idProducto];
-        const publico = item.nombrePublico || producto?.nombrePublico;
-        return publico?.toLowerCase() === filtrosAvanzados.publico.toLowerCase();
-      });
+      filtrados = filtrados.filter(producto => 
+        producto.nombrePublico?.toLowerCase() === filtrosAvanzados.publico.toLowerCase()
+      );
     }
 
     // FILTRO DE PRECIO
     if (filtrosAvanzados.precioMin) {
-      filtrados = filtrados.filter(item => 
-        item.precio >= parseFloat(filtrosAvanzados.precioMin)
-      );
-    }
-    if (filtrosAvanzados.precioMax) {
-      filtrados = filtrados.filter(item => 
-        item.precio <= parseFloat(filtrosAvanzados.precioMax)
+      filtrados = filtrados.filter(producto => 
+        producto.precio >= parseFloat(filtrosAvanzados.precioMin)
       );
     }
 
-    // FILTRO ESPECÍFICO PARA BOLSOS
+    if (filtrosAvanzados.precioMax) {
+      filtrados = filtrados.filter(producto => 
+        producto.precio <= parseFloat(filtrosAvanzados.precioMax)
+      );
+    }
+
+    // FILTRO ESPECÍFICO PARA BOLSOS (IGUAL QUE EN TU CATALOGO.JS)
     if (tipoProductoActual === 'bolsos' && filtrosAvanzados.tipoBolso) {
-      filtrados = filtrados.filter(item => {
-        const producto = productosMap[item.idProducto];
-        const nombreLower = producto?.nombreProducto?.toLowerCase() || '';
-        const tipoLower = producto?.nombreTipoProducto?.toLowerCase() || '';
+      filtrados = filtrados.filter(producto => {
+        const nombreLower = producto.nombreProducto?.toLowerCase() || '';
+        const tipoLower = producto.nombreTipoProducto?.toLowerCase() || '';
         const termino = filtrosAvanzados.tipoBolso.toLowerCase();
+        
         return nombreLower.includes(termino) || tipoLower.includes(termino);
       });
     }
 
     setProductosFiltrados(filtrados);
-  }, [stock, filtro, filtrosAvanzados, tipoProductoActual, productosMap]);
+  }, [stock, filtro, filtrosAvanzados, tipoProductoActual]);
 
   // Función para manejar cambios en filtros avanzados
   const manejarCambioFiltro = (nombre, valor) => {
@@ -277,12 +256,6 @@ const CatalogoMobile = () => {
     }
   };
 
-  // Función para obtener la marca de un item de stock (desde producto)
-  const obtenerMarcaItem = (item) => {
-    const producto = productosMap[item.idProducto];
-    return producto?.nombreMarca || null;
-  };
-
   // Función para obtener la imagen
   const obtenerImagenProducto = (producto) => {
     if (producto.idProducto && imagenesProductos[producto.idProducto]) {
@@ -301,8 +274,8 @@ const CatalogoMobile = () => {
     if (filtro === 'bolsos') return 'Bolsos';
     
     if (productosFiltrados.length > 0) {
-      const primerProducto = productosMap[productosFiltrados[0].idProducto];
-      return primerProducto?.nombreCategoria || `Categoría ${filtro}`;
+      const primerProducto = productosFiltrados[0];
+      return primerProducto.nombreCategoria || `Categoría ${filtro}`;
     }
     
     return `Categoría ${filtro}`;
@@ -355,7 +328,7 @@ const CatalogoMobile = () => {
             </div>
           </div>
 
-          {/* FILTROS AVANZADOS - CON FILTRO DE MARCAS REDISEÑADO */}
+          {/* FILTROS AVANZADOS - CON FILTRO DE MARCAS */}
           {mostrarFiltros && (
             <FiltrosAvanzadosMobile
               tipoProducto={tipoProductoActual}
@@ -373,19 +346,18 @@ const CatalogoMobile = () => {
           {/* GRILLA DE PRODUCTOS */}
           <div className="products-grid-mobile" id="products-grid-mobile">
             {productosFiltrados.length > 0 ? (
-              productosFiltrados.map((item, index) => {
-                const imagenProducto = obtenerImagenProducto(item);
-                const marca = obtenerMarcaItem(item);
-                const producto = productosMap[item.idProducto];
+              productosFiltrados.map((producto, index) => {
+                const imagenProducto = obtenerImagenProducto(producto);
+                const marca = extraerMarca(producto);
                 
                 return (
-                  <div key={item.codigoReferencia} className="product-card-wrapper-mobile">
-                    <Link to={`/home/${item.codigoReferencia}`} className="product-card-mobile">
+                  <div key={producto.codigoReferencia || index} className="product-card-wrapper-mobile">
+                    <Link to={`/home/${producto.codigoReferencia}`} className="product-card-mobile">
                       <div className="product-image-container-mobile">
                         <img
                           src={imagenProducto}
                           className="product-image-mobile"
-                          alt={item.nombreProducto}
+                          alt={producto.nombreProducto || 'Producto'}
                           onError={(e) => {
                             e.target.src = "/imagenes_prueba/default.jpg";
                           }}
@@ -398,13 +370,18 @@ const CatalogoMobile = () => {
                       </div>
                       <div className="product-info-mobile">
                         <h3 className="product-name-mobile">
-                          {item.nombreProducto}
+                          {producto.nombreProducto || 'Producto'}
                         </h3>
                         <p className="product-price-mobile">
-                          ${item.precio?.toLocaleString()}
+                          ${producto.precio?.toLocaleString() || '0'}
                         </p>
                         <div className="product-details-mobile">
-                          {producto?.nombreMaterial && (
+                          {producto.nombreColor && (
+                            <span className="product-color-mobile">
+                              <i className="bi bi-palette"></i> {producto.nombreColor}
+                            </span>
+                          )}
+                          {producto.nombreMaterial && (
                             <span className="product-material-mobile">
                               <i className="bi bi-grid"></i> {producto.nombreMaterial}
                             </span>
@@ -435,7 +412,7 @@ const CatalogoMobile = () => {
   );
 };
 
-// Componente de filtros específico para móvil - REDISEÑADO
+// Componente de filtros específico para móvil
 const FiltrosAvanzadosMobile = ({ 
     tipoProducto, 
     filtros, 
@@ -487,7 +464,7 @@ const FiltrosAvanzadosMobile = ({
                     </div>
                 </div>
 
-                {/* FILTRO DE MARCAS - NUEVO DISEÑO CON BOTONES */}
+                {/* FILTRO DE MARCAS */}
                 {marcasDisponibles.length > 0 && (
                     <div className="filtro-mobile-grupo">
                         <label className="filtro-mobile-label">Marcas</label>
