@@ -13,7 +13,7 @@ export default function CreateMaterial() {
     let navigate=useNavigate();
 
     const [loading, setLoad] = useState(false);
-    const [ setSuccess] = useState(false);
+    const [success,setSuccess] = useState(false);
 
     const [materiales, setMateriales]=useState({ 
         nombreMaterial:"",
@@ -51,6 +51,10 @@ export default function CreateMaterial() {
         await handleCreateMaterial(materiales); // manda datos al backend
     }
 
+    {success && (
+        console.log("material creado con éxito.")
+    )}    
+
   return (
 
 <div className="main-content">
@@ -73,11 +77,12 @@ export default function CreateMaterial() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
             <div className="col">
-                <label className="form-label">Nombre de material</label>
+                <label className="form-label required">Nombre de material</label>
                 <input type="text" 
                 name="nombreMaterial" 
                 placeholder="Ingresa nombre del material"
                 className="form-control" 
+                required
                 value={nombreMaterial} 
                 onChange={(e)=>onInputChange(e)}
                 />

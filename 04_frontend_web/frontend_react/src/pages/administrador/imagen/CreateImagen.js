@@ -4,6 +4,7 @@ import MenuAdmin from "../../../layouts/administrador/menuAdmin";
 import "../../../styles/administrador/gestion_producto.css";
 import "../../../styles/administrador/inventario.css";
 import {createImagen, getImagenById, deleteImagen} from "../../../services/administrador/ImagenService.js";
+import api_url from "../../../services/administrador/api.js";
 
 export default function CreateImagen() {
 
@@ -12,7 +13,7 @@ export default function CreateImagen() {
   const [imagenes, setImagenes] = useState([]);
   const [file, setFile] = useState(null); // archivo seleccionado
   const [loading, setLoading] = useState(false);
-  const [ setSuccess] = useState(false); 
+  const [success,setSuccess] = useState(false);
   
   // Traer los productos al cargar la página
   useEffect(() => {
@@ -76,7 +77,10 @@ export default function CreateImagen() {
     }
   };   
 
-   
+    {success && (
+        console.log("imagen creada con éxito.")
+    )}   
+
   if (loading) return <p>Cargando imagenes...</p>;
 
   return (
@@ -138,7 +142,7 @@ export default function CreateImagen() {
                             <button
                             className="btn btn-light"
                             onClick={() => {
-                                if (window.confirm("¿Estás seguro de eliminar este color?")) {
+                                if (window.confirm("¿Estás seguro de eliminar esta imagen?")) {
                                 handleDeleteImagen(imagen.idImagen);
                                 }
                             }}

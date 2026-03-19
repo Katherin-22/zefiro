@@ -66,8 +66,7 @@ console.log("idProducto desde URL:", idProducto);
     <div className="header">    
         <div className="row custom-header">
             <div className="col-3 d-flex align-items-center justify-content-between">
-                <h1 className="mb-0">Stock </h1>
-                {/*{nombreProducto}*/}
+                <h1 className="mb-0">Stock {nombreProducto} </h1>
             </div>
             <div className="col-9 d-flex align-items-end px-1 gap-2 w-50">
                 <Link to={`/stock/${idProducto}`}className="btn custom-btn btn-light">Registrar Stock</Link>

@@ -3,6 +3,7 @@ package com.backend.proyect.service.carrito;
 import com.backend.proyect.dto.carrito.AgregarItemDTO;
 import com.backend.proyect.model.carrito.Carrito;
 import com.backend.proyect.model.carrito.DetalleCarrito;
+import com.backend.proyect.model.pedido.EstadoPedido;
 import com.backend.proyect.model.carrito.EstadoCarritoEnum;
 import com.backend.proyect.model.productos.Producto;
 import com.backend.proyect.model.productos.Stock;
@@ -11,7 +12,6 @@ import com.backend.proyect.model.usuario.Usuario;
 
 import com.backend.proyect.model.pedido.Pedido;
 import com.backend.proyect.model.pedido.DetallePedido;
-import com.backend.proyect.model.pedido.EstadoPedido;
 import com.backend.proyect.model.metodosPago.MetodoPago;
 
 // Paquetes del Repositorio
@@ -22,7 +22,6 @@ import com.backend.proyect.repository.usuario.UsuarioRepository;
 import com.backend.proyect.repository.carrito.DetalleCarritoRepository;
 import com.backend.proyect.repository.pedido.pedidoRepository;
 import com.backend.proyect.repository.pedido.DetallePedidoRepository;
-import com.backend.proyect.repository.pedido.EstadoPedidoRepository;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -43,14 +42,12 @@ public class CarritoService {
     private final pedidoRepository pedidoRepository;
     private final UsuarioRepository usuarioRepository;
     private final DetallePedidoRepository detallePedidoRepository;
-    private final EstadoPedidoRepository estadoPedidoRepository;
     private final MetodoPagoRepository metodoPagoRepository; // Correcto: camelCase
 
     // Inyección de dependencias
     public CarritoService(CarritoRepository carritoRepository, DetalleCarritoRepository detalleCarritoRepository,
                           StockRepository stockRepository, pedidoRepository pedidoRepository,
                           UsuarioRepository usuarioRepository, DetallePedidoRepository detallePedidoRepository,
-                          EstadoPedidoRepository estadoPedidoRepository,
                           MetodoPagoRepository metodoPagoRepository) {
 
         this.carritoRepository = carritoRepository;
@@ -59,7 +56,6 @@ public class CarritoService {
         this.pedidoRepository = pedidoRepository;
         this.usuarioRepository = usuarioRepository;
         this.detallePedidoRepository = detallePedidoRepository;
-        this.estadoPedidoRepository = estadoPedidoRepository;
         this.metodoPagoRepository = metodoPagoRepository;
     }
 
@@ -387,8 +383,6 @@ public class CarritoService {
         }
 
         // 2. Creación del Pedido
-        EstadoPedido estadoInicial = estadoPedidoRepository.findById(2)
-                .orElseThrow(() -> new IllegalStateException("El estado 'Pagado' (ID 2) no existe. Verifica la tabla EstadoPedido."));
 
         Pedido nuevoPedido = new Pedido();
         nuevoPedido.setUsuario(carrito.getUsuario());
@@ -399,7 +393,7 @@ public class CarritoService {
         MetodoPago metodoPago = metodoPagoRepository.getReferenceById(idMetodoPago);
         nuevoPedido.setMetodoPago(metodoPago);
 
-        nuevoPedido.setEstadoPedido(estadoInicial);
+        nuevoPedido.setEstadoPedido(EstadoPedido.Pendiente);
 
         Pedido pedidoGuardado = pedidoRepository.save(nuevoPedido);
 

@@ -17,7 +17,7 @@ export default function UpdateCategoria() {
     const { idCategoria } = useParams(); // esto se usa cuando se va a editar
 
     const [loading, setLoading] = useState(true);
-    const [ setSuccess] = useState(false);
+    const [success,setSuccess] = useState(false);
 
     const [categorias,setCategorias]=useState({ 
         nombreCategoria: "",
@@ -77,6 +77,10 @@ export default function UpdateCategoria() {
         await handleUpdateCategoria(idCategoria, categorias); // acá le pasas el id y los datos(como esta en el hook)
     }
 
+    {success && (
+        console.log("Categoria creada con éxito.")
+    )}
+
   // Mostrar loading mientras trae el producto
   if (loading) return <p>Cargando categoria...</p>;
 
@@ -102,9 +106,10 @@ export default function UpdateCategoria() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
             <div className="col">
-                <label className="form-label">Tipo de Producto</label>
+                <label className="form-label required">Tipo de Producto</label>
                 <select 
                 name="idTipoProducto" 
+                required
                 value={categorias.idTipoProducto}
                 onChange={(e)=>onInputChange(e)} 
                 className="form-select">
@@ -118,12 +123,13 @@ export default function UpdateCategoria() {
             </div>
 
             <div className="col">
-                <label className="form-label">Nombre de la categoria</label>
+                <label className="form-label required">Nombre de la categoria</label>
                 <input 
                 type="text" 
                 name="nombreCategoria" 
                 placeholder="Ingresa nombre de la categoria"
                 className="form-control" 
+                required
                 value={nombreCategoria} 
                 onChange={(e)=>onInputChange(e)}
                 /> 

@@ -277,14 +277,6 @@ CREATE TABLE DetalleCarrito (
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
 -- -----------------------------------------------------
 
--- Tabla estadoPedido
-CREATE TABLE EstadoPedido (
-  idEstadoPedido INT AUTO_INCREMENT NOT NULL,
-  nombreEstado VARCHAR(45) NOT NULL,
-  
-  PRIMARY KEY (idEstadoPedido)
-) ;
-
 -- Tabla Pedido
 CREATE TABLE Pedido (
   idPedido INT AUTO_INCREMENT NOT NULL,
@@ -293,15 +285,14 @@ CREATE TABLE Pedido (
   idCarrito INT NOT NULL,
   idPromocion INT  NULL,
   idMetodoPago INT NOT NULL,
-  idEstadoPedido INT NOT NULL,
-  total_final DECIMAL(10,2) NOT NULL,
+  estadoPedido enum('Pendiente','Procesando','Entregado')default 'Pendiente',
+  total_final DECIMAL(10,2) NOT NULL DEFAULT 0,
   
   PRIMARY KEY(idPedido),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
   FOREIGN KEY (idCarrito) REFERENCES Carrito (idCarrito),
   FOREIGN KEY (idPromocion) REFERENCES Promocion (idPromocion),
-  FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago),
-  FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido) 
+  FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago)
 ) ;
 
 -- Tabla detallePedido
@@ -315,19 +306,6 @@ CREATE TABLE DetallePedido (
   PRIMARY KEY(idDetallePedido),
   FOREIGN KEY (idPedido) REFERENCES pedido(idPedido),
   FOREIGN KEY (idStock) REFERENCES Stock(idStock)
-) ;
-
--- Tabla seguimientoPedido
-CREATE TABLE SeguimientoPedido (
-  idSeguimiento INT NOT NULL AUTO_INCREMENT,
-  fechaEstado DATE NOT NULL,
-  comentario VARCHAR(45) NULL,
-  idPedido INT NOT NULL,
-  idEstadoPedido INT NOT NULL,
-  
-  PRIMARY KEY (idSeguimiento),
-  FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido),
-  FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido)
 ) ;
 
 -- -----------------------------------------------------
@@ -377,9 +355,13 @@ CREATE TABLE devoluciones_Cambios (
   fecha_solicitud VARCHAR(40) NOT NULL,
   fecha_respuesta VARCHAR(45) NULL, 
   idUsuario INT NOT NULL,
+  idPedido INT NOT NULL,     
+  idProducto INT NOT NULL,
 
   PRIMARY KEY (id_devolucion),
-  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
+  FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido),
+  FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
 
 ) ;
 
@@ -814,37 +796,20 @@ VALUES
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
 -- -----------------------------------------------------
 
-
--- Tabla estadoPedido
-INSERT INTO EstadoPedido (nombreEstado) VALUES
-('Pendiente'),
-('Pagado'),
-('Procesando'),
-('Empacado'),
-('Enviado'),
-('En tránsito'),
-('En reparto'),
-('Entregado'),
-('Cancelado'),
-('Rechazado'),
-('Devuelto'),
-('Reembolso en proceso'),
-('Reembolsado');
-
 -- Tabla Pedido
 INSERT INTO Pedido 
-(fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago, total_final, idEstadoPedido)
+(fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago, estadoPedido, total_final)
  VALUES
-("2025-07-01", 4, 1, 1, 1, 120000, 1),
-("2025-07-01", 5, 2, 2, 1, 85000, 2),
-("2025-07-02", 6, 3, 1, 1, 99000, 3),
-("2025-07-02", 7, 4, 2, 1, 130000, 4),
-("2025-07-03", 8, 5, 1, 1, 115000, 5),
-("2025-07-03", 9, 6, 2, 1, 78000, 6),
-("2025-07-04", 10, 7, 1, 1, 145000, 7),
-("2025-07-04", 11, 8, 2, 1, 92000, 8),
-("2025-07-05", 12, 9, 1, 1, 160000, 9),
-("2025-07-05", 13, 10, 2, 1, 110000, 10);
+("2026-03-18", 4, 1, 1, 1, 'Pendiente', 120000.00),
+("2026-03-18", 5, 2, 2, 1, 'Procesando', 85000.00), 
+("2026-03-19", 6, 3, 1, 1, 'Procesando', 99000.00),
+("2026-03-19", 7, 4, 2, 1, 'Entregado', 130000.00),
+("2026-03-20", 8, 5, 1, 1, 'Entregado', 115000.00),
+("2026-03-20", 9, 6, 2, 1, 'Pendiente', 78000.00),
+("2026-03-21", 10, 7, 1, 1, 'Procesando', 145000.00),
+("2026-03-21", 11, 8, 2, 1, 'Entregado', 92000.00),
+("2026-03-22", 12, 9, 1, 1, 'Pendiente', 160000.00),
+("2026-03-22", 13, 10, 2, 1, 'Procesando', 110000.00);
 
 -- Tabla detallePedido
 INSERT INTO DetallePedido (idPedido, idStock, cantidad, precioUnitario, subtotal) 
@@ -859,20 +824,6 @@ VALUES
 (8, 2, 1, 89000, 89000),
 (9, 3, 1, 175000, 175000),
 (10, 1, 2, 105000, 210000);
-
--- Tabla seguimientoPedido
-INSERT INTO SeguimientoPedido (fechaEstado, comentario, idPedido, idEstadoPedido)
-VALUES
-("2025-06-25", "Pedido recibido", 1, 7),
-("2025-06-26", "Confirmado por el sistema", 2, 6),
-("2025-06-26", "Cocinando", 3, 3),
-("2025-06-27", "Va en camino", 4, 4),
-("2025-06-27", "Cliente recibió el pedido", 5, 5),
-("2025-06-27", "Cancelado por cliente", 6, 4),
-("2025-06-28", "Producto defectuoso", 7, 3),
-("2025-06-28", "Se cambió la fecha", 8, 2),
-("2025-06-28", "Problema con tarjeta", 9, 1),
-("2025-06-29", "Esperando recogida", 10, 7);
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTION DE COMPRAS									PARTE 1.2
@@ -916,19 +867,20 @@ VALUES
 -- ----------------------------------------------------
 
 -- Tabla DevolucionCambio
+-- Tabla Devoluciones y Cambios con relaciones completas
 INSERT INTO devoluciones_Cambios 
-(motivo, tipo_solicitud, estado_solicitud, fecha_solicitud, fecha_respuesta, idUsuario)
+(motivo, tipo_solicitud, estado_solicitud, fecha_solicitud, fecha_respuesta, idUsuario, idPedido, idProducto)
 VALUES
-("Producto defectuoso al recibirlo", "Devolución", "Aprobada", "2025-06-20", "2025-06-22", 1),
-("Talla incorrecta enviada", "Cambio", "En proceso", "2025-06-21", NULL, 2),
-("No era lo que esperaba", "Devolución", "Rechazada", "2025-06-22", "2025-06-24", 1),
-("Producto llegó incompleto", "Devolución", "Aprobada", "2025-06-23", "2025-06-25", 2),
-("Color distinto al solicitado", "Cambio", "Pendiente", "2025-06-24", NULL, 1),
-("No me quedó bien", "Cambio", "Rechazada", "2025-06-24", "2025-06-26", 2),
-("No quede satisfecho con el Producto ", "Devolución", "Aprobada", "2025-06-25", "2025-06-27", 1),
-("Error en el modelo recibido", "Cambio", "En proceso", "2025-06-26", NULL,  2 ),
-("Me equivoqué en el pedido", "Devolución", "Rechazada", "2025-06-26", "2025-06-28",  1),
-("La talla no me queda", "Devolución", "Aprobada", "2025-06-26", "2025-06-28", 2);
+("Producto defectuoso al recibirlo", "Devolución", "Aprobada", "2025-06-20", "2025-06-22", 1, 1, 1),
+("Talla incorrecta enviada", "Cambio", "En proceso", "2025-06-21", NULL, 2, 2, 3),
+("No era lo que esperaba", "Devolución", "Rechazada", "2025-06-22", "2025-06-24", 1, 3, 2),
+("Producto llegó incompleto", "Devolución", "Aprobada", "2025-06-23", "2025-06-25", 2, 4, 5),
+("Color distinto al solicitado", "Cambio", "Pendiente", "2025-06-24", NULL, 1, 5, 4),
+("No me quedó bien", "Cambio", "Rechazada", "2025-06-24", "2025-06-26", 2, 6, 1),
+("No quede satisfecho con el Producto ", "Devolución", "Aprobada", "2025-06-25", "2025-06-27", 1, 7, 2),
+("Error en el modelo recibido", "Cambio", "En proceso", "2025-06-26", NULL, 2, 8, 3),
+("Me equivoqué en el pedido", "Devolución", "Rechazada", "2025-06-26", "2025-06-28", 1, 9, 5),
+("La talla no me queda", "Devolución", "Aprobada", "2025-06-26", "2025-06-28", 2, 10, 4);
 
 
 								-- cosultas avanzadas:
@@ -970,9 +922,6 @@ GROUP BY p.idProducto
 ORDER BY p.nombreProducto ASC;
 
 SELECT * FROM Stock;
-
--- 1. Verificar que existan los estados (Especialmente el ID 2)
-SELECT * FROM EstadoPedido;
 
 -- 2. Verificar que el método de pago 2 exista (el que pide tu fetch)
 SELECT * FROM MetodoPago WHERE idMetodoPago = 2;

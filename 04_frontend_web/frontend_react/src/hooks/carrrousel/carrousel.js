@@ -34,11 +34,11 @@ const BannerCarousel = ({ banners = [] }) => {
 
                     // Si la URL es relativa, añadir el dominio
                     if (imageUrl && !imageUrl.startsWith('http')) {
-                        imageUrl = `http://35.171.131.177:8080${imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl}`;
+                        imageUrl = `http://localhost:8080${imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl}`;
                     }
                     // Si no hay URL pero sí fileName
                     else if (!imageUrl && banner.fileName) {
-                        imageUrl = `http://35.171.131.177:8080/uploads/${banner.fileName}`;
+                        imageUrl = `http://localhost:8080/uploads/${banner.fileName}`;
                     }
 
                     console.log(`   URL final ${index}:`, imageUrl);

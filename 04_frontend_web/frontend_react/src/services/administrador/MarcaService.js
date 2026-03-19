@@ -24,6 +24,3 @@ export const updateMarca = async (idMarca, marcaData) => {
 export const deleteMarca= async (idMarca) => {
     return await api_url.delete(`/marca/${idMarca}`);
 };
-
-
-

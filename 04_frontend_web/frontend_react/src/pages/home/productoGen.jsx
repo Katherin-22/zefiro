@@ -168,7 +168,7 @@ const ProductoGen = () => {
 
             try {
                 setCargandoEstadisticas(true);
-                const response = await api_url.get(`/comentarios/producto/${producto.idProducto}/estadisticas`);
+                const response = await api_url.get(`/api/comentarios/producto/${producto.idProducto}/estadisticas`);;
                 if (response.data) {
                     setEstadisticasComentarios({
                         promedioCalificacion: response.data.promedioCalificacion || 0,
@@ -403,7 +403,7 @@ const ProductoGen = () => {
         if (!producto?.idProducto) return;
 
         try {
-            const response = await api_url.get(`/comentarios/producto/${producto.idProducto}/estadisticas`);
+            const response = await api_url.get(`/api/comentarios/producto/${producto.idProducto}/estadisticas`);;
             if (response.data) {
                 setEstadisticasComentarios({
                     promedioCalificacion: response.data.promedioCalificacion || 0,

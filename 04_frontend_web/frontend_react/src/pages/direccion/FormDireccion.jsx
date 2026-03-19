@@ -1,51 +1,39 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import "../../styles/gestionusuarios/perfilusuario.css";
-import "../../styles/home/paginaInicio.css";
-import MenuHome from "../../layouts/home/menuHome";
+import "../../styles/home/formDireccion.css";
 import Footer from "../../layouts/home/footer";
+import { Container, Row, Col, Form, Button, Alert, Spinner } from 'react-bootstrap';
+import BotonAtras from "../../hooks/boton/BotonAtras";
 
 function FormDireccion() {
-
     const { user } = useAuth();
     const userId = user?.id || user?.idUsuario;
-
     const [formData, setFormData] = useState(null);
-
-    // 2. Estado separado para la nueva contraseña (siempre inicia vacío).
     const [newPassword, setNewPassword] = useState('');
-
-    // 3. Estado para manejar la UI
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
-    let navigate=useNavigate();
+    let navigate = useNavigate();
 
     // --- A. Obtención de Datos (GET) ---
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
-                // 1. Obtener el token de autenticación (Eliminamos comillas si existen)
                 const token = localStorage.getItem("authToken")?.replace(/"/g, "");
-
                 if (!token) {
                     setError("No se encontró el token de autenticación. Inicie sesión.");
                     setLoading(false);
                     return;
                 }
-                
-                // Endpoint: GET /api/usuarios/perfil
+
                 const response = await axios.get('http://localhost:8080/api/usuarios/perfil', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     }
                 });
-
-                // Usamos esta data para pre-llenar los campos.
                 setFormData(response.data);
-
             } catch (err) {
                 console.error("Error al cargar el perfil:", err);
                 setError("No se pudo cargar el perfil del usuario. Intente más tarde.");
@@ -53,7 +41,6 @@ function FormDireccion() {
                 setLoading(false);
             }
         };
-
         fetchUserProfile();
     }, []);
 
@@ -61,16 +48,13 @@ function FormDireccion() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === 'password') {
-            // Maneja el campo de password en su estado separado
             setNewPassword(value);
         } else {
-            // Maneja los demás campos en el estado principal
             setFormData(prevData => ({
                 ...prevData,
                 [name]: value
             }));
         }
-        // Limpiar mensajes al empezar a editar
         setSuccessMessage('');
         setError(null);
     };
@@ -83,7 +67,7 @@ function FormDireccion() {
         setError(null);
 
         const token = localStorage.getItem("authToken")?.replace(/"/g, "");
-        
+
         if (!token) {
             setError("No se encontró el token de autenticación para actualizar. Inicie sesión.");
             setLoading(false);
@@ -91,33 +75,27 @@ function FormDireccion() {
         }
 
         try {
-            // 1. Crear el DTO a enviar al backend
             const requestData = {
                 ...formData,
-                // Incluimos la nueva contraseña solo si se ha escrito algo.
                 password: newPassword || null,
-
-                // Eliminamos los objetos de relación anidados para el DTO.
                 rol: undefined,
                 tipo_de_documento: undefined,
                 estado_usuario: undefined,
             };
 
-            // Endpoint: PUT /api/usuarios/perfil
-            await axios.put('http://localhost:8080/api/usuarios/perfil', requestData, { 
+            await axios.put('http://localhost:8080/api/usuarios/perfil', requestData, {
                 headers: {
-                    Authorization: `Bearer ${token}`, 
+                    Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 }
             });
 
-            // Éxito
             if (userId) {
-            navigate(`/api/payments/create/${userId}`)
-            setLoading(false);
+                navigate(`/api/payments/create/${userId}`);
+                setLoading(false);
             } else {
-            throw new Error("No se pudo obtener el ID del usuario.");
-        }
+                throw new Error("No se pudo obtener el ID del usuario.");
+            }
         } catch (err) {
             console.error("Error al actualizar:", err);
             setError("Error al actualizar el perfil. Revisa los datos.");
@@ -127,61 +105,177 @@ function FormDireccion() {
 
     // --- D. Lógica de Renderizado ---
     if (loading && !formData) {
-        return <div className="loading-state">Cargando perfil... </div>;
+        return (
+            <div className="allHome" id="home-container">
+                <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
+                    <Spinner animation="border" variant="primary" />
+                    <span className="ms-3">Cargando datos...</span>
+                </Container>
+                <Footer />
+            </div>
+        );
     }
 
     if (error && !formData) {
-        return <div className="error-state">Error: {error}</div>;
+        return (
+            <div className="allHome" id="home-container">
+                <Container className="py-5">
+                    <Alert variant="danger">Error: {error}</Alert>
+                </Container>
+                <Footer />
+            </div>
+        );
     }
 
     if (!formData) return null;
 
     return (
-    <div className="allHome" id="home-container">
-      <MenuHome />        
-        <div className="user-profile-container">
-            <h1>Datos personales</h1>
+        <div className="allHome" id="home-container">
+ 
 
-            {successMessage && <div className="success-message">{successMessage}</div>}
-            {error && <div className="error-message">{error}</div>}
+            <Container className="py-4 py-md-5 container-form">
+                <BotonAtras />
+                <Row className="row-form justify-content-center">
+                    <Col xs={12} md={10} lg={8}>
+                        <div className="form-direccion bg-white p-3 p-md-4 rounded shadow-sm">
+                            <h1 className="text-center text-dir mb-3 mb-md-4">Información de envío</h1>
 
-            <form onSubmit={handleSubmit} className="profile-form">
+                            {successMessage && (
+                                <Alert variant="success" onClose={() => setSuccessMessage('')} dismissible>
+                                    {successMessage}
+                                </Alert>
+                            )}
 
-                {/* Campos de texto y email */}
-                <div className="form-group">
-                    <label htmlFor="nombreUsuario">Nombre:</label>
-                    <input type="text" name="nombreUsuario" value={formData.nombreUsuario || ''} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="primerApellido">Primer Apellido:</label>
-                    <input type="text" name="primerApellido" value={formData.primerApellido || ''} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="segundoApellido">Segundo Apellido:</label>
-                    <input type="text" name="segundoApellido" value={formData.segundoApellido || ''} onChange={handleChange} />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="correoElectronico">Correo Electrónico:</label>
-                    <input type="email" name="correoElectronico" value={formData.correoElectronico || ''} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="telefono">Teléfono:</label>
-                    <input type="text" name="telefono" value={formData.telefono || ''} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="direccion">Dirección:</label>
-                    <input type="text" name="direccion" value={formData.direccion || ''} onChange={handleChange} required />
-                </div>
+                            {error && (
+                                <Alert variant="danger" onClose={() => setError(null)} dismissible>
+                                    {error}
+                                </Alert>
+                            )}
 
-                <button type="submit" disabled={loading}>
-                    {loading ? 'Guardando...' : 'Actualizar datos'}
-                </button>
-            </form>
+                            <Form onSubmit={handleSubmit}>
+                                <Row>
+                                    {/* Fila 1: Nombre y Primer Apellido (2 columnas en md, 1 en móvil) */}
+                                    <Col xs={12} md={6}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label htmlFor="nombreUsuario">Nombre:</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="nombreUsuario"
+                                                value={formData.nombreUsuario || ''}
+                                                onChange={handleChange}
+                                                required
+                                                placeholder="Ingrese su nombre"
+                                            />
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col xs={12} md={6}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label htmlFor="primerApellido">Primer Apellido:</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="primerApellido"
+                                                value={formData.primerApellido || ''}
+                                                onChange={handleChange}
+                                                required
+                                                placeholder="Ingrese su primer apellido"
+                                            />
+                                        </Form.Group>
+                                    </Col>
+
+                                    {/* Fila 2: Segundo Apellido y Teléfono (2 columnas en md, 1 en móvil) */}
+                                    <Col xs={12} md={6}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label htmlFor="segundoApellido">Segundo Apellido:</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="segundoApellido"
+                                                value={formData.segundoApellido || ''}
+                                                onChange={handleChange}
+                                                placeholder="Ingrese su segundo apellido"
+                                            />
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col xs={12} md={6}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label htmlFor="telefono">Teléfono:</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="telefono"
+                                                value={formData.telefono || ''}
+                                                onChange={handleChange}
+                                                required
+                                                placeholder="Ingrese su teléfono"
+                                            />
+                                        </Form.Group>
+                                    </Col>
+
+                                    {/* Fila 3: Correo Electrónico (solo 1 columna) */}
+                                    <Col xs={12}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label htmlFor="correoElectronico">Correo Electrónico:</Form.Label>
+                                            <Form.Control
+                                                type="email"
+                                                name="correoElectronico"
+                                                value={formData.correoElectronico || ''}
+                                                onChange={handleChange}
+                                                required
+                                                placeholder="Ingrese su correo electrónico"
+                                            />
+                                        </Form.Group>
+                                    </Col>
+
+                                    {/* Fila 4: Dirección (solo 1 columna) */}
+                                    <Col xs={12}>
+                                        <Form.Group className="mb-4">
+                                            <Form.Label htmlFor="direccion">Dirección:</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="direccion"
+                                                value={formData.direccion || ''}
+                                                onChange={handleChange}
+                                                required
+                                                placeholder="Ingrese su dirección"
+                                            />
+                                        </Form.Group>
+                                    </Col>
+
+                                    {/* Fila 5: Botón (centrado) */}
+                                    <Col xs={12} className="text-center">
+                                        <Button
+                                            type="submit"
+                                            disabled={loading}
+                                            variant="primary"
+                                            size="lg"
+                                            className="px-4 px-md-5 w-100 w-md-auto bton-form"
+                                        >
+                                            {loading ? (
+                                                <>
+                                                    <Spinner
+                                                        as="span"
+                                                        animation="border"
+                                                        size="sm"
+                                                        role="status"
+                                                        aria-hidden="true"
+                                                        className="me-2"
+                                                    />
+                                                    Guardando...
+                                                </>
+                                            ) : (
+                                                'Confirmar datos'
+                                            )}
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Form>
+                        </div>
+                    </Col>
+                </Row>
+            </Container>
 
         </div>
-        <Footer />
-    </div>    
-    )
+    );
 }
 
 export default FormDireccion;

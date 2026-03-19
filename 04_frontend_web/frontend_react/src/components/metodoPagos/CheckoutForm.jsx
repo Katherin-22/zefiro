@@ -1,9 +1,9 @@
-import React, {useState}  from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
-import { useAuth } from "../../context/AuthContext"; 
+import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
+import { useAuth } from "../../context/AuthContext";
 
-const CheckoutForm = ({clientSecret, amount, idUsuario }) => {
+const CheckoutForm = ({ clientSecret, amount, idUsuario }) => {
     const stripe = useStripe();
     const elements = useElements();
     const { token } = useAuth(); // Obtenemos el usuario y el token
@@ -25,11 +25,11 @@ const CheckoutForm = ({clientSecret, amount, idUsuario }) => {
             setMessage("Error: No se detectó un ID de usuario válido. Por favor, regresa al carrito.");
             return;
         }
-        
+
         setLoading(true);
         const cardElement = elements.getElement(CardElement);
 
-        const {error, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
             payment_method: { card: cardElement }
         });
 
@@ -56,7 +56,7 @@ const CheckoutForm = ({clientSecret, amount, idUsuario }) => {
 
                     // ✅ Redirigir al ticket con el ID del pedido
                     setTimeout(() => {
-                        navigate("/ticket/${data.idPedido"); 
+                        navigate(`/ticket/${data.idPedido}`);
                     }, 2000);
 
                 } else {
@@ -77,31 +77,32 @@ const CheckoutForm = ({clientSecret, amount, idUsuario }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} style={{display: "flex", flexDirection: "column", gap: "12px"}}>
-            <div style={{padding: "12px", border: "1px solid #ddd", borderRadius: 8}}>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div style={{ padding: "12px", border: "1px solid #ddd", borderRadius: 8 }}>
                 <CardElement />
             </div>
-        <button disabled={loading} style={{
-            background: "#E0B253",
-            color: "#fff",
-            padding: "12px",
-            border: "2px solid #E0B253",
-            borderRadius: 25,
-            cursor: loading ? "not-allowed" : "pointer",
-            opacity: loading ? 0.7 : 1
-        }}>
-            {loading ? "Procesando..." : `Pagar $${(amount / 100).toFixed(2)}`}
-        </button>    
+            <button disabled={loading} style={{
+                background: "#E0B253",
+                color: "#fff",
+                padding: "12px",
+                border: "2px solid #E0B253",
+                borderRadius: 25,
+                cursor: loading ? "not-allowed" : "pointer",
+                opacity: loading ? 0.7 : 1
+            }}>
+                {loading ? "Procesando..." : `Pagar $${(amount / 100).toFixed(2)}`}
+            </button>
 
-        {message &&  (
-            <div style={{
-                marginTop: 8,
-                fontWeight:600,
-                color: message.includes('✅') ? '#28a745' : message.includes('❌') ? '#dc3545' : '#000'
+            {message && (
+                <div style={{
+                    marginTop: 8,
+                    fontWeight: 600,
+                    color: message.includes('✅') ? '#28a745' : message.includes('❌') ? '#dc3545' : '#000'
                 }}>
                     {message}
-                    </div>)}
-        </form> 
+                </div>
+            )}
+        </form>
     );
 }
 

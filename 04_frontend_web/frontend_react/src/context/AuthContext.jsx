@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     // Proveedor del contexto que pasa los valores del estado y funciones a los componentes hijos
-    <AuthContext.Provider value={{ user,userData: user, userId: user?.id, token, isAuthenticated: !!token, login, logout, isLoading, getUserData }}>
+    <AuthContext.Provider value={{ user, userData: user, userId: user?.id || user?.idUsuario, token, isAuthenticated: !!token, login, logout, isLoading, getUserData }}>
       {children} {/* Renderiza los componentes hijos que estarán dentro de este proveedor */}
     </AuthContext.Provider>
   );

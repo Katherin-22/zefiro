@@ -2,14 +2,12 @@ package com.backend.proyect.model.pedido;
 
 import com.backend.proyect.model.productos.Stock;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 
@@ -37,15 +35,22 @@ public class DetallePedido {
     @Column(name = "subtotal", nullable = false)
     private BigDecimal subtotal;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "idPedido", referencedColumnName = "idPedido")
-    @JsonBackReference // 1. Evita el bucle infinito en la serialización JSON
-    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "idPedido", nullable = false)
     private Pedido pedido;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "idStock", referencedColumnName = "idStock")
+    @ManyToOne
+    @JoinColumn(name = "idStock", nullable = false)
     private Stock stock;
+
+    @PrePersist
+    public void calcularSubtotal() {
+        if (precioUnitario != null && cantidad != null) {
+            this.subtotal = BigDecimal.valueOf(precioUnitario * cantidad)
+                    .setScale(2, java.math.RoundingMode.HALF_UP);
+        }
+    }
+
 }
 
 

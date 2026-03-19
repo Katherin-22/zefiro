@@ -6,6 +6,7 @@ import MenuAdmin from "../../../layouts/administrador/menuAdmin";
 import "../../../styles/administrador/gestion_producto.css";
 import "../../../styles/administrador/inventario.css";
 import {updateImagen, OneGetImagenById} from "../../../services/administrador/ImagenService.js";
+import api_url from "../../../services/administrador/api.js";
 
 export default function UpdateImagen() {
 
@@ -15,7 +16,7 @@ export default function UpdateImagen() {
   const [imagen, setImagen] = useState(null);
   const [file, setFile] = useState(null); // archivo seleccionado
   const [loading, setLoading] = useState(false);
-  const [ setSuccess] = useState(false); 
+  const [success,setSuccess] = useState(false);
 
   // Traer los productos al cargar la página
   useEffect(() => {
@@ -61,6 +62,10 @@ export default function UpdateImagen() {
     setLoading(false);         // paso 4: quitar "cargando"
     }
    };
+
+    {success && (
+        console.log("imagen actualizada con éxito.")
+    )}
 
   if (loading) return <p>Cargando imagenes...</p>;
 

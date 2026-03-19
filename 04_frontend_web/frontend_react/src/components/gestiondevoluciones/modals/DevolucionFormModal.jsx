@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import axios from "axios";
 import { ESTADOS, TIPOS_SOLICITUD } from "../constants/devolucionesConstants";
 
-const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit, userRole = "cliente" }) => {
+const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit, userRole = "cliente", pedido, producto }) => {
   const isClient = userRole === "cliente";
 
   const [formData, setFormData] = useState({
@@ -14,12 +14,21 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit, userRo
     fechaSolicitud: new Date().toISOString().substring(0, 10),
     fechaRespuesta: null,
     idUsuario: "",
+    idProducto: "",
+    idPedido: "",
   });
 
   const [isError, setIsError] = useState("");
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
+ useEffect(() => {
+    if (!isOpen) {
+      setIsError("");
+      setMessage("");
+      return;
+    }
+
+    // CASO 1: EDITAR DEVOLUCIÓN EXISTENTE
     if (devolucionToEdit) {
       setFormData({
         id: devolucionToEdit.id_devolucion,
@@ -32,22 +41,25 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit, userRo
         idProducto: devolucionToEdit.producto?.idProducto || "",
         idPedido: devolucionToEdit.pedido?.idPedido || "",
       });
-    } else {
+    } 
+    // CASO 2: NUEVA DEVOLUCIÓN DESDE "MIS PEDIDOS"
+    else if (pedido || producto) {
+      const idPedFinal = pedido?.idPedido || pedido?.id || "";
+      const idProdFinal = producto?.idProducto || producto?.id || "";
+
       setFormData({
         id: null,
         motivo: "",
         tipoSolicitud: TIPOS_SOLICITUD[0],
-        estadoSolicitud: ESTADOS[0],
+        estadoSolicitud: "Pendiente",
         fechaSolicitud: new Date().toISOString().substring(0, 10),
         fechaRespuesta: null,
-        idUsuario: "",
-        idProducto: "",
-        idPedido: "",
+        idUsuario: "", 
+        idProducto: idProdFinal,
+        idPedido: idPedFinal,
       });
     }
-    setIsError("");
-    setMessage("");
-  }, [devolucionToEdit, isOpen]);
+  }, [isOpen, devolucionToEdit, pedido, producto]);
 
   if (!isOpen) return null;
 
@@ -70,6 +82,14 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit, userRo
       return;
     }
 
+    const idPedFinal = formData.idPedido ? Number(formData.idPedido) : null;
+    const idProdFinal = formData.idProducto ? Number(formData.idProducto) : null;
+
+    if (!idPedFinal || !idProdFinal) {
+      setIsError("❌ Error: No se ha detectado el pedido o producto.");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("authToken")?.replace(/"/g, "");
       if (!token) {
@@ -85,14 +105,11 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit, userRo
         fechaSolicitud: formData.fechaSolicitud || now,
         fechaRespuesta: isClient || formData.estadoSolicitud === 'Pendiente' ? null : (formData.fechaRespuesta || now),
         idUsuario: isClient ? null : Number(formData.idUsuario),
-        idProducto: Number(formData.idProducto),
-        idPedido: Number(formData.idPedido),
+        idProducto: idProdFinal,
+        idPedido: idPedFinal,
       };
 
-      if (!formData.idPedido || !formData.idProducto) {
-        setIsError("❌ Error: No se ha seleccionado un pedido o producto válido.");
-        return;
-      }
+      console.log("🚀 Payload listo para enviar:", payload);
 
       if (devolucionToEdit) {
         const devolucionId = devolucionToEdit.id_devolucion;
@@ -153,6 +170,22 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit, userRo
                 </div>
               )}
             </div>
+
+            {/* Visualización informativa para el cliente */}
+            {isClient && !devolucionToEdit && (
+              <div className="info-preseleccion" style={{ background: '#f0f7ff', padding: '10px', borderRadius: '5px', marginBottom: '15px', fontSize: '0.9rem', border: '1px solid #d0e7ff' }}>
+                <p style={{ margin: '2px 0' }}><strong>Pedido:</strong> #{formData.idPedido || "No detectado"}</p>
+                <p style={{ margin: '2px 0' }}><strong>Producto ID:</strong> {formData.idProducto || "No detectado"}</p>
+              </div>
+            )}
+
+            {/* Inputs ocultos para asegurar que viajen en el form */}
+            <input type="hidden" name="idPedido" value={formData.idPedido} />
+            <input type="hidden" name="idProducto" value={formData.idProducto} />
+
+            {/* Tus inputs hidden actuales */}
+            <input type="hidden" name="idPedido" value={formData.idPedido} />
+            <input type="hidden" name="idProducto" value={formData.idProducto} />
 
             {!isClient && (
               <div className="form-group">

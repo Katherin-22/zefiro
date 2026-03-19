@@ -20,7 +20,7 @@ export default function CreateCategoria() {
     });
 
     const [loading, setLoad] = useState(false);
-    const [ setSuccess] = useState(false);
+    const [success,setSuccess] = useState(false);
     
     const { nombreCategoria } = categoria;
 
@@ -56,6 +56,10 @@ export default function CreateCategoria() {
         await handleCreateCategoria(categoria); // manda datos al backend
     }
 
+    {success && (
+        console.log("Categoria creada con éxito.")
+    )}
+
   return (
 
 <div className="main-content">
@@ -78,8 +82,8 @@ export default function CreateCategoria() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
             <div className="col">
-                <label className="form-label">Tipo de Producto</label>
-                <select name="idTipoProducto" value={categoria.idTipoProducto} onChange={(e)=>onInputChange(e)} className="form-select">
+                <label className="form-label required">Tipo de Producto</label>
+                <select name="idTipoProducto" value={categoria.idTipoProducto} onChange={(e)=>onInputChange(e)} className="form-select" required>
                 <option value="">-- Selecciona una opción --</option>
                 {TipoProducto.map((Tp) => (
                 <option key={Tp.idTipoProducto} value={Tp.idTipoProducto}>
@@ -90,11 +94,12 @@ export default function CreateCategoria() {
             </div>
 
             <div className="col">
-                <label className="form-label">Nombre de Categoria</label>
+                <label className="form-label required">Nombre de Categoria</label>
                 <input type="text" 
                 name="nombreCategoria" 
                 placeholder="Ingresa nombre de la categoria"
                 className="form-control" 
+                required
                 value={nombreCategoria} 
                 onChange={(e)=>onInputChange(e)}
                 />

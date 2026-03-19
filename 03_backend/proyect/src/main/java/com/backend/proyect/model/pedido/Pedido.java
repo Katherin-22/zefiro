@@ -4,17 +4,14 @@ import com.backend.proyect.model.usuario.Usuario;
 import com.backend.proyect.model.carrito.Carrito;
 import com.backend.proyect.model.promociones.Promocion;
 import com.backend.proyect.model.metodosPago.MetodoPago;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,8 +36,6 @@ public class  Pedido {
     
     @OneToOne
     @JoinColumn(name = "idCarrito", nullable = false)
-    @JsonIgnore
-    @ToString.Exclude
     private Carrito carrito;
     
     @ManyToOne
@@ -51,20 +46,24 @@ public class  Pedido {
     @JoinColumn(name = "idMetodoPago", nullable = false)
     private MetodoPago metodoPago;
 
-    @ManyToOne
-    @JoinColumn(name = "idEstadoPedido", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estadoPedido", columnDefinition = "ENUM('Pendiente','Procesando','Entregado')")
     private EstadoPedido estadoPedido;
 
-    @Column(name = "total_final", nullable = false)
+    @Column(name = "total_final", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalFinal;
-
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
-    @JsonManagedReference // Indica que esta es la parte de la relación que sí se debe serializar
-    private List<DetallePedido> detalles;
 
     @PrePersist
     public void prePersist() {
-        if (fechaPedido == null) fechaPedido = LocalDate.now();
+        if (fechaPedido == null) {
+            fechaPedido = LocalDate.now();
+        }
+        if (estadoPedido == null) {
+            estadoPedido = EstadoPedido.Pendiente;
+        }
+        if (totalFinal == null) {
+            totalFinal = BigDecimal.ZERO;
+        }
     }
 
 }

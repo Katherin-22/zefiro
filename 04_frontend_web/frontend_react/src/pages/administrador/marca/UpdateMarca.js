@@ -14,7 +14,7 @@ export default function UpdateMarca() {
     const { idMarca } = useParams(); // esto se usa cuando se va a editar
 
     const [loading, setLoading] = useState(true);
-    const [ setSuccess] = useState(false);
+    const [success,setSuccess] = useState(false);
 
     const [marcas, setMarcas]=useState({ 
         nombreMarca:""
@@ -71,6 +71,10 @@ export default function UpdateMarca() {
         await handleUpdateMarca(idMarca, marcas); // acá le pasas el id y los datos(como esta en el hook)
     }
 
+    {success && (
+        console.log("marca actualizada con éxito.")
+    )}    
+
   // Mostrar loading mientras trae el producto
   if (loading) return <p>Cargando marca...</p>;
 
@@ -96,11 +100,12 @@ export default function UpdateMarca() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
             <div className="col">
-                <label className="form-label">Nombre de marca</label>
+                <label className="form-label required">Nombre de marca</label>
                 <input type="text" 
                 name="nombreMarca" 
                 placeholder="Ingresa nombre de la marca"
                 className="form-control" 
+                required
                 value={nombreMarca} 
                 onChange={(e)=>onInputChange(e)}
                 />

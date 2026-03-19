@@ -21,11 +21,8 @@ function Login({ stateOverride }) {
     setMessage("");
 
     const pendingRedirect = sessionStorage.getItem("pendingCheckoutRedirect");
-    const pendingRoleCheck =
-      sessionStorage.getItem("requireClientRole") === "true";
 
     console.log("DEBUG-CHECKOUT: pendingRedirect:", pendingRedirect);
-    console.log("DEBUG-CHECKOUT: pendingRoleCheck:", pendingRoleCheck);
 
     try {
       const response = await axios.post(
@@ -45,40 +42,26 @@ function Login({ stateOverride }) {
           return;
         }
 
+        // ✅ Login permitido
+        login(userData, token);
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("userData", JSON.stringify(userData));
+
         let redirectPath = "/";
 
         // 🔐 PRIORIDAD ABSOLUTA: COMPRA
-        if (pendingRoleCheck) {
-          
-          // ⛔ BLOQUEAR ANTES DE LOGIN
-          if (userData.rol !== ROL_CLIENTE) {
-            setIsError("Solo los clientes pueden realizar compras.");
-            return; // ❌ NO LOGIN, NO REDIRECCIÓN
-          }
+        if (pendingRedirect) {
+
+          redirectPath = pendingRedirect;
 
           // Limpiar intención
           sessionStorage.removeItem("pendingCheckoutRedirect");
           sessionStorage.removeItem("requireClientRole");
 
-          // ✅ Login permitido
-          login(userData, token);
-          localStorage.setItem("authToken", token);
-          localStorage.setItem("userData", JSON.stringify(userData));
-
-          redirectPath = pendingRedirect || "/carrito";
-        }
-
-        // 🔓 LOGIN NORMAL (NO COMPRA)
-        else {
-          login(userData, token);
-          localStorage.setItem("authToken", token);
-          localStorage.setItem("userData", JSON.stringify(userData));
-
-          if (userData.rol === ROL_ADMIN) {
-            redirectPath = "/Administrador/stock";
-          } else {
-            redirectPath = "/";
-          }
+        } else if (userData.rol === ROL_ADMIN) {
+          redirectPath = "/Administrador/stock";
+        } else if (userData.rol === ROL_CLIENTE) {
+          redirectPath = "/";
         }
 
         setMessage(response.data.message || "¡Inicio de sesión exitoso!");
@@ -87,19 +70,19 @@ function Login({ stateOverride }) {
         setIsError(response.data.message || "No se pudo iniciar sesión.");
       }
     } catch (err) {
-      if (err.response?.status === 401 && err.response?.data?.notVerified ) {
+      if (err.response?.status === 401 && err.response?.data?.notVerified) {
         setIsError("Debes verificar tu cuenta primero. Redirigiendo...");
         setTimeout(() => {
-        navigate("/email-verify", { state: { email: email, tipo: "verify" } });
+          navigate("/email-verify", { state: { email: email, tipo: "verify" } });
         }, 2000);
-      } else if(err.response?.status === 401) {
+      } else if (err.response?.status === 401) {
         setIsError("Credenciales inválidas.");
       } else if (err.response?.status === 404) {
         setIsError("El email no está registrado.");
       } else if (err.response?.status === 500) {
         setIsError("Error del servidor.");
-      } else { 
-        setIsError("Error de conexión.") 
+      } else {
+        setIsError("Error de conexión.")
       };
 
       console.error("Error login:", err);

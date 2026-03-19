@@ -1,8 +1,10 @@
-import { useState, useEffect, useRef , useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../components/carrito/CarritoContext";
 import { useAuth } from "../../context/AuthContext";
 import { getImagenById } from "../../services/administrador/ImagenService";
+import BotonAtras from "../../hooks/boton/BotonAtras";
+import "../../styles/Carrito/EstiloCarrito.css";
 
 const Carrito = () => {
     const navigate = useNavigate();
@@ -27,32 +29,53 @@ const Carrito = () => {
 
     const safeCart = useMemo(() => cart ?? [], [cart]);
 
-// ===============================================
-// 1. FUNCIÓN AUXILIAR DE ACCESO A DATOS SEGURO
-// ===============================================
-    const getProductData =  useCallback ((item) => {
+    // ===============================================
+    // 1. FUNCIÓN AUXILIAR DE ACCESO A DATOS SEGURO
+    // ===============================================
+    const getProductData = useCallback((item) => {
         // En invitado (no autenticado), la data de 'item' podría ser simple (solo idStock y cantidad)
         // En logueado, 'item' es un DetalleCarrito completo.
 
         const stockRef = item.stock || null;
-        const productoRef =stockRef?.producto || item.producto || null;
+        const productoRef = stockRef?.producto || item.producto || null;
 
-        console.log("Datos del item:", item);
+        console.log("=== DATOS COMPLETOS DEL ITEM ===");
+        console.log("Item:", JSON.stringify(item, null, 2));
+        console.log("stockRef:", stockRef);
+        console.log("productoRef:", productoRef);
 
         const idProducto = productoRef?.idProducto || item.idProducto;
-        const idDetalle = isAuthenticated ? item.idDetalleCarrito :  item.idStock ;
+        const idDetalle = isAuthenticated ? item.idDetalleCarrito : item.idStock;
 
         const nombre = productoRef?.nombreProducto || item.nombreProducto || "Producto Desconocido";
-        const precio = item.precioUnitario || item.precio|| productoRef?.precio || 0;
+        const precio = item.precioUnitario || item.precio || productoRef?.precio || 0;
         const stockDisponible = stockRef?.stockActual || item.stockActual || item.stockDisponible || 0;
         const cantidad = item.cantidad || 0;
 
-        // Lógica de prioridad de imagen igual que en Home:
-        // 1. Imagen del estado (cargada por API)
-        // 2. Imagen que venga en el objeto (fallback)
-        // 3. Imagen por defecto
+        // 🎨 EXTRAER COLOR
+        let color = "";
+        if (item.color) color = item.color;
+        else if (item.nombreColor) color = item.nombreColor;
+        else if (stockRef?.color?.nombreColor) color = stockRef.color.nombreColor;
+        else if (stockRef?.nombreColor) color = stockRef.nombreColor;
+
+        // 📏 EXTRAER TALLA - CORREGIDO: La talla está en stock.variacion.nombre
+        let talla = "";
+
+        // Buscar en stock.variacion.nombre (esta es la ubicación correcta según tu JSON)
+        if (stockRef?.variacion?.nombre) {
+            talla = stockRef.variacion.nombre;
+            console.log("✅ Talla encontrada en stock.variacion.nombre:", talla);
+        }
+        // Fallbacks por si acaso
+        else if (item.talla) talla = item.talla;
+        else if (item.nombreTalla) talla = item.nombreTalla;
+        else if (stockRef?.talla?.nombre) talla = stockRef.talla.nombre;
+        else if (stockRef?.nombre) talla = stockRef.nombre;
+
+        // Lógica de prioridad de imagen 
         let imagenFinal = "/imagenes_prueba/zapato/default.jpg";
-        
+
         if (idProducto && imagenesProductos[idProducto]) {
             imagenFinal = imagenesProductos[idProducto];
         } else if (item.imagen || productoRef?.imagen) {
@@ -61,19 +84,26 @@ const Carrito = () => {
             imagenFinal = imgPath.startsWith('http') ? imgPath : `http://localhost:8080${imgPath}`;
         }
 
+        console.log(`=== RESULTADO FINAL ===`);
+        console.log(`Producto: ${nombre}`);
+        console.log(`Color encontrado: "${color}"`);
+        console.log(`Talla encontrada: "${talla}"`);
+
         return {
-            idDetalle, 
+            idDetalle,
             idProducto,
             nombre,
-            precio, 
+            precio,
             cantidad,
             stockDisponible,
-            imagenUrl: imagenFinal, 
+            imagenUrl: imagenFinal,
+            color,
+            talla,
         };
-    } , [isAuthenticated, imagenesProductos]);
+    }, [isAuthenticated, imagenesProductos]);
 
 
-// ===============================================
+    // ===============================================
     //2.  EFECTO PARA CARGAR IMÁGENES 
     // ===============================================
     useEffect(() => {
@@ -85,7 +115,7 @@ const Carrito = () => {
                 for (const item of safeCart) {
                     const data = getProductData(item);
                     const idProducto = data.idProducto;
-                    
+
                     // Solo buscamos si tenemos ID y si NO está ya en nuestro estado local
                     if (idProducto && !idsCargadosRef.current.has(idProducto)) {
                         try {
@@ -118,12 +148,12 @@ const Carrito = () => {
     // ===============================================
     // 3. LÓGICA DE AUMENTAR/DISMINUIR
     // ===============================================
-    
+
     // AUMENTAR CANTIDAD (validando stock)
     const handleIncreaseQuantity = (item) => {
         const product = getProductData(item);
 
-        if (!product.idDetalle) return; 
+        if (!product.idDetalle) return;
 
         if (product.cantidad < product.stockDisponible) {
             // Llama al contexto con el ID del DetalleCarrito
@@ -146,7 +176,7 @@ const Carrito = () => {
             setErrorMessage("");
         } else {
             // Eliminar si la cantidad es 1
-            handleRemoveFromCart(product.idDetalle); 
+            handleRemoveFromCart(product.idDetalle);
         }
     };
 
@@ -160,7 +190,7 @@ const Carrito = () => {
     // ===============================================
     // 3. CÁLCULOS
     // ===============================================
-    
+
     // TOTAL PRODUCTOS (Unidades)
     const totalItems = safeCart.reduce(
         (total, item) => total + (item.cantidad ?? 0),
@@ -172,7 +202,7 @@ const Carrito = () => {
 
         const data = getProductData(item);
         return total + (data.precio * data.cantidad);
-        
+
     }, 0);
 
     // ===============================================
@@ -186,7 +216,7 @@ const Carrito = () => {
             setTimeout(() => {
                 navigate("/loginpage");
             }, 50);
-            
+
             return;
         }
 
@@ -196,8 +226,8 @@ const Carrito = () => {
     // ===============================================
     // 5. RENDERIZADO
     // ===============================================
-    
-    if (loading) {
+
+    if (loading && safeCart.length === 0) {
         return <div className="carrito-container loading-state">Cargando carrito...</div>;
     }
 
@@ -213,7 +243,9 @@ const Carrito = () => {
     }
 
     return (
-        <div className="carrito-container">
+        <div className={`carrito-container full ${loading ? "content-loading" : ""}`}>
+            <BotonAtras />
+
             <h2 className="carrito-title">Carrito de compras</h2>
 
             {errorMessage && (
@@ -221,100 +253,134 @@ const Carrito = () => {
             )}
 
             {/* LISTA DE PRODUCTOS */}
-            <div className="carrito-items">
-                {safeCart.map((item, index) => {
-                    // Usamos la función auxiliar para obtener datos limpios y seguros
-                    const product = getProductData(item);
-                    const subtotalItem = product.precio * product.cantidad;
+            <div className="row">
+                <div className="col-md-8 prod-col">
+                    <div className="carrito-items">
+                        {safeCart.map((item, index) => {
+                            // Usamos la función auxiliar para obtener datos limpios y seguros
+                            const product = getProductData(item);
+                            const subtotalItem = product.precio * product.cantidad;
 
-                    return (
-                        <div key={product.idDetalle || `item-${index}`} className="carrito-item">
-                            <img
-                                // Se concatena la URL base del backend para la carga de imágenes
-                                src={product.imagenUrl}
-                                alt={product.nombre}
-                                className="carrito-item-img"
-                                onError={(e) => {
-                                    // 🛑 CORRECCIÓN CRÍTICA: Cambiado 'iamgenes_prueba' a 'imagenes_prueba'
-                                    e.target.src = "/imagenes_prueba/default.jpg";
-                                }}
-                            />
+                            return (
+                                <div key={product.idDetalle || `item-${index}`} className="carrito-item">
+                                    <img
+                                        // Se concatena la URL base del backend para la carga de imágenes
+                                        src={product.imagenUrl}
+                                        alt={product.nombre}
+                                        className="carrito-item-img"
+                                        onError={(e) => {
+                                            // 🛑 CORRECCIÓN CRÍTICA: Cambiado 'iamgenes_prueba' a 'imagenes_prueba'
+                                            e.target.src = "/imagenes_prueba/default.jpg";
+                                        }}
+                                    />
 
-                            <div className="carrito-item-info">
-                                <h5>{product.nombre}</h5>
+                                    <div className="carrito-item-info">
+                                        <h5>{product.nombre}</h5>
 
-                                <p>
-                                    Precio unitario:{" "}
-                                    {new Intl.NumberFormat("es-CO", {
-                                        style: "currency",
-                                        currency: "COP",
-                                        minimumFractionDigits: 0,
-                                    }).format(product.precio)}
-                                </p>
+                                        {/* MOSTRAR COLOR Y TALLA */}
+                                        <div className="producto-variantes mb-3">
+                                            {product.color && (
+                                                <span className="badge bg-light text-dark me-2 border">
+                                                    <i className="bi bi-palette me-1"></i>
+                                                    Color: <strong>{product.color}</strong>
+                                                </span>
+                                            )}
+                                            {product.talla && (
+                                                <span className="badge bg-light text-dark border">
+                                                    <i className="bi bi-rulers me-1"></i>
+                                                    Talla: <strong>{product.talla}</strong>
+                                                </span>
+                                            )}
+                                            {!product.color && !product.talla && (
+                                                <span className="badge bg-light text-muted border">
+                                                    <i className="bi bi-box me-1"></i>
+                                                    Producto simple
+                                                </span>
+                                            )}
+                                        </div>
 
-                                {/* CANTIDAD */}
-                                <div className="cantidad-controls">
-                                    <button
-                                        onClick={() => handleDecreaseQuantity(item)}
-                                        className="btn-qty"
-                                    >
-                                        −
-                                    </button>
+                                        <p>
+                                            Precio unitario:{" "}
+                                            {new Intl.NumberFormat("es-CO", {
+                                                style: "currency",
+                                                currency: "COP",
+                                                minimumFractionDigits: 0,
+                                            }).format(product.precio)}
+                                        </p>
 
-                                    <span>{product.cantidad}</span>
+                                        {/* CANTIDAD */}
+                                        <div className="cantidad-controls">
+                                            <button
+                                                onClick={() => handleDecreaseQuantity(item)}
+                                                className="btn-qty"
+                                                disabled={loading}
+                                            >
+                                                −
+                                            </button>
 
-                                    <button
-                                        onClick={() => handleIncreaseQuantity(item)}
-                                        className="btn-qty"
-                                    >
-                                        +
-                                    </button>
+                                            <span>{product.cantidad}</span>
+
+                                            <button
+                                                onClick={() => handleIncreaseQuantity(item)}
+                                                className="btn-qty"
+                                                disabled={loading}
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+
+                                        <p>
+                                            Subtotal:{" "}
+                                            {new Intl.NumberFormat("es-CO", {
+                                                style: "currency",
+                                                currency: "COP",
+                                                minimumFractionDigits: 0,
+                                            }).format(subtotalItem)}
+                                        </p>
+
+                                        <button
+                                            className="btn-remove"
+                                            onClick={() => handleRemoveFromCart(product.idDetalle)}
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </div>
                                 </div>
+                            );
+                        })}
+                    </div>
+                </div>
 
-                                <p>
-                                    Subtotal:{" "}
-                                    {new Intl.NumberFormat("es-CO", {
-                                        style: "currency",
-                                        currency: "COP",
-                                        minimumFractionDigits: 0,
-                                    }).format(subtotalItem)}
-                                </p>
+                {/* RESUMEN */}
+                < div className="col-md-4 info-col">
+                    <div className="carrito-summary">
+                        <p>
+                            <strong>Productos (Unidades):</strong> {totalItems}
+                        </p>
 
-                                <button
-                                    className="btn-remove"
-                                    onClick={() => handleRemoveFromCart(product.idDetalle)}
-                                >
-                                    Eliminar
-                                </button>
-                            </div>
+                        <p className="total">
+                            <strong>Total:</strong>{" "}
+                            {new Intl.NumberFormat("es-CO", {
+                                style: "currency",
+                                currency: "COP",
+                                minimumFractionDigits: 0,
+                            }).format(totalPrice)}
+                        </p>
+
+                        <div className="carrito-actions">
+                            <button className="btn-secondary" onClick={() => {
+                                if (window.confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
+                                    clearCart();
+                                }
+                            }}>
+                                Vaciar carrito
+                            </button>
+
+                            <button className="btn-primary" onClick={handleCheckout}>
+                                {user ? "Proceder al pago" : "Inicia sesión para continuar"}
+                            </button>
                         </div>
-                    );
-                })}
-            </div>
-
-            {/* RESUMEN */}
-            <div className="carrito-summary">
-                <p>
-                    <strong>Productos (Unidades):</strong> {totalItems}
-                </p>
-
-                <p className="total">
-                    <strong>Total:</strong>{" "}
-                    {new Intl.NumberFormat("es-CO", {
-                        style: "currency",
-                        currency: "COP",
-                        minimumFractionDigits: 0,
-                    }).format(totalPrice)}
-                </p>
-
-                <div className="carrito-actions">
-                    <button className="btn-secondary" onClick={clearCart}>
-                        Vaciar carrito
-                    </button>
-
-                    <button className="btn-primary" onClick={handleCheckout}>
-                        {user ? "Proceder al pago" : "Inicia sesión para continuar"}
-                    </button>
+                    </div>
                 </div>
             </div>
         </div>
