@@ -398,7 +398,7 @@ function AppRoutes() {
             
             {/* ========== PERFIL USUARIO ========== */}
             {/* 👤 Perfil protegido (requiere login) */}
-            <Route path='/perfilUsuario' element={
+            <Route path='/perfilUsuario/:idUsuario' element={
                <ProtectedRoute>
                   <PerfilUsuario />
                </ProtectedRoute>

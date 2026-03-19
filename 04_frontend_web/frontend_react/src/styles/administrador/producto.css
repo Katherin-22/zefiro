@@ -12,7 +12,7 @@
 }
 
 /* ===== CONTENEDOR PRINCIPAL ===== */
-#container-admin-stockGen {
+#container-admin-producto {
     width: 81.5%;
     margin: 18px 18px 15px 18% !important;
     padding: 5px 18px;
@@ -21,7 +21,7 @@
     box-sizing: border-box;
 }
 
-/* ===== HEADER FIJO (SIN SCROLL) ===== */
+/* ===== HEADER FIJO ===== */
 .custom-header {
     white-space: nowrap;
     width: 100%;
@@ -42,13 +42,13 @@ h1 {
     margin: 0;
 }
 
-/* ===== ISLA DE BOTONES FIJA (SIN SCROLL) ===== */
-.isla-StockGen {
+/* ===== ISLA DE BOTONES FIJA ===== */
+.isla-Producto {
     background: var(--bg-body-light);
     display: flex;
     justify-content: center !important;
     align-items: center;
-    width: 350px !important;
+    width: 450px !important; /* Un poco más ancha para 3 botones */
     height: 50px;
     border-radius: 15px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
@@ -56,7 +56,7 @@ h1 {
     padding: 0 0 5px 10px;
 }
 
-.custom-btn-genStock {
+.custom-btn-producto {
     background: var(--primary-color);
     display: flex;
     align-items: center;
@@ -70,9 +70,10 @@ h1 {
     border: 1px solid transparent;
     white-space: nowrap;
     font-size: 0.9rem;
+    text-decoration: none;
 }
 
-.custom-btn-genStock:hover {
+.custom-btn-producto:hover {
     background-color: transparent;
     color: var(--primary-color);
     box-shadow: 0 5px 20px rgba(224, 178, 83, 0.5);
@@ -81,7 +82,7 @@ h1 {
 }
 
 /* ===== CONTENEDOR DE TABLA CON SCROLL ===== */
-.table-responsive {
+.table-responsive-producto {
     overflow-x: auto;
     overflow-y: hidden;
     margin: 20px 0;
@@ -97,28 +98,28 @@ h1 {
 }
 
 /* Personalizar la barra de scroll */
-.table-responsive::-webkit-scrollbar {
+.table-responsive-producto::-webkit-scrollbar {
     height: 8px;
     background-color: #f5f5f5;
     border-radius: 10px;
 }
 
-.table-responsive::-webkit-scrollbar-track {
+.table-responsive-producto::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 10px;
 }
 
-.table-responsive::-webkit-scrollbar-thumb {
+.table-responsive-producto::-webkit-scrollbar-thumb {
     background: var(--primary-color);
     border-radius: 10px;
 }
 
-.table-responsive::-webkit-scrollbar-thumb:hover {
+.table-responsive-producto::-webkit-scrollbar-thumb:hover {
     background: var(--hover-color);
 }
 
-/* ===== TABLA SIN ANCHO MÍNIMO ===== */
-.table {
+/* ===== TABLA ===== */
+.table-producto {
     width: 100%;
     border-collapse: collapse;
     background-color: white;
@@ -126,7 +127,7 @@ h1 {
     /* SIN min-width para que se adapte al contenido */
 }
 
-.table thead th {
+.table-producto thead th {
     padding: 15px;
     font-weight: 600;
     text-transform: uppercase;
@@ -138,64 +139,105 @@ h1 {
     text-align: left;
 }
 
-.table thead th:first-child {
+.table-producto thead th:first-child {
     border-top-left-radius: 15px;
 }
 
-.table thead th:last-child {
+.table-producto thead th:last-child {
     border-top-right-radius: 15px;
 }
 
-.table tbody tr {
+.table-producto tbody tr {
     border-bottom: 1px solid #edf2f7;
     transition: var(--tran-03);
 }
 
-.table tbody tr:last-child {
+.table-producto tbody tr:last-child {
     border-bottom: none;
 }
 
-.table tbody tr:last-child td:first-child {
+.table-producto tbody tr:last-child td:first-child {
     border-bottom-left-radius: 15px;
 }
 
-.table tbody tr:last-child td:last-child {
+.table-producto tbody tr:last-child td:last-child {
     border-bottom-right-radius: 15px;
 }
 
-.table tbody td {
+.table-producto tbody td {
     padding: 12px 15px;
     vertical-align: middle;
     font-size: 0.95rem;
+    white-space: nowrap;
 }
 
 /* Efecto hover en filas */
-.table tbody tr:hover {
+.table-producto tbody tr:hover {
     background-color: rgba(224, 178, 83, 0.05);
 }
 
 /* ===== BOTONES DE ACCIÓN ===== */
-.table .btn-light {
+.btn-producto-editar {
     background-color: var(--primary-color);
     color: white;
     font-weight: bold !important;
     white-space: nowrap;
     border: none;
-    padding: 8px 15px;
+    padding: 6px 12px;
     border-radius: 8px;
     font-size: 13px;
     transition: var(--tran-03);
     display: inline-block;
     text-decoration: none;
-    width: 100%;
-    text-align: center;
+    margin-right: 5px;
 }
 
-.table .btn-light:hover {
+.btn-producto-editar:hover {
     background-color: var(--secondary-color);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(224, 178, 83, 0.5);
     color: white;
+}
+
+.btn-producto-imagenes {
+    background-color: #17a2b8;
+    color: white;
+    font-weight: bold !important;
+    white-space: nowrap;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: var(--tran-03);
+    display: inline-block;
+    text-decoration: none;
+    margin-right: 5px;
+}
+
+.btn-producto-imagenes:hover {
+    background-color: #138496;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(23, 162, 184, 0.5);
+    color: white;
+}
+
+.btn-producto-eliminar {
+    background-color: #dc3545;
+    color: white;
+    font-weight: bold !important;
+    white-space: nowrap;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: var(--tran-03);
+    cursor: pointer;
+}
+
+.btn-producto-eliminar:hover {
+    background-color: #bb2d3b;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.5);
 }
 
 /* ===== ESTADOS DE PRODUCTO ===== */
@@ -223,7 +265,7 @@ h1 {
 /* ===== RESPONSIVE ===== */
 /* Desktop mediano (1025px - 1200px) */
 @media (min-width: 1025px) and (max-width: 1200px) {
-    #container-admin-stockGen {
+    #container-admin-producto {
         width: 78%;
         margin-left: 20% !important;
     }
@@ -231,7 +273,7 @@ h1 {
 
 /* Tablet horizontal y Desktop pequeño (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
-    #container-admin-stockGen {
+    #container-admin-producto {
         width: 72% !important;
         margin: 15px 15px 15px 26% !important;
         padding: 10px;
@@ -245,12 +287,12 @@ h1 {
         font-size: 1.6rem;
     }
     
-    .isla-StockGen {
-        width: 300px !important;
+    .isla-Producto {
+        width: 400px !important;
         height: 45px;
     }
     
-    .custom-btn-genStock {
+    .custom-btn-producto {
         padding: 6px 10px;
         font-size: 0.8rem;
     }
@@ -258,7 +300,7 @@ h1 {
 
 /* Tablet vertical (481px - 768px) - TUS MEDIDAS */
 @media (min-width: 481px) and (max-width: 768px) {
-    #container-admin-stockGen {
+    #container-admin-producto {
         width: 90% !important;
         margin: 80px auto 20px auto !important;
         padding: 15px;
@@ -277,7 +319,7 @@ h1 {
         width: 100%;
     }
     
-    .isla-StockGen {
+    .isla-Producto {
         width: 100% !important;
         height: auto;
         padding: 10px !important;
@@ -288,7 +330,7 @@ h1 {
         box-shadow: none;
     }
     
-    .custom-btn-genStock {
+    .custom-btn-producto {
         width: calc(50% - 5px);
         margin: 0;
         padding: 10px;
@@ -298,7 +340,7 @@ h1 {
 
 /* Móvil pequeño (<480px) */
 @media (max-width: 480px) {
-    #container-admin-stockGen {
+    #container-admin-producto {
         width: 100% !important;
         margin: 60px 0 20px 0 !important;
         padding: 10px;
@@ -318,7 +360,7 @@ h1 {
         width: 100%;
     }
     
-    .isla-StockGen {
+    .isla-Producto {
         width: 100% !important;
         height: auto;
         padding: 10px !important;
@@ -329,7 +371,7 @@ h1 {
         gap: 8px;
     }
     
-    .custom-btn-genStock {
+    .custom-btn-producto {
         width: 100%;
         margin: 0;
         padding: 12px;
@@ -337,7 +379,7 @@ h1 {
     }
 }
 
-/* ===== MEJORAS VISUALES ===== */
+/* ===== ANIMACIONES ===== */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -349,25 +391,27 @@ h1 {
     }
 }
 
-.table tbody tr {
+.table-producto tbody tr {
     animation: fadeIn 0.3s ease-out;
     animation-fill-mode: both;
 }
 
-.table tbody tr:nth-child(1) { animation-delay: 0.05s; }
-.table tbody tr:nth-child(2) { animation-delay: 0.1s; }
-.table tbody tr:nth-child(3) { animation-delay: 0.15s; }
-.table tbody tr:nth-child(4) { animation-delay: 0.2s; }
-.table tbody tr:nth-child(5) { animation-delay: 0.25s; }
-.table tbody tr:nth-child(6) { animation-delay: 0.3s; }
-.table tbody tr:nth-child(7) { animation-delay: 0.35s; }
-.table tbody tr:nth-child(8) { animation-delay: 0.4s; }
-.table tbody tr:nth-child(9) { animation-delay: 0.45s; }
-.table tbody tr:nth-child(10) { animation-delay: 0.5s; }
+.table-producto tbody tr:nth-child(1) { animation-delay: 0.05s; }
+.table-producto tbody tr:nth-child(2) { animation-delay: 0.1s; }
+.table-producto tbody tr:nth-child(3) { animation-delay: 0.15s; }
+.table-producto tbody tr:nth-child(4) { animation-delay: 0.2s; }
+.table-producto tbody tr:nth-child(5) { animation-delay: 0.25s; }
+.table-producto tbody tr:nth-child(6) { animation-delay: 0.3s; }
+.table-producto tbody tr:nth-child(7) { animation-delay: 0.35s; }
+.table-producto tbody tr:nth-child(8) { animation-delay: 0.4s; }
+.table-producto tbody tr:nth-child(9) { animation-delay: 0.45s; }
+.table-producto tbody tr:nth-child(10) { animation-delay: 0.5s; }
 
 /* ===== MEJORAS DE ACCESIBILIDAD ===== */
-.custom-btn-genStock:focus-visible,
-.table .btn-light:focus-visible {
+.custom-btn-producto:focus-visible,
+.btn-producto-editar:focus-visible,
+.btn-producto-imagenes:focus-visible,
+.btn-producto-eliminar:focus-visible {
     outline: 2px solid var(--primary-color);
     outline-offset: 2px;
 }
@@ -375,7 +419,7 @@ h1 {
 /* ===== SAFE AREA PARA IPHONE ===== */
 @supports (padding-top: env(safe-area-inset-top)) {
     @media (max-width: 480px) {
-        #container-admin-stockGen {
+        #container-admin-producto {
             padding-left: env(safe-area-inset-left);
             padding-right: env(safe-area-inset-right);
         }
@@ -384,7 +428,7 @@ h1 {
 
 /* ===== VERSIÓN IMPRESIÓN ===== */
 @media print {
-    #container-admin-stockGen {
+    #container-admin-producto {
         width: 100%;
         margin: 0 !important;
         padding: 20px;
@@ -397,28 +441,30 @@ h1 {
         border-bottom: 2px solid #000;
     }
     
-    .isla-StockGen,
-    .table .btn-light {
+    .isla-Producto,
+    .btn-producto-editar,
+    .btn-producto-imagenes,
+    .btn-producto-eliminar {
         display: none;
     }
     
-    .table-responsive {
+    .table-responsive-producto {
         overflow-x: visible;
         box-shadow: none;
     }
     
-    .table {
+    .table-producto {
         min-width: auto;
         border: 1px solid #ddd;
     }
     
-    .table thead th {
+    .table-producto thead th {
         background: #f0f0f0;
         color: black;
         border-bottom: 2px solid #000;
     }
     
-    .table tbody td {
+    .table-producto tbody td {
         border-bottom: 1px solid #ddd;
     }
 }

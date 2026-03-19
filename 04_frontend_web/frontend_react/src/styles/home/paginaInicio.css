@@ -343,28 +343,17 @@
 }
 
 /* ===========================================
-   ESTILOS RESPONSIVE
+   ESTILOS RESPONSIVE MEJORADOS
 =========================================== */
-@media (max-width: 1200px) {
-    #home-container {
-        padding-top: 20%;
-    }
-    
-    [id^="home-shoe-title-"],
-    [id^="home-bag-title-"] {
-        font-size: 16px;
-    }
-}
 
-@media (max-width: 992px) {
+/* Pantallas grandes (1200px - 1400px) */
+@media (max-width: 1400px) {
     #home-container {
-        padding-top: 2%;
-        margin-top: -12%;
+        padding-top: 16%;
     }
     
-    #home-bags-title,
-    #home-shoes-title {
-        font-size: 22px;
+    #home-products-container {
+        max-width: 1200px;
     }
     
     [id^="home-shoe-image-container-"],
@@ -373,26 +362,51 @@
     }
 }
 
-@media (max-width: 768px) {
+/* Desktop mediano (992px - 1200px) */
+@media (max-width: 1200px) {
     #home-container {
-        padding-top: 25%;
-        margin-top: -10%;
+        padding-top: 20%;
     }
     
-    #home-body {
-        padding-bottom: 30px;
+    #home-bags-title,
+    #home-shoes-title {
+        font-size: 22px;
+    }
+    
+    [id^="home-shoe-title-"],
+    [id^="home-bag-title-"] {
+        font-size: 16px;
+        height: 45px;
+    }
+    
+    [id^="home-shoe-image-container-"],
+    [id^="home-bag-image-container-"] {
+        height: 180px;
+    }
+    
+    [id^="home-shoe-card-container-"]:hover,
+    [id^="home-bag-card-container-"]:hover {
+        transform: translateY(-6px) scale(1.08);
+    }
+}
+
+/* Tablet horizontal (768px - 992px) */
+@media (max-width: 992px) {
+    #home-container {
+        padding-top: 2%;
+        margin-top: -12%;
     }
     
     #home-bags-title,
     #home-shoes-title {
         font-size: 20px;
-        padding-bottom: 10px;
+        margin-top: 20px;
     }
     
     #home-shoes-section,
     #home-bags-section {
-        padding: 15px;
-        margin-bottom: 30px;
+        padding: 15px 0;
+        margin-bottom: 40px;
     }
     
     [id^="home-shoe-card-"],
@@ -402,7 +416,26 @@
     
     [id^="home-shoe-image-container-"],
     [id^="home-bag-image-container-"] {
-        height: 180px;
+        height: 160px;
+    }
+    
+    [id^="home-shoe-title-"],
+    [id^="home-bag-title-"] {
+        font-size: 15px;
+        height: 42px;
+        margin-bottom: 8px;
+    }
+    
+    [id^="home-shoe-description-"],
+    [id^="home-bag-description-"] {
+        font-size: 13px;
+        height: 36px;
+        margin-bottom: 10px;
+    }
+    
+    [id^="home-shoe-hover-price-"],
+    [id^="home-bag-hover-price-"] {
+        font-size: 16px;
     }
     
     [id^="home-shoe-favorite-btn-"],
@@ -417,8 +450,110 @@
     [id^="home-bag-favorite-btn-"] i {
         font-size: 1.2rem;
     }
+    
+    [id^="home-shoe-cart-btn-"],
+    [id^="home-bag-cart-btn-"],
+    [id^="home-shoe-details-btn-"],
+    [id^="home-bag-details-btn-"] {
+        padding: 8px 15px;
+        font-size: 13px;
+    }
+    
+    [id^="home-shoe-card-container-"]:hover,
+    [id^="home-bag-card-container-"]:hover {
+        transform: translateY(-5px) scale(1.05);
+    }
 }
 
+/* Tablet vertical (576px - 768px) - TUS MEDIDAS */
+@media (min-width: 576px) and (max-width: 768px) {
+    #home-container {
+        padding-top: 25%;
+        margin-top: -10%;
+    }
+    
+    #home-bags-title,
+    #home-shoes-title {
+        font-size: 18px;
+        padding-bottom: 10px;
+    }
+    
+    #home-bags-title::after,
+    #home-shoes-title::after {
+        width: 60px;
+        height: 2px;
+    }
+    
+    #home-shoes-section,
+    #home-bags-section {
+        padding: 10px;
+        margin-bottom: 30px;
+    }
+    
+    [id^="home-shoe-card-"],
+    [id^="home-bag-card-"] {
+        padding: 8px;
+    }
+    
+    [id^="home-shoe-image-container-"],
+    [id^="home-bag-image-container-"] {
+        height: 140px;
+    }
+    
+    [id^="home-shoe-card-body-"],
+    [id^="home-bag-card-body-"] {
+        padding: 15px 10px;
+    }
+    
+    [id^="home-shoe-title-"],
+    [id^="home-bag-title-"] {
+        font-size: 14px;
+        height: 40px;
+        margin-bottom: 6px;
+    }
+    
+    [id^="home-shoe-description-"],
+    [id^="home-bag-description-"] {
+        font-size: 12px;
+        height: 34px;
+        margin-bottom: 8px;
+    }
+    
+    [id^="home-shoe-hover-text-"],
+    [id^="home-bag-hover-text-"] {
+        padding: 6px 10px;
+        margin: 10px 0;
+    }
+    
+    [id^="home-shoe-hover-price-"],
+    [id^="home-bag-hover-price-"] {
+        font-size: 15px;
+    }
+    
+    [id^="home-shoe-cart-btn-"],
+    [id^="home-bag-cart-btn-"],
+    [id^="home-shoe-details-btn-"],
+    [id^="home-bag-details-btn-"] {
+        padding: 6px 12px;
+        font-size: 12px;
+        gap: 5px;
+    }
+    
+    [id^="home-shoe-cart-btn-"] i,
+    [id^="home-bag-cart-btn-"] i,
+    [id^="home-shoe-details-btn-"] i,
+    [id^="home-bag-details-btn-"] i {
+        font-size: 12px;
+    }
+    
+    [id^="home-shoe-card-container-"]:hover,
+    [id^="home-bag-card-container-"]:hover {
+        transform: translateY(-4px) scale(1.03);
+        box-shadow: 0 10px 20px rgba(224, 178, 83, 0.8);
+    }
+}
+
+/* Móvil grande (480px - 576px) */
 @media (max-width: 576px) {
     #home-container {
         padding-top: 30%;
@@ -427,23 +562,133 @@
     
     #home-bags-title,
     #home-shoes-title {
-        font-size: 18px;
-        text-align: center;
+        font-size: 16px;
+        letter-spacing: 0.5px;
+        padding-bottom: 8px;
     }
     
-    [id^="home-shoe-card-container-"],
-    [id^="home-bag-card-container-"] {
-        margin-bottom: 20px;
+    #home-bags-title::after,
+    #home-shoes-title::after {
+        width: 50px;
+        height: 2px;
+    }
+    
+    #home-shoes-section,
+    #home-bags-section {
+        padding: 5px;
+        margin-bottom: 25px;
+    }
+    
+    [id^="home-shoe-card-"],
+    [id^="home-bag-card-"] {
+        padding: 5px;
     }
     
     [id^="home-shoe-image-container-"],
     [id^="home-bag-image-container-"] {
-        height: 160px;
+        height: 130px;
     }
     
     [id^="home-shoe-card-body-"],
     [id^="home-bag-card-body-"] {
-        padding: 15px 10px;
+        padding: 12px 8px;
+    }
+    
+    [id^="home-shoe-title-"],
+    [id^="home-bag-title-"] {
+        font-size: 13px;
+        height: 36px;
+        margin-bottom: 5px;
+    }
+    
+    [id^="home-shoe-description-"],
+    [id^="home-bag-description-"] {
+        font-size: 11px;
+        height: 30px;
+        margin-bottom: 6px;
+    }
+    
+    [id^="home-shoe-hover-text-"],
+    [id^="home-bag-hover-text-"] {
+        padding: 5px 8px;
+        margin: 8px 0;
+    }
+    
+    [id^="home-shoe-hover-price-"],
+    [id^="home-bag-hover-price-"] {
+        font-size: 14px;
+    }
+    
+    [id^="home-shoe-favorite-btn-"],
+    [id^="home-bag-favorite-btn-"] {
+        width: 30px;
+        height: 30px;
+        top: 8px;
+        right: 8px;
+    }
+    
+    [id^="home-shoe-favorite-btn-"] i,
+    [id^="home-bag-favorite-btn-"] i {
+        font-size: 1rem;
+    }
+    
+    [id^="home-shoe-cart-btn-"],
+    [id^="home-bag-cart-btn-"],
+    [id^="home-shoe-details-btn-"],
+    [id^="home-bag-details-btn-"] {
+        padding: 5px 10px;
+        font-size: 11px;
+        gap: 4px;
+    }
+    
+    [id^="home-shoe-cart-btn-"] i,
+    [id^="home-bag-cart-btn-"] i,
+    [id^="home-shoe-details-btn-"] i,
+    [id^="home-bag-details-btn-"] i {
+        font-size: 11px;
+    }
+}
+
+/* Móvil pequeño (menos de 480px) */
+@media (max-width: 480px) {
+    #home-container {
+        padding-top: 35%;
+        margin-top: -5%;
+    }
+    
+    #home-bags-title,
+    #home-shoes-title {
+        font-size: 15px;
+    }
+    
+    [id^="home-shoe-image-container-"],
+    [id^="home-bag-image-container-"] {
+        height: 120px;
+    }
+    
+    [id^="home-shoe-title-"],
+    [id^="home-bag-title-"] {
+        font-size: 12px;
+        height: 34px;
+    }
+    
+    [id^="home-shoe-description-"],
+    [id^="home-bag-description-"] {
+        font-size: 10px;
+        height: 28px;
+    }
+    
+    [id^="home-shoe-hover-price-"],
+    [id^="home-bag-hover-price-"] {
+        font-size: 13px;
+    }
+    
+    [id^="home-shoe-cart-btn-"],
+    [id^="home-bag-cart-btn-"],
+    [id^="home-shoe-details-btn-"],
+    [id^="home-bag-details-btn-"] {
+        padding: 4px 8px;
+        font-size: 10px;
     }
 }
 

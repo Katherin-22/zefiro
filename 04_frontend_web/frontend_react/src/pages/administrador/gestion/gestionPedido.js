@@ -4,6 +4,7 @@ import '../../../styles/administrador/inventario.css';
 import React, { useState, useEffect } from 'react';
 import { getPedido, actualizarEstadoPedido } from "../../../services/administrador/pedidos";
 import { Link } from "react-router-dom";
+import "../../../styles/administrador/gestionPedidos.css"
 
 const GestionPedido = () => {
     const [pedidos, setPedidos] = useState([]);
@@ -174,11 +175,11 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
     return (
         <div className="all">
             <MenuAdmin />
-            <div className="container-fluid" id='container-admin'>
+            <div className="container-fluid container-fluid-gesPed" id='container-admin'>
                 <div className="main-content">
                     <div className="container">
                         <div className="row border-bottom pb-2 mb-4">
-                            <h2 className="text-center mb-4">Gestión Pedidos</h2>
+                            <h2 className="text-center mb-4 text-gestPed">Gestión Pedidos</h2>
                         </div>
 
                         {/* Mensaje de error global */}
@@ -193,20 +194,13 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                             </div>
                         )}
 
-                        <div className="row row-cols-md g-4 mb-4">
+                        <div className="row row-cols-md-3 g-4 mb-4 row-estado">
                             <div className="col">
-                                <Link to="/Administrador/Gestion_Devoluciones" className="btn btn-outline-secondary w-100">
-                                    Gestión Devoluciones
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="row row-cols-md-3 g-4 mb-4">
-                            <div className="col">
+                                <h5>Mostrar por</h5>
                                 <select 
                                     name="estado_pedido" 
                                     id="estado_pedido" 
-                                    className="form-select"
+                                    className="form-select form-select-estado"
                                     value={filtroEstado}
                                     onChange={(e) => setFiltroEstado(e.target.value)}
                                 >
@@ -215,11 +209,6 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                                     <option value="Procesando">Procesando</option>
                                     <option value="Entregado">Entregado</option>
                                 </select>
-                            </div>
-                            <div className="col">
-                                <p className="text-muted">
-                                    Mostrando <strong>{pedidosFiltrados.length}</strong> de <strong>{pedidos.length}</strong> pedidos
-                                </p>
                             </div>
                         </div>
 
@@ -240,7 +229,6 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                                             <th>Estado</th>
                                             <th>Fecha</th>
                                             <th>Total</th>
-                                            <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -257,7 +245,7 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                                                         </td>
                                                         <td>
                                                             <button 
-                                                                className="btn btn-sm btn-outline-secondary me-2"
+                                                                className="btn btn-sm btn-mostarProd btn-outline-secondary me-2"
                                                                 onClick={() => toggleExpandir(pedido.idPedido)}
                                                             >
                                                                 {pedidosExpandidos[pedido.idPedido] ? '▼' : '►'}
@@ -267,14 +255,14 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                                                         <td>{pedido.nombreUsuario}</td>
                                                         <td>
                                                             <select 
-                                                                className="form-select form-select-sm"
+                                                                className="form-select form-select-sm form-select-estadoPed"
                                                                 value={pedido.estado}
                                                                 onChange={(e) => handleCambiarEstado(pedido.idPedido, e.target.value)}
                                                                 disabled={actualizandoEstado === pedido.idPedido}
                                                                 style={{
                                                                     backgroundColor: 
                                                                         pedido.estado === 'Pendiente' ? '#fff3cd' :
-                                                                        pedido.estado === 'Procesando' ? '#cfe2ff' :
+                                                                        pedido.estado === 'Procesando' ? '#9cd8d5' :
                                                                         pedido.estado === 'Entregado' ? '#d1e7dd' : 'white'
                                                                 }}
                                                             >
@@ -290,20 +278,6 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                                                         </td>
                                                         <td>{new Date(pedido.fechaPedido).toLocaleDateString()}</td>
                                                         <td>${pedido.totalFinal?.toFixed(2) || '0.00'}</td>
-                                                        <td>
-                                                            <button 
-                                                                className="btn btn-sm btn-info me-2"
-                                                                onClick={() => handleVerPedido(pedido.idPedido)}
-                                                            >
-                                                                Ver
-                                                            </button>
-                                                            <button 
-                                                                className="btn btn-sm btn-warning"
-                                                                onClick={() => handleEditarPedido(pedido.idPedido)}
-                                                            >
-                                                                Editar
-                                                            </button>
-                                                        </td>
                                                     </tr>
                                                     
                                                     {pedidosExpandidos[pedido.idPedido] && (

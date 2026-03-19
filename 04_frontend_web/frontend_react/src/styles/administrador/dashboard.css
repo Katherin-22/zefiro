@@ -68,3 +68,10 @@
     color: var(--text-light) !important;
     font-weight: bold !important;
 }
+
+@media (min-width: 480px) and (max-width: 768px) {
+    .main-content-dash{
+    width: 100% !important;
+    margin: 0 !important;
+}
+}

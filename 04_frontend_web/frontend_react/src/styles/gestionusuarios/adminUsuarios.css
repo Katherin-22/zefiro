@@ -1,17 +1,50 @@
+
+:root {
+  /* Colores originales en HEX */
+  --primary-color: #E0B253;
+  --secondary-color: #000000;
+  --bg-body-dark: #000000;
+  --bg-body-light: #ffffff;
+  --text-light: #ffffff;
+  --text-dark: #000000;
+  --hover-color: #c89c3f;
+  
+  /* Colores en RGBA */
+  --primary-color-rgba: rgba(224, 178, 83, 1);
+  --secondary-color-rgba: rgba(0, 0, 0, 1);
+  --bg-body-dark-rgba: rgba(0, 0, 0, 1);
+  --bg-body-light-rgba: rgba(255, 255, 255, 1);
+  --text-light-rgba: rgba(228, 233, 247, 1);
+  --text-dark-rgba: rgba(0, 0, 0, 1);
+  --hover-color-rgba: rgba(200, 156, 63, 1);
+  
+  /* También versión semitransparente  */
+  --primary-color-transparent: rgba(224, 178, 83, 0.8);
+  --secondary-color-transparent: rgba(0, 0, 0, 0.8);
+  --hover-color-transparent: rgba(224, 178, 83, 0.2);
+  
+  /* Transiciones */
+  --tran-03: all 0.3s ease;
+  --tran-04: all 0.4s ease;
+  --tran-05: all 0.5s ease;
+}
+
+
 .admin-theme .admin-container {
   padding: 30px;
-  background: #f5f6fa;
+  background: var(--bg-body-light);
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
+  width: 81.5%;
 
 }
 
 .admin-theme .admin-header {
-  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  background: var(--primary-color);
   color: #fff;
   padding: 25px;
   border-radius: 12px 12px 0 0;
-  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 10px var(--hover-color-transparent);
 }
 
 .admin-theme .admin-header h2 {
@@ -29,7 +62,7 @@
 }
 
 .admin-theme .btn-crear {
-  background: #4f46e5;
+  background: var(--primary-color);
   color: white;
   font-weight: bold;
   border: none;
@@ -38,13 +71,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 4px 10px var(--primary-color-transparent);
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .admin-theme .btn-crear:hover {
-  background: #3730a3;
+  background: var(--secondary-color-transparent);
   transform: scale(1.03);
 }
 
@@ -63,8 +96,8 @@
 }
 
 .admin-theme .search-box input:focus {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--secondary-color-transparent);
 }
 
 .admin-theme .icon-search {
@@ -133,7 +166,7 @@
 
 .admin-theme .btn-editar:hover {
   background: rgba(79, 70, 229, 0.1);
-  color: #4f46e5;
+  color: var(--primary-color);
 }
 
 .admin-theme .btn-eliminar:hover {
@@ -169,12 +202,12 @@
   max-height: 90vh; /* Altura máxima */
   padding: 30px 40px;
   box-shadow: 0 0px 20px rgba(0, 0, 0, 0.25);
-  animation: fadeIn 0.3s ease;
   overflow-y: auto; /* Scroll vertical */
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  transition: var(--tran-05) !important;
 }
 
 /* Opcional: Personalizar scrollbar */
@@ -265,12 +298,25 @@
 }
 
 .admin-theme .btn-guardar {
-  background: #4f46e5;
+  background: var(--primary-color);
   border: none;
   color: white;
   padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
+  border: 2px solid var(--primary-color);
+  font-weight: bold;
+}
+
+.admin-theme .btn-guardar:hover{
+  background: transparent;
+  color: var(--text-dark);
+  transition: var(--tran-05);
+}
+
+.btn-cancelar:hover{
+  border: 1px solid var(--secondary-color);
+  transition: var(--tran-05);
 }
 
 .admin-theme .btn-eliminar {
@@ -291,4 +337,10 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@media (min-width: 480px) and (max-width: 768px) {
+  .admin-theme .admin-container {
+  width: 100%;
+}
 }

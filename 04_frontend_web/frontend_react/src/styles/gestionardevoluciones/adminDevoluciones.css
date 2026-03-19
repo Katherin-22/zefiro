@@ -1,16 +1,50 @@
+
+:root {
+  /* Colores originales en HEX */
+  --primary-color: #E0B253;
+  --secondary-color: #000000;
+  --bg-body-dark: #000000;
+  --bg-body-light: #ffffff;
+  --text-light: #ffffff;
+  --text-dark: #000000;
+  --hover-color: #c89c3f;
+  
+  /* Colores en RGBA */
+  --primary-color-rgba: rgba(224, 178, 83, 1);
+  --secondary-color-rgba: rgba(0, 0, 0, 1);
+  --bg-body-dark-rgba: rgba(0, 0, 0, 1);
+  --bg-body-light-rgba: rgba(255, 255, 255, 1);
+  --text-light-rgba: rgba(228, 233, 247, 1);
+  --text-dark-rgba: rgba(0, 0, 0, 1);
+  --hover-color-rgba: rgba(200, 156, 63, 1);
+  
+  /* También versión semitransparente  */
+  --primary-color-transparent: rgba(224, 178, 83, 0.8);
+  --secondary-color-transparent: rgba(0, 0, 0, 0.8);
+  --hover-color-transparent: rgba(224, 178, 83, 0.2);
+  
+  /* Transiciones */
+  --tran-03: all 0.3s ease;
+  --tran-04: all 0.4s ease;
+  --tran-05: all 0.5s ease;
+}
+
+
+
 .admin2-theme .admin-container {
   padding: 30px;
   background: #f5f6fa;
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
+  width: 81.5%;
 }
 
 .admin2-theme .admin-header {
-  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  background: var(--primary-color);
   color: #fff;
   padding: 25px;
   border-radius: 12px 12px 0 0;
-  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 10px var(--hover-color-transparent);
 }
 
 .admin2-theme .admin-header h2 {
@@ -28,7 +62,7 @@
 }
 
 .admin2-theme .btn-crear {
-  background: #4f46e5;
+  background: var(--primary-color);
   color: white;
   font-weight: bold;
   border: none;
@@ -37,14 +71,15 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 4px 10px var(--hover-color-rgba)  ;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .admin2-theme .btn-crear:hover {
-  background: #3730a3;
+  background: transparent !important;
   transform: scale(1.03);
+  color: var(--text-dark);
 }
 
 .admin2-theme .search-box {
@@ -62,8 +97,7 @@
 }
 
 .admin2-theme .search-box input:focus {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  border-color: 2px solid var(--primary-color) !important;
 }
 
 .admin2-theme .icon-search {
@@ -265,4 +299,12 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+
+@media (min-width: 480px) and (max-width: 768px) {
+.admin2-theme .admin-container {
+  width: 103%;
+}
+
 }

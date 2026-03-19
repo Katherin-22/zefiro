@@ -1,0 +1,113 @@
+/* ===== CARRUSEL RESPONSIVE ===== */
+#carouselBanners {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Estilos base del carrusel */
+.carousel-inner {
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.carousel-item img {
+    transition: transform 0.3s ease;
+    width: 100%;
+}
+
+/* ===== RESPONSIVE CON MEDIA QUERIES ===== */
+
+/* Móvil pequeño (menos de 480px) */
+@media (max-width: 479px) {
+    .carousel-item img {
+        object-fit: contain !important;
+        background-color: #f0f0f0;
+    }
+    
+    /* Ajustar controles para móvil */
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 30px;
+        height: 30px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 50%;
+        margin: 0 5px;
+    }
+    
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 15px;
+        height: 15px;
+    }
+    
+    /* Indicadores más pequeños */
+    .carousel-indicators button {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        margin: 0 3px;
+    }
+}
+
+/* Móvil grande y tablet pequeña (480px - 768px) - TUS MEDIDAS */
+@media (min-width: 480px) and (max-width: 768px) {
+    .carousel-item img {
+        object-fit: cover !important;
+    }
+    
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 35px;
+        height: 35px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 50%;
+    }
+    
+    .carousel-indicators button {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+}
+
+/* Tablet y laptops pequeñas (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .carousel-item img {
+        object-fit: cover !important;
+    }
+    
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Desktop (más de 1024px) */
+@media (min-width: 1025px) {
+    .carousel-item img {
+        object-fit: cover !important;
+    }
+    
+    /* Opcional: bordes redondeados en desktop */
+    .carousel-inner {
+        border-radius: 8px;
+    }
+}
+
+/* ===== OPCIONAL: Efectos hover ===== */
+.carousel-item img:hover {
+    transform: scale(1.02);
+    transition: transform 0.5s ease;
+}
+
+/* ===== SAFE AREA PARA IPHONE ===== */
+@supports (padding-top: env(safe-area-inset-top)) {
+    #carouselBanners {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+}

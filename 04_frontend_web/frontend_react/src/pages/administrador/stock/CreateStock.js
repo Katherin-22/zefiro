@@ -8,6 +8,7 @@ import {useGetVariacionPorProducto} from "../../../hooks/stock/useVariacionStock
 import MenuAdmin from "../../../layouts/administrador/menuAdmin";
 import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
+import "../../../styles/administrador/formularios-admin.css"
 
 export default function CreateStock() {
 {/*navigate=useNavigate():Sirve para moverte entre páginas desde el código */}
@@ -139,12 +140,12 @@ export default function CreateStock() {
 
 <div className="row row-cols-1">
 {/* esto es para enviar el formulario*/} 
+      
             <button type="submit" className="btn btn-outline-primary" disabled={loading}>
-            {loading ? "Guardando..." : "Submit"}
+            {loading ? "Guardando..." : "Guardar"}
             </button>
-
-
-            {/* esto es para cancelar el formulario*/} 
+        
+           {/* esto es para cancelar el formulario*/} 
             <Link to={`/stock/producto/${idProducto}`} className="btn btn-outline-danger mx-2">
                 Cancel
             </Link>

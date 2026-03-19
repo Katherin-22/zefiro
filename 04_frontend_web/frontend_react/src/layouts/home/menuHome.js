@@ -304,7 +304,7 @@ const MenuHome = () => {
                       <Link
                         className="dropdown-item"
                         id="navBarHome-profile"
-                        to={`/perfilUsuario/${userId || ""}`}
+                        to={`/perfilUsuario/${userId ||""}`}
                       >
                         <i className="bi bi-person me-2"></i>Perfil
                       </Link>

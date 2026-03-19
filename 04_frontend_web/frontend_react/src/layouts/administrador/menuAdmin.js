@@ -4,7 +4,6 @@ import "../../../src/styles/administrador/menuAdmin.css";
 import { Link, useLocation } from "react-router-dom";
 
 const MenuAdmin = () => {
-  const [isClosed, setIsClosed] = useState(false);
   const [activeTab, setActiveTab] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
@@ -31,25 +30,16 @@ const MenuAdmin = () => {
     else if (path.includes("/Administrador/Dashboard")) setActiveTab("Dashboard");
   }, [location]);
 
-  // Sidebar para desktop (versión original con IDs)
+  // Sidebar para desktop - SIEMPRE EXPANDIDO (sin toggle)
   const DesktopSidebar = () => (
-    <nav id="admin-sidebar" className={`slidebar ${isClosed ? "close" : ""}`}>
+    <nav id="admin-sidebar" className="slidebar">
       <header id="admin-sidebar-header">
         <div id="admin-logo-container" className="image-text">
-          <div id="admin-logo-image">
-            <img src={logo} alt="Logo" id="admin-logo" />
-          </div>
           <div id="admin-title-container" className="text header-text">
             <span id="admin-title" className="name">ADMINISTRADOR</span>
             <span id="admin-subtitle" className="profession">Panel de Control</span>
           </div>
         </div>
-
-        <i
-          id="admin-toggle-btn"
-          className={`bi ${isClosed ? 'bi-chevron-right' : 'bi-chevron-left'}`}
-          onClick={() => setIsClosed(!isClosed)}
-        ></i>
       </header>
 
       <div id="admin-menu-container" className="menu-bar">
@@ -100,7 +90,7 @@ const MenuAdmin = () => {
         </div>
 
         <div id="admin-bottom-menu" className="botton-content">
-          <li id="admin-menu-logout" className="nav link">
+          <li id="admin-menu-home" className="nav link">
             <Link to={"/"} className="admin-menu-link admin-home-link">
               <i className="bi bi-house admin-menu-icon"></i>
               <span className="text nav-text admin-menu-text">Página Principal</span>
@@ -121,10 +111,9 @@ const MenuAdmin = () => {
     </nav>
   );
 
-  // Menú inferior para móvil (5 iconos)
+  // Menú inferior para móvil (5 iconos) - SIN CAMBIOS
   const MobileBottomNav = () => (
     <>
-      {/* Barra inferior fija con 5 opciones */}
       <nav id="admin-mobile-nav" className="admin-mobile-bottom-nav">
         <div id="admin-mobile-nav-container" className="admin-mobile-nav-container">
           
@@ -248,15 +237,13 @@ const MenuAdmin = () => {
     </>
   );
 
-  // Retornamos AMBAS versiones, cada una se mostrará según el tamaño de pantalla
+  // Retornamos AMBAS versiones
   return (
     <>
-      {/* Versión Desktop - visible en pantallas grandes */}
       <div className="admin-desktop-only">
         <DesktopSidebar />
       </div>
       
-      {/* Versión Móvil - visible en pantallas pequeñas */}
       <div className="admin-mobile-only">
         <MobileBottomNav />
       </div>
