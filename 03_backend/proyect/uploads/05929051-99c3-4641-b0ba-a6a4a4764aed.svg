@@ -1,0 +1,57 @@
+<svg width="1920" height="600" viewBox="0 0 1920 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo degradado -->
+  <rect width="1920" height="600" fill="url(#gradient)" />
+  
+  <!-- Línea guía del área segura (opcional, para diseño) -->
+  <rect x="0" y="100" width="1920" height="400" fill="none" stroke="#E0B253" stroke-width="2" stroke-dasharray="10 10" opacity="0.3" />
+  <text x="50" y="80" fill="#E0B253" font-size="24" opacity="0.5">Área segura 1920×400</text>
+
+  <!-- Elementos decorativos de fondo -->
+  <circle cx="300" cy="200" r="150" fill="url(#circleGrad)" opacity="0.1" />
+  <circle cx="1600" cy="400" r="200" fill="url(#circleGrad)" opacity="0.1" />
+  
+  <!-- LOGO (posición superior izquierda - dentro del área segura) -->
+  <g transform="translate(100, 180)">
+    <rect x="0" y="0" width="60" height="60" rx="12" fill="#E0B253" />
+    <text x="30" y="42" font-size="36" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-weight="bold">Z</text>
+    <text x="80" y="42" font-size="32" fill="#2c3e50" font-family="Arial, sans-serif" font-weight="bold">ÉFIRO</text>
+  </g>
+
+  <!-- TEXTO PRINCIPAL (centrado) -->
+  <g transform="translate(960, 280)">
+    <text text-anchor="middle" font-family="Arial, sans-serif">
+      <tspan x="0" y="0" font-size="72" font-weight="bold" fill="#2c3e50">NUEVA COLECCIÓN</tspan>
+      <tspan x="0" y="90" font-size="48" fill="#666">VERANO 2024</tspan>
+    </text>
+  </g>
+
+  <!-- BOTÓN CTA (Call to Action) -->
+  <g transform="translate(860, 400)">
+    <rect x="0" y="0" width="200" height="60" rx="30" fill="#E0B253" />
+    <text x="100" y="38" text-anchor="middle" font-size="24" font-weight="bold" fill="white" font-family="Arial, sans-serif">COMPRAR AHORA</text>
+  </g>
+
+  <!-- PRODUCTOS decorativos (opcional) -->
+  <g transform="translate(1400, 250)">
+    <!-- Zapato 1 -->
+    <rect x="0" y="0" width="80" height="40" rx="20" fill="#E0B253" opacity="0.2" />
+    <rect x="10" y="10" width="60" height="20" rx="10" fill="#E0B253" opacity="0.4" />
+    <!-- Zapato 2 -->
+    <rect x="100" y="20" width="80" height="40" rx="20" fill="#E0B253" opacity="0.2" />
+    <rect x="110" y="30" width="60" height="20" rx="10" fill="#E0B253" opacity="0.4" />
+  </g>
+
+  <!-- Definición de degradados -->
+  <defs>
+    <linearGradient id="gradient" x1="0" y1="0" x2="1920" y2="600" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f8f9fa" />
+      <stop offset="50%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f8f9fa" />
+    </linearGradient>
+    
+    <radialGradient id="circleGrad">
+      <stop offset="0%" stop-color="#E0B253" />
+      <stop offset="100%" stop-color="#E0B253" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+</svg>

@@ -75,7 +75,7 @@ const Carrito = () => {
             imagenFinal = imagenesProductos[idProducto];
         } else if (item.imagen || productoRef?.imagen) {
             const imgPath = item.imagen || productoRef.imagen;
-            imagenFinal = imgPath.startsWith('http') ? imgPath : `${api_url}${imgPath}`;
+            imagenFinal = imgPath.startsWith('http') ? imgPath : `http://35.171.131.177:8080${imgPath}`;
         }
 
         console.log(`=== RESULTADO FINAL ===`);
@@ -113,7 +113,7 @@ const Carrito = () => {
                         try {
                             const response = await getImagenById(idProducto);
                             if (response.data && response.data.length > 0) {
-                                nuevasImagenesParaAgregar[idProducto] = `${api_url}${response.data[0].urlImagen}`;
+                                nuevasImagenesParaAgregar[idProducto] = `http://35.171.131.177:8080${response.data[0].urlImagen}`;
                                 idsCargadosRef.current.add(idProducto);
                                 huboCambios = true;
                             }

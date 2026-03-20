@@ -134,7 +134,7 @@ const Catalogo = () => {
             try {
               const response = await getImagenById(producto.idProducto);
               if (response.data && response.data.length > 0) {
-                todasImagenes[producto.idProducto] = `${api_url}${response.data[0].urlImagen}`;
+                todasImagenes[producto.idProducto] = `http://35.171.131.177:8080${response.data[0].urlImagen}`;
               } else {
                 todasImagenes[producto.idProducto] = producto.imagen || "/imagenes_prueba/default.jpg";
               }

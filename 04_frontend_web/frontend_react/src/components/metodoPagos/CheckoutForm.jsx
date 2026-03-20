@@ -6,7 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 const CheckoutForm = ({ clientSecret, amount, idUsuario }) => {
     const stripe = useStripe();
     const elements = useElements();
-    const { token } = useAuth(); // Obtenemos el usuario y el token
+    const { token } = useAuth();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
@@ -42,10 +42,10 @@ const CheckoutForm = ({ clientSecret, amount, idUsuario }) => {
         if (paymentIntent && paymentIntent.status === "succeeded") {
             try {
                 // ✅ SOLO UNA VEZ - Llamar al checkout
-                const response = await fetch(`http://localhost:8080/api/carrito/checkout/${idUsuario}/2`, {
+                const response = await fetch(`http://35.171.131.177:8080/api/carrito/checkout/${idUsuario}/1`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`, // Enviamos el token para pasar el SecurityConfig
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });

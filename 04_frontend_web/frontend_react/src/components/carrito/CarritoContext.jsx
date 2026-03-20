@@ -8,7 +8,7 @@ import { useAuth } from "../../context/AuthContext";
 const LOCAL_STORAGE_KEY = "Zéfiro_cart";
 
 const api_url = axios.create({
-    baseURL: "http://localhost:8080/api/carrito",
+    baseURL: "http://35.171.131.177:8080/api/carrito",
     withCredentials: true
 });
 

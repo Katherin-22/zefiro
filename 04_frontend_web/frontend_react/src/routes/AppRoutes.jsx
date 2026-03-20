@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { FiltroProvider } from "../utils/FiltroContextx";
 import ProtectedRoute from "../components/ProtectedRoute";
 import AccessDenied from "../pages/usuario/denied/accesDenied";
-
+import EmailVerify from "../pages/usuario/contraseña/EmailVerify";
 /* ==============================
    IMPORTACIÓN DE PÁGINAS PÚBLICAS
    (Acceso sin login)
@@ -121,8 +121,8 @@ import Carrito from "../pages/carrito/Carrito";
 ======================================== */
 import TicketCompra from "../pages/ticket/ticketCompra";
 
-
-
+import UserDevoluciones from "../pages/usuario/UserDevoluciones";
+import ResetPassword from "../pages/usuario/contraseña/ResetPassword";
 function AppRoutes() {
    return (
       <FiltroProvider>
@@ -136,8 +136,9 @@ function AppRoutes() {
             <Route path="/Catalogo" element={<Catalogo />} />
             
             {/* 👟 Detalle de producto - Acceso libre */}
+            <Route path="//reset-password" element={<ResetPassword />} />
             <Route path="/home/:codigoReferencia" element={<ProductoGen />} />
-            
+            <Route path="/email-verify" element={<EmailVerify />} />
             <Route path="/home/catalogo" element={<CatalogoMobile />} />
             {/* ========== RUTAS DE ADMINISTRACIÓN ========== */}
             {/* ✉️ Bandeja de entrada admin */}
@@ -152,6 +153,13 @@ function AppRoutes() {
                   <FavoritosPage />
                </ProtectedRoute>
             } />
+
+            <Route path="/mis-devoluciones" element={
+               <ProtectedRoute >
+                  <UserDevoluciones />
+               </ProtectedRoute>
+            } />
+
 
                <Route path="/ticket/:idPedido" element={
                    <ProtectedRoute >

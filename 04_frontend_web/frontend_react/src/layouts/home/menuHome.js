@@ -309,6 +309,15 @@ const MenuHome = () => {
                         <i className="bi bi-person me-2"></i>Perfil
                       </Link>
                     </li>
+                                        <li>
+                      <Link
+                        className="dropdown-item"
+                        id="navBarHome-profile"
+                        to="/mis-devoluciones"
+                      >
+                        <i className="bi bi-person me-2"></i>Mis Devoluciones
+                      </Link>
+                    </li>
                     <li>
                       {userId ? (
                         <Link

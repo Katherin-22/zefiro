@@ -48,7 +48,7 @@ const ResetPassword = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`http://localhost:8080/api/auth/forgot-password?correoElectronico=${correoElectronico}`);
+      const response = await axios.post(`http://35.171.131.177:8080/api/auth/forgot-password?correoElectronico=${correoElectronico}`);
 
       if (response.status === 200) {
         toast.success("Password reset OTP sent successfully!");
@@ -95,7 +95,7 @@ const ResetPassword = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8080/api/auth/reset-password', {
+      const response = await axios.post('http://35.171.131.177:8080/api/auth/reset-password', {
         correoElectronico,
         otp,
         newPassword
