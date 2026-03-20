@@ -29,11 +29,9 @@
 }
 
 .admin2-theme .admin-container {
-  padding: 30px;
   background: #f5f6fa;
-  min-height: 100vh;
   font-family: 'Inter', sans-serif;
-  width: 81.5%;
+  width: 100% !important;
 }
 
 .admin2-theme .admin-header {

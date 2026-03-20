@@ -33,7 +33,7 @@
   background: var(--bg-body-light);
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
-  width: 81.5%;
+  width: 100%;
 }
 
 .admin-theme .admin-header {
