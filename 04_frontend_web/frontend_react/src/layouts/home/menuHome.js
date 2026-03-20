@@ -550,6 +550,20 @@ const MenuHome = () => {
                     <span className="dropdown-text">Actualizar perfil</span>
                   </Link>
 
+                  <Link
+                    id="dropdown-pagina"
+                    to="/mis-devoluciones"
+                    className="dropdown-item"
+                    onClick={() => {
+                      document
+                        .querySelector(".admin-mobile-dropdown")
+                        ?.classList.remove("show");
+                    }}
+                  >
+                    <i className="bi bi-card-heading dropdown-icon"></i>
+                    <span className="dropdown-text">Devoluciones</span>
+                  </Link>
+
                   {userData?.rol === 2 && (
                     <Link
                       id="dropdown-devoluciones"

@@ -1,4 +1,5 @@
-/* categoriasMobilePage.css - PÁGINA COMPLETA PARA MÓVIL */
+/* dashboard.css */
+
 :root {
   /* Colores originales en HEX */
   --primary-color: #E0B253;
@@ -18,7 +19,7 @@
   --text-dark-rgba: rgba(0, 0, 0, 1);
   --hover-color-rgba: rgba(200, 156, 63, 1);
   
-  /* También versión semitransparente  */
+  /* También versión semitransparente */
   --primary-color-transparent: rgba(224, 178, 83, 0.8);
   --secondary-color-transparent: rgba(0, 0, 0, 0.8);
   --hover-color-transparent: rgba(200, 156, 63, 0.8);
@@ -29,49 +30,55 @@
   --tran-05: all 0.5s ease;
 }
 
-.main-content-dash{
+/* Estilos principales - selector directo */
+.main-content-dash {
     width: 82% !important;
     margin-left: 18% !important;
+    transition: all 0.3s ease;
 }
 
+/* Island dash */
 .island-dash {
- display: flex;
- justify-content: center;
- background: var(--primary-color);
- color: var(--text-light) !important;
- font-weight: bold;
- padding: 5;
- align-items: center !important;
- border-radius: 25px 25px 0 0;
- box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    display: flex !important;
+    justify-content: center !important;
+    background: var(--primary-color) !important;
+    color: var(--text-light) !important;
+    font-weight: bold !important;
+    padding: 5px !important;
+    align-items: center !important;
+    border-radius: 25px 25px 0 0 !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4) !important;
 }
 
-.tit{
+.tit {
     margin-top: 5px !important;
     padding-top: 5px !important;
+    color: var(--text-light) !important;
 }
 
-.ped{
+.ped {
     color: var(--text-light) !important;
     font-weight: bold !important;
 }
 
-.btn-down{
-    display: flex;
-    justify-content: center;
-    margin: 16px;
-    font-weight: bold;
+.btn-down {
+    display: flex !important;
+    justify-content: center !important;
+    margin: 16px !important;
+    font-weight: bold !important;
 }
 
-.card-header{
+/* Cards headers */
+.card .card-header {
     background: var(--primary-color) !important;
     color: var(--text-light) !important;
     font-weight: bold !important;
 }
 
-@media (min-width: 480px) and (max-width: 768px) {
-    .main-content-dash{
-    width: 100% !important;
-    margin: 0 !important;
-}
+/* Responsive - MÓVIL */
+@media (max-width: 768px) {
+    .main-content-dash {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
 }
