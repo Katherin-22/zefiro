@@ -1,6 +1,7 @@
 package com.backend.proyect.model.usuario;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(name = "rol")
 public class Rol {

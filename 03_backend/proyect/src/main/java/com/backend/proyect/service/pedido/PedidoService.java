@@ -35,17 +35,22 @@ public class PedidoService {
                 dto.setFechaPedido(sqlDate.toLocalDate());
             }
 
-            dto.setNombreUsuario(fila[2] != null ? (String) fila[2] : null);
-            dto.setCodigoReferencia(fila[3] != null ? (String) fila[3] : null);
-            dto.setNombreProducto(fila[4] != null ? (String) fila[4] : null);
-            dto.setNombreColor(fila[5] != null ? (String) fila[5] : null);
-            dto.setNombre(fila[6] != null ? (String) fila[6] : null);
-            dto.setCantidad(fila[7] != null ? ((Number) fila[7]).intValue() : null);
-            dto.setPrecioUnitario(fila[8] != null ? BigDecimal.valueOf(((Number) fila[8]).doubleValue()) : null);
-            dto.setNombrePromocion(fila[9] != null ? (String) fila[9] : null);
-            dto.setDescuento(fila[10] != null ? BigDecimal.valueOf(((Number) fila[10]).doubleValue()) : null);
+        // NUEVO: Mapear el estado (ahora está en la posición 2)
+        dto.setEstado(fila[2] != null ? (String) fila[2] : null);
 
-            pedidosDTO.add(dto);
+        // Los índices se corren por la nueva columna
+        dto.setNombreUsuario(fila[3] != null ? (String) fila[3] : null);
+        dto.setCodigoReferencia(fila[4] != null ? (String) fila[4] : null);
+        dto.setNombreProducto(fila[5] != null ? (String) fila[5] : null);
+        dto.setNombreColor(fila[6] != null ? (String) fila[6] : null);
+        dto.setNombre(fila[7] != null ? (String) fila[7] : null);
+        dto.setCantidad(fila[8] != null ? ((Number) fila[8]).intValue() : null);
+        dto.setPrecioUnitario(fila[9] != null ? BigDecimal.valueOf(((Number) fila[9]).doubleValue()) : null);
+        dto.setNombrePromocion(fila[10] != null ? (String) fila[10] : null);
+        dto.setDescuento(fila[11] != null ? BigDecimal.valueOf(((Number) fila[11]).doubleValue()) : null);
+
+        pedidosDTO.add(dto);
+
         }
 
         return pedidosDTO;

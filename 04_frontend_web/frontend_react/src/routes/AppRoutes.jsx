@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { FiltroProvider } from "../utils/FiltroContextx";
 import ProtectedRoute from "../components/ProtectedRoute";
 import AccessDenied from "../pages/usuario/denied/accesDenied";
-
+import EmailVerify from "../pages/usuario/contraseña/EmailVerify";
 /* ==============================
    IMPORTACIÓN DE PÁGINAS PÚBLICAS
    (Acceso sin login)
@@ -11,9 +11,8 @@ import Home from "../pages/home/home";                      // Página principal
 import Catalogo from "../pages/home/category/catalogo";     // Catálogo de productos
 import ProductoGen from "../pages/home/productoGen";        // Detalle de producto
 import CategoriasMobilePage from "../pages/home/category/categorias";
-import FavoritosPage from "../pages/home/favoritos";
-import EmailVerify from "../pages/usuario/contraseña/EmailVerify";
-import ResetPassword from "../pages/usuario/contraseña/ResetPassword";
+import FavoritosPage  from "../pages/home/favoritos";
+import CatalogoMobile from "../pages/home/category/catalogoMovil";
 /* ==============================
    ADMINISTRACIÓN - GENERAL
    (Dashboard principal)
@@ -24,6 +23,7 @@ import GestionCambios from "../pages/administrador/gestion/gestionCambios"; // C
 import GestionPagina from "../pages/administrador/gestion/gestionPagina";   // Configuración web
 import GestionPedido from "../pages/administrador/gestion/gestionPedido";   // Pedidos
 import AdminUserManagement from "../pages/administrador/gestion/gestionusuariosadmin/AdminUserManagement"; // Usuarios
+import DashboardAdmin from "../pages/administrador/DashBoard/Dashboardamdim";
 
 /* ==============================
    ADMINISTRACIÓN - STOCK
@@ -121,16 +121,12 @@ import Carrito from "../pages/carrito/Carrito";
 ======================================== */
 import TicketCompra from "../pages/ticket/ticketCompra";
 
-
-
+import UserDevoluciones from "../pages/usuario/UserDevoluciones";
+import ResetPassword from "../pages/usuario/contraseña/ResetPassword";
 function AppRoutes() {
    return (
       <FiltroProvider>
-           <Routes>
-
-            <Route path='/email-verify' element={<EmailVerify />} />
-            <Route path='/reset-password' element={<ResetPassword />} />
-
+         <Routes>
             
             {/* ========== RUTAS PÚBLICAS ========== */}
             {/* 🏠 Página principal - Acceso libre */}
@@ -140,8 +136,10 @@ function AppRoutes() {
             <Route path="/Catalogo" element={<Catalogo />} />
             
             {/* 👟 Detalle de producto - Acceso libre */}
+            <Route path="//reset-password" element={<ResetPassword />} />
             <Route path="/home/:codigoReferencia" element={<ProductoGen />} />
-            
+            <Route path="/email-verify" element={<EmailVerify />} />
+            <Route path="/home/catalogo" element={<CatalogoMobile />} />
             {/* ========== RUTAS DE ADMINISTRACIÓN ========== */}
             {/* ✉️ Bandeja de entrada admin */}
             <Route path="/Administrador/Inbox" element={
@@ -155,6 +153,13 @@ function AppRoutes() {
                   <FavoritosPage />
                </ProtectedRoute>
             } />
+
+            <Route path="/mis-devoluciones" element={
+               <ProtectedRoute >
+                  <UserDevoluciones />
+               </ProtectedRoute>
+            } />
+
 
                <Route path="/ticket/:idPedido" element={
                    <ProtectedRoute >
@@ -172,6 +177,12 @@ function AppRoutes() {
             <Route path="/Administrador/Gestion_Devoluciones" element={
                <ProtectedRoute requireAdmin={true}>
                   <AdminDevoluciones />
+               </ProtectedRoute>
+            } />
+
+            <Route path="/Administrador/Dashboard" element={
+               <ProtectedRoute requireAdmin={true}>
+                  <DashboardAdmin />
                </ProtectedRoute>
             } />
             
@@ -395,7 +406,7 @@ function AppRoutes() {
             
             {/* ========== PERFIL USUARIO ========== */}
             {/* 👤 Perfil protegido (requiere login) */}
-            <Route path='/perfilUsuario' element={
+            <Route path='/perfilUsuario/:idUsuario' element={
                <ProtectedRoute>
                   <PerfilUsuario />
                </ProtectedRoute>

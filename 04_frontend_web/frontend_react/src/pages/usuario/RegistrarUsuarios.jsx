@@ -35,6 +35,22 @@ function RegistrarUsuarios() {
       return;
     }
 
+    const telefonoRegex = /^[0-9]{10}$/;
+    if (!telefonoRegex.test(telefono)) {
+      setIsError("El teléfono debe tener exactamente 10 dígitos numéricos.");
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).*$/;
+    if (password.length < 8 || password.length > 20) {
+      setIsError("La contraseña debe tener entre 8 y 20 caracteres.");
+      return;
+    }
+    if (!passwordRegex.test(password)) {
+      setIsError("La contraseña debe incluir mayúsculas, minúsculas, números y un símbolo (@#$%^&+=!).");
+      return;
+    }
+
     try {
       const response = await api_url.post("/api/auth/register", {
         nombreUsuario,
@@ -51,21 +67,28 @@ function RegistrarUsuarios() {
       });
 
       if (response.status === 200 && response.data.success === true) {
-        setMessage(response.data.message || "¡Registro exitoso!");
-        setTimeout(() => navigate("/Login"), 2000);
+        setMessage(response.data.message || "¡Registro exitoso! Por favor, verifica tu correo.");
+        setTimeout(() => { 
+          navigate("/email-verify", { 
+            state: { email: correoElectronico, tipo: "verify" } 
+          });
+        }, 2000);
+
       } else {
         setIsError(response.data.message || "No se pudo completar el registro.");
       }
     } catch (err) {
-      if (err.response?.data?.message) setIsError(err.response.data.message);
-      else if (err.response?.status === 400)
+      if (err.response?.data?.message) { 
+        setIsError(err.response.data.message); 
+      } else if (err.response?.status === 400) {
         setIsError("Solicitud inválida. Verifique los datos.");
-      else if (err.response?.status === 500)
+      } else if (err.response?.status === 500) {
         setIsError("Error del servidor. Intente más tarde.");
-      else setIsError("No se pudo crear el usuario. Por favor, intente más tarde.");
+      } else { setIsError("No se pudo crear el usuario. Por favor, intente más tarde.")} ;
 
       console.error("error detallado:", err);
     }
+
   }
 
   return (
@@ -129,7 +152,7 @@ function RegistrarUsuarios() {
                 <div className={styles.field}>
                   <label className={styles.label}>Cédula *</label>
                   <input
-                    type="text"
+                    type="number"
                     className={styles.input}
                     placeholder="Cédula"
                     value={numeroDocumento}
@@ -193,7 +216,7 @@ function RegistrarUsuarios() {
 
               <div className={styles.registro}>
                 <button type="submit" className={styles.btn1}>Registrarse</button>
-                <button type="button" className={styles["btn-cancel"]}>Cancelar</button>
+                <button type="button" className={styles["btn-cancel"]} onClick={() => navigate("/loginpage")}>Cancelar</button>
               </div>
 
             </form>

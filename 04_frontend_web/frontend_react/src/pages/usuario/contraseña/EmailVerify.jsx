@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import logo from "../../../assets/logo.png";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from "../../../context/AuthContext";
 import { toast } from "react-toastify";
 import axios from 'axios';
+import "../../../styles/gestionusuarios/EmailVerify.css";
 
 
 const EmailVerify = () => {
@@ -11,6 +12,8 @@ const EmailVerify = () => {
     const [loading, setLoading] = useState(false);
     const { getUserData, isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const { tipo, email } = location.state || {};
 
     const handleChange = (e, index) => {
         const value = e.target.value.replace(/\D/, "");
@@ -47,52 +50,61 @@ const EmailVerify = () => {
 
         setLoading(true);
         try {
-            const email = user?.correoElectronico || user?.email;
-            const response = await axios.post('http://localhost:8080/api/auth/verify-otp', {
-                correoElectronico: email,
-                otp
-            });
+            const emailFinal = email || user?.correoElectronico || user?.email;
 
-            if (response.status === 200) {
-                toast.success("OTP verified successfully!");
-                getUserData();
-                navigate("/");
+            if (tipo === "reset") {
+                // Flujo para restablecer contraseña
+                toast.success("OTP validado correctamente.");
+                navigate("/reset-password", {
+                    state: { email: emailFinal, otp: otp, step: 'new-password' }
+                });
             } else {
-                toast.error("Invalid OTP");
+                const response = await axios.post('http://35.171.131.177:8080/api/auth/verify-otp', {
+                    correoElectronico: emailFinal,
+                    otp
+                });
+
+                if (response.status === 200) {
+                    toast.success("OTP verified successfully!");
+                    await getUserData();
+                    navigate("/login");
+                } else {
+                    toast.error("Invalid OTP");
+                }
             }
         } catch (error) {
-            toast.error("Failed to verify OTP. Please try again.");
+            toast.error(error.response?.data?.message || "Failed to verify OTP. Please try again.");
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     useEffect(() => {
-        isAuthenticated && user && user.isAccountVerified && navigate("/");
-    }, [isAuthenticated, user, navigate]);
+        if (!email && !user?.correoElectronico) {
+            navigate("/login");
+        }
+        isAuthenticated && user && user.isAccountVerified && tipo !== "reset" && navigate("/");
+    }, [isAuthenticated, user, navigate, email, tipo]);
 
     return (
-        <div className="email-verify-container d-flex align-items-center justify-content-center vh-100 position-relative"
-            style={{ background: "linear-gradient(90deg, #6a5af9, #8268f9)", borderRadius: "none" }}>
+        <div className="email-verify-container">
 
-            <Link to="/" className="position-absolute top-0 start-0 p-4 d-flex align-items-center gap-2 text-decoration-none">
+            <Link to="/" className="auth-logo-link">
                 <img src={logo} alt='logo' height={32} width={32} />
-                <span className='fs-4 fw-semibold text-light'>Authify </span>
+                <span className='authify-text'>Zéfiro </span>
             </Link>
 
-            <div className="p-5 rounded-4 shadow bg-white" style={{ width: "400px" }}>
-                <h4 className='text-center fw-bold mb-2'>Email Verify OTP </h4>
-                <p className='text-center  mb-4'>
-                    Enter the 6-digit code sent to your email.
-                </p>
+            <div className="auth-card">
+                <h4> {tipo === "reset" ? "Reset Password OTP" : "Email Verify OTP"} </h4>
+                <p>  Enter the 6-digit code sent to your email. </p>
 
-                <div className="d-flex justify-content-between gap-2 mb-4 text-center text-white-50 mb-2">
+                <div className="otp-inputs-container">
                     {[...Array(6)].map((_, i) => (
                         <input
                             key={i}
                             type='text'
                             maxLength={1}
-                            className='form-control text-center fs-4 otp-input'
+                            className='otp-input'
                             ref={(el) => (inputRef.current[i] = el)}
                             onChange={(e) => handleChange(e, i)}
                             onKeyDown={(e) => handleKeyDown(e, i)}
@@ -102,14 +114,14 @@ const EmailVerify = () => {
                     ))}
                 </div>
 
-                <button className="btn btn-primary w-100 fw-semibold" disabled={loading} onClick={handleVerify}>
+                <button className="btn-auth" disabled={loading} onClick={handleVerify} to="/loginpage">
                     {loading ? "Verifying..." : "Verify email"}
                 </button>
 
             </div>
 
         </div>
-    )
-}
+    );
+};
 
 export default EmailVerify;

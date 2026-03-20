@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { X } from "lucide-react";
 import { ROLES } from "../constants/roles";
-import "../../../styles/gestionusuarios/adminUsuarios.css";
+import styles from "../../../styles/gestionusuarios/adminUsuarios.module.css";
 
 const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
   const [formData, setFormData] = useState({
@@ -25,20 +25,15 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
 
   useEffect(() => {
     if (userToEdit) {
-      // Mapea los datos del usuario a editar al formulario
       setFormData({
         ...userToEdit,
-        // Usar idRol directamente del userToEdit (mapeado en fetchUsers)
         idRol: userToEdit.idRol || 1,
-        // Usar idEstadoUsuario para inicializar el checkbox
         idEstadoUsuario: userToEdit.idEstadoUsuario || (userToEdit.activo ? 1 : 2),
-        activo: userToEdit.idEstadoUsuario === 1, // Aseguramos que el checkbox refleje el estado
-        // Las contraseñas se dejan vacías en edición
+        activo: userToEdit.idEstadoUsuario === 1,
         password: "",
         confirmPassword: "",
       });
     } else {
-      // Estado inicial para un nuevo usuario
       setFormData({
         nombreUsuario: "",
         primerApellido: "",
@@ -65,24 +60,20 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
-      // Actualizar idEstadoUsuario si cambia 'activo'
       ...(name === 'activo' && { idEstadoUsuario: checked ? 1 : 2 }),
     });
   };
 
-  // Lógica de envío y llamadas a la API (handleSubmit)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsError("");
     setMessage("");
 
-    // Validación básica de campos
     if (formData.password !== formData.confirmPassword) {
       setIsError("Las contraseñas no coinciden.");
       return;
     }
 
-    // Si estamos editando y no se cambia la contraseña, no enviamos la propiedad.
     const passwordPayload = (userToEdit && formData.password === "") ? {} : { password: formData.password };
 
     const payload = {
@@ -92,11 +83,11 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
       segundoApellido: formData.segundoApellido,
       telefono: formData.telefono,
       correoElectronico: formData.correoElectronico,
-      direccion: "Calle 123 #45-67, Bogotá, Colombia", // Valor estático por ahora
+      direccion: "Calle 123 #45-67, Bogotá, Colombia",
       idRol: Number(formData.idRol),
-      idTipoDeDocumento: 1, // Valor estático por ahora
+      idTipoDeDocumento: 1,
       idEstadoUsuario: formData.activo ? 1 : 2,
-      ...passwordPayload, // Incluir contraseña solo si se cambia o es nuevo
+      ...passwordPayload,
     };
 
     try {
@@ -113,7 +104,6 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
       let method;
 
       if (userToEdit) {
-        // 🔹 Actualizar usuario existente
         const userId = userToEdit.id;
 
         if (!userId || isNaN(Number(userId))) {
@@ -125,10 +115,8 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
         url = `http://35.171.131.177:8080/api/usuarios/${userId}`;
         method = 'put';
       } else {
-        // 🔹 Crear nuevo usuario (usando el endpoint de registro)
         url = "http://35.171.131.177:8080/api/auth/register";
         method = 'post';
-        // Asegurarse que haya contraseña para el registro
         if (!payload.password) {
           setIsError("La contraseña es obligatoria para un nuevo usuario.");
           return;
@@ -150,8 +138,6 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
         setMessage("✅ Usuario actualizado correctamente.");
         backendId = userToEdit.id;
       } else {
-        // Asumimos que el endpoint de registro devuelve el ID del nuevo usuario
-        // Si tu registro devuelve el usuario completo, necesitarías mapear user.idUsuario
         if (response.data.success === true && response.data.data.id) {
           setMessage("✅ ¡Usuario creado exitosamente!");
           backendId = Number(response.data.data.id);
@@ -161,7 +147,6 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
         }
       }
 
-      // Llama a la función del padre para actualizar la tabla
       onSave({
         id: backendId,
         nombreUsuario: formData.nombreUsuario,
@@ -170,15 +155,12 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
         numeroDocumento: formData.numeroDocumento,
         telefono: formData.telefono,
         correoElectronico: formData.correoElectronico,
-        // Enviamos los IDs del backend que necesitamos para futuras ediciones
         idRol: Number(formData.idRol),
         idEstadoUsuario: payload.idEstadoUsuario,
-        // Propiedades de visualización
         rol: ROLES.find((r) => r.id === Number(formData.idRol))?.nombre || "cliente",
         activo: formData.activo,
       });
 
-      // Cerramos el modal después de un breve tiempo para mostrar el mensaje de éxito
       setTimeout(() => onClose(), 1200);
 
     } catch (err) {
@@ -192,10 +174,8 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
         } else if (status === 404) {
           setIsError("❌ Usuario no encontrado (404).");
         } else if (status === 400 && msg.includes("documento")) {
-          // Error específico por número de documento duplicado
           setIsError("⚠️ Error: El número de documento ya está registrado.");
-        }
-        else {
+        } else {
           setIsError(msg);
         }
       } else {
@@ -204,23 +184,21 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
     }
   };
 
-  // ... Resto del render del modal ...
   return (
-  <div className="admin-theme">
-    <div className="modal-overlay">
-      <div className="modal-container">
-        <div className="modal-header">
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContainer}>
+        <div className={styles.modalHeader}>
           <h3>{userToEdit ? "Editar Usuario" : "Registrar Nuevo Usuario"}</h3>
-          <button onClick={onClose} className="close-btn">
+          <button onClick={onClose} className={styles.closeBtn}>
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
+        <form onSubmit={handleSubmit} className={styles.modalForm}>
           <div className="row">
             {/* Fila 1: Nombre y Primer Apellido */}
             <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
+              <div className={styles.formGroup}>
                 <label>Nombres *</label>
                 <input
                   type="text"
@@ -233,7 +211,7 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
               </div>
             </div>
             <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
+              <div className={styles.formGroup}>
                 <label>Primer Apellido *</label>
                 <input
                   type="text"
@@ -248,7 +226,7 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
 
             {/* Fila 2: Segundo Apellido y Cédula */}
             <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
+              <div className={styles.formGroup}>
                 <label>Segundo Apellido *</label>
                 <input
                   type="text"
@@ -261,7 +239,7 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
               </div>
             </div>
             <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
+              <div className={styles.formGroup}>
                 <label>Cédula *</label>
                 <input
                   type="text"
@@ -276,7 +254,7 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
 
             {/* Fila 3: Teléfono y Correo */}
             <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
+              <div className={styles.formGroup}>
                 <label>Teléfono *</label>
                 <input
                   type="text"
@@ -289,7 +267,7 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
               </div>
             </div>
             <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
+              <div className={styles.formGroup}>
                 <label>Correo Electrónico *</label>
                 <input
                   type="email"
@@ -304,7 +282,7 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
 
             {/* Fila 4: Contraseña y Confirmación */}
             <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
+              <div className={styles.formGroup}>
                 <label>Contraseña {userToEdit ? "" : "*"}</label>
                 <input
                   type="password"
@@ -317,7 +295,7 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
               </div>
             </div>
             <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
+              <div className={styles.formGroup}>
                 <label>Confirmar Contraseña {userToEdit ? "" : "*"}</label>
                 <input
                   type="password"
@@ -332,7 +310,7 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
 
             {/* Fila 5: Rol y Estado */}
             <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
+              <div className={styles.formGroup}>
                 <label>Rol</label>
                 <select 
                   name="idRol" 
@@ -349,17 +327,17 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
               </div>
             </div>
             <div className="col-12 col-lg-6 mb-3 d-flex align-items-end">
-              <div className="field checkbox-group w-100">
-                <div className="form-check">
+              <div className={styles.checkboxGroup}>
+                <div className={styles.formCheck}>
                   <input
-                    className="form-check-input"
+                    className={styles.formCheckInput}
                     type="checkbox"
                     name="activo"
                     id="activoCheckbox"
                     checked={formData.activo}
                     onChange={handleChange}
                   />
-                  <label className="form-check-label" htmlFor="activoCheckbox">
+                  <label className={styles.formCheckLabel} htmlFor="activoCheckbox">
                     Usuario Activo
                   </label>
                 </div>
@@ -370,29 +348,24 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
           {/* Mensajes de error/éxito */}
           <div className="row">
             <div className="col-12">
-              {isError && <p className="error-text">⚠️ {isError}</p>}
-              {message && <p className="success-text">{message}</p>}
+              {isError && <p className={styles.errorText}>⚠️ {isError}</p>}
+              {message && <p className={styles.successText}>{message}</p>}
             </div>
           </div>
 
           {/* Botones */}
-          <div className="modal-footer mt-4">
-            <div className="row w-100">
-              <div className="col-12 d-flex justify-content-end gap-2">
-                <button type="button" onClick={onClose} className="btn-cancelar">
-                  Cancelar
-                </button>
-                <button type="submit" className="btn-guardar">
-                  {userToEdit ? "Guardar Cambios" : "Crear Usuario"}
-                </button>
-              </div>
-            </div>
+          <div className={styles.modalFooter}>
+            <button type="button" onClick={onClose} className={styles.btnCancelar}>
+              Cancelar
+            </button>
+            <button type="submit" className={styles.btnGuardar}>
+              {userToEdit ? "Guardar Cambios" : "Crear Usuario"}
+            </button>
           </div>
         </form>
       </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default UserFormModal;

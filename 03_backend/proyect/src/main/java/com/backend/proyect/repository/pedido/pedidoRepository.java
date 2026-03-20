@@ -26,6 +26,7 @@ public interface pedidoRepository extends JpaRepository<Pedido, Integer> {
     @Query(value = "SELECT " +
             "p.idPedido, " +
             "p.fechaPedido, " +
+            "p.estado, " + 
             "u.nombreUsuario, " +
             "prod.codigoReferencia, " +
             "prod.nombreProducto, " +

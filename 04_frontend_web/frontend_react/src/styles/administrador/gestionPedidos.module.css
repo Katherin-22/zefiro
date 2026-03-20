@@ -1,0 +1,686 @@
+:root {
+  /* Colores originales en HEX */
+  --primary-color: #E0B253;
+  --secondary-color: #000000;
+  --bg-body-dark: #000000;
+  --bg-body-light: #ffffff;
+  --text-light: #ffffff;
+  --text-dark: #000000;
+  --hover-color: #c89c3f;
+  
+  /* Colores en RGBA */
+  --primary-color-rgba: rgba(224, 178, 83, 1);
+  --secondary-color-rgba: rgba(0, 0, 0, 1);
+  --bg-body-dark-rgba: rgba(0, 0, 0, 1);
+  --bg-body-light-rgba: rgba(255, 255, 255, 1);
+  --text-light-rgba: rgba(228, 233, 247, 1);
+  --text-dark-rgba: rgba(0, 0, 0, 1);
+  --hover-color-rgba: rgba(200, 156, 63, 1);
+  
+  /* También versión semitransparente  */
+  --primary-color-transparent: rgba(224, 178, 83, 0.8);
+  --secondary-color-transparent: rgba(0, 0, 0, 0.8);
+  --hover-color-transparent: rgba(224, 178, 83, 0.2);
+  
+  /* Transiciones */
+  --tran-03: all 0.3s ease;
+  --tran-04: all 0.4s ease;
+  --tran-05: all 0.5s ease;
+}
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.containerFluidGesPed {
+    width: 82%;
+    margin-left: 18%;
+    transition: var(--tran-03);
+    padding: 30px;
+    background: var(--bg-body-light);
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ===== TÍTULO MEJORADO ===== */
+.textGestPed {
+    padding: 25px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--hover-color) 100%);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 8px 20px var(--hover-color-transparent);
+    color: var(--text-light);
+    font-weight: 700;
+    margin: 0;
+    font-size: 1.8rem;
+    letter-spacing: -0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.textGestPed::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+}
+
+/* ===== FILTROS MEJORADOS ===== */
+.rowEstado {
+    display: flex;
+    justify-content: flex-start;
+    margin: 25px 0;
+}
+
+.formSelectEstado {
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--tran-03);
+    max-width: 300px;
+    background-color: white;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.formSelectEstado:hover {
+    border-color: var(--hover-color);
+    box-shadow: 0 4px 12px var(--primary-color-transparent);
+    transform: translateY(-1px);
+}
+
+.formSelectEstado:focus {
+    outline: none;
+    border-color: var(--hover-color);
+    box-shadow: 0 0 0 3px var(--secondary-color-transparent);
+}
+
+/* ===== CONTENEDOR RESPONSIVE PARA TABLA ===== */
+.tableResponsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 20px 0;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) #f1f1f1;
+}
+
+.tableResponsive::-webkit-scrollbar {
+    height: 8px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+}
+
+.tableResponsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.tableResponsive::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+
+.tableResponsive::-webkit-scrollbar-thumb:hover {
+    background: var(--hover-color);
+}
+
+/* ===== TABLA PRINCIPAL MEJORADA ===== */
+.table {
+    background: white;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+    min-width: 900px; /* Forzar scroll horizontal en móvil */
+}
+
+.table thead th {
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+    font-weight: 600;
+    padding: 15px;
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+}
+
+.table thead th:first-child {
+    border-top-left-radius: 16px;
+}
+
+.table thead th:last-child {
+    border-top-right-radius: 16px;
+}
+
+.table tbody tr {
+    transition: var(--tran-03);
+    border-bottom: 1px solid #edf2f7;
+}
+
+.table tbody tr:hover {
+    background-color: var(--hover-color-transparent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(224, 178, 83, 0.15);
+}
+
+.table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 16px;
+}
+
+.table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 16px;
+}
+
+/* ===== FILA DE PEDIDO PRINCIPAL ===== */
+.tablePrimary {
+    background-color: #f8fafc !important;
+    border-bottom: 2px solid var(--primary-color) !important;
+}
+
+.tablePrimary td {
+    padding: 15px;
+    vertical-align: middle;
+    font-weight: 500;
+}
+
+/* ===== BOTÓN MOSTRAR PRODUCTOS MEJORADO ===== */
+.btnMostrarProd {
+    background: var(--secondary-color);
+    color: var(--text-light);
+    padding: 8px 15px;
+    transition: var(--tran-05);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    min-width: 45px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btnMostrarProd:hover {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px var(--primary-color-transparent);
+}
+
+/* ===== SELECTOR DE ESTADO MEJORADO ===== */
+.formSelectEstadoPed {
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--tran-03);
+    min-width: 130px;
+    font-weight: 500;
+    background-color: white;
+}
+
+.formSelectEstadoPed:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.formSelectEstadoPed:hover:not(:disabled) {
+    border-color: var(--hover-color);
+    box-shadow: 0 4px 10px var(--primary-color-transparent);
+}
+
+.formSelectEstadoPed:focus {
+    outline: none;
+    border-color: var(--hover-color);
+    box-shadow: 0 0 0 3px var(--secondary-color-transparent);
+}
+
+/* ===== TABLA DE PRODUCTOS INTERNA MEJORADA ===== */
+.tableSm {
+    margin: 0;
+    background: #f8fafc;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableSm thead th {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    color: white;
+    font-size: 0.85rem;
+    padding: 10px;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.tableSm tbody td {
+    padding: 10px;
+    font-size: 0.9rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.tableSm tbody tr:hover {
+    background-color: rgba(224, 178, 83, 0.08);
+}
+
+.tableSm tfoot td {
+    padding: 12px;
+    background-color: #f1f3f5;
+    font-weight: 600;
+}
+
+/* ===== CHECKBOX MEJORADO ===== */
+.checkItem,
+#checkAll {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+    transition: var(--tran-03);
+}
+
+.checkItem:hover,
+#checkAll:hover {
+    transform: scale(1.1);
+}
+
+/* ===== SPINNER ===== */
+.spinnerBorderSm {
+    width: 1rem;
+    height: 1rem;
+    margin-left: 8px;
+    border: 2px solid var(--primary-color);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ===== MENSAJE DE ERROR MEJORADO ===== */
+.alertDanger {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border: none;
+    color: #991b1b;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+    font-weight: 500;
+}
+
+/* ===== BADGE PARA ESTADOS ===== */
+.estadoBadge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    display: inline-block;
+    min-width: 100px;
+}
+
+.estadoBadgePendiente {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+    color: #856404;
+}
+
+.estadoBadgeProcesando {
+    background: linear-gradient(135deg, #9cd8d5 0%, #7ac9c5 100%);
+    color: #0c5460;
+}
+
+.estadoBadgeEntregado {
+    background: linear-gradient(135deg, #d1e7dd 0%, #b8d9cc 100%);
+    color: #0f5132;
+}
+
+/* ===== TOOLTIP ===== */
+.tooltip {
+    position: relative;
+    cursor: pointer;
+}
+
+.tooltip:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 12px;
+    background: var(--secondary-color);
+    color: white;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--tran-03);
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip:hover:before {
+    opacity: 1;
+    visibility: visible;
+    bottom: 120%;
+}
+
+/* ===== NO USERS ===== */
+.noUsers {
+    text-align: center;
+    color: #888;
+    padding: 30px 0;
+    font-size: 1rem;
+}
+
+/* ===== MEJORAS DE ACCESIBILIDAD ===== */
+.btnMostrarProd:focus-visible,
+.formSelectEstado:focus-visible,
+.formSelectEstadoPed:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Tablet y Desktop pequeño */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .containerFluidGesPed {
+        width: 75%;
+        margin-left: 25%;
+        padding: 20px;
+    }
+    
+    .textGestPed {
+        font-size: 1.5rem;
+        padding: 20px;
+    }
+    
+    .table thead th {
+        padding: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .tablePrimary td {
+        padding: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .btnMostrarProd {
+        padding: 6px 12px;
+        min-width: 40px;
+    }
+    
+    .formSelectEstadoPed {
+        min-width: 110px;
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .tableSm thead th {
+        padding: 8px;
+        font-size: 0.8rem;
+    }
+    
+    .tableSm tbody td {
+        padding: 8px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Móvil grande y Tablet vertical */
+@media (min-width: 481px) and (max-width: 768px) {
+    .containerFluidGesPed {
+        width: 100% !important;
+        margin-left: 0 !important;
+        padding: 15px;
+    }
+    
+    .textGestPed {
+        font-size: 1.4rem;
+        padding: 18px;
+        border-radius: 14px 14px 0 0;
+    }
+    
+    .rowEstado {
+        flex-direction: column;
+        margin: 15px 0;
+    }
+    
+    .formSelectEstado {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .tableResponsive {
+        margin: 10px 0;
+        border-radius: 12px;
+    }
+    
+    .table {
+        min-width: 800px;
+    }
+    
+    .table thead th {
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+    
+    .tablePrimary td {
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+    
+    .btnMostrarProd {
+        padding: 5px 10px;
+        min-width: 35px;
+        font-size: 0.8rem;
+        margin-right: 5px;
+    }
+    
+    .formSelectEstadoPed {
+        min-width: 100px;
+        font-size: 0.8rem;
+        padding: 5px 6px;
+    }
+    
+    .tableSm thead th {
+        font-size: 0.8rem;
+        padding: 8px;
+    }
+    
+    .tableSm tbody td {
+        font-size: 0.8rem;
+        padding: 8px;
+    }
+    
+    .estadoBadge {
+        min-width: 80px;
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+    
+    .tableResponsive::after {
+        content: '← Desliza para ver más →';
+        display: block;
+        text-align: center;
+        padding: 8px;
+        background: rgba(224, 178, 83, 0.1);
+        color: var(--primary-color);
+        font-size: 0.8rem;
+        border-radius: 0 0 12px 12px;
+        border-top: 1px dashed var(--primary-color);
+    }
+}
+
+/* Móvil pequeño */
+@media (max-width: 480px) {
+    .containerFluidGesPed {
+        width: 100% !important;
+        margin-left: 0 !important;
+        padding: 12px;
+    }
+    
+    .textGestPed {
+        font-size: 1.3rem;
+        padding: 15px;
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .rowEstado {
+        flex-direction: column;
+        margin: 15px 0;
+    }
+    
+    .formSelectEstado {
+        width: 100%;
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+    
+    .tableResponsive {
+        margin: 8px 0;
+        border-radius: 10px;
+    }
+    
+    .table {
+        min-width: 750px;
+        font-size: 0.8rem;
+    }
+    
+    .table thead th {
+        padding: 8px 5px;
+        font-size: 0.75rem;
+    }
+    
+    .tablePrimary td {
+        padding: 8px 5px;
+        font-size: 0.75rem;
+    }
+    
+    .btnMostrarProd {
+        padding: 4px 8px;
+        min-width: 30px;
+        font-size: 0.7rem;
+        margin-right: 5px !important;
+    }
+    
+    .formSelectEstadoPed {
+        min-width: 90px;
+        font-size: 0.7rem;
+        padding: 4px 5px;
+    }
+    
+    .tableSm thead th {
+        font-size: 0.7rem;
+        padding: 6px;
+    }
+    
+    .tableSm tbody td {
+        font-size: 0.7rem;
+        padding: 6px;
+    }
+    
+    .checkItem,
+    #checkAll {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .estadoBadge {
+        min-width: 70px;
+        font-size: 0.65rem;
+        padding: 3px 6px;
+    }
+    
+    .spinnerBorderSm {
+        width: 0.8rem;
+        height: 0.8rem;
+        margin-left: 5px;
+    }
+    
+    .tableResponsive::after {
+        content: '← Desliza →';
+        display: block;
+        text-align: center;
+        padding: 6px;
+        background: rgba(224, 178, 83, 0.1);
+        color: var(--primary-color);
+        font-size: 0.7rem;
+        border-radius: 0 0 10px 10px;
+        border-top: 1px dashed var(--primary-color);
+    }
+}
+
+/* Safe area para iPhone */
+@supports (padding-top: env(safe-area-inset-top)) {
+    @media (max-width: 768px) {
+        .containerFluidGesPed {
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+    }
+}
+
+/* ===== VERSIÓN IMPRESIÓN ===== */
+@media print {
+    .containerFluidGesPed {
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+    }
+    
+    .textGestPed {
+        background: none;
+        color: black;
+        box-shadow: none;
+        border-bottom: 2px solid #000;
+    }
+    
+    .btnMostrarProd,
+    .formSelectEstado,
+    .formSelectEstadoPed,
+    .checkItem,
+    #checkAll,
+    .tableResponsive::after {
+        display: none;
+    }
+    
+    .tableResponsive {
+        overflow-x: visible;
+        box-shadow: none;
+    }
+    
+    .table {
+        min-width: auto;
+        border: 1px solid #ddd;
+    }
+    
+    .table thead th {
+        background: #f0f0f0;
+        color: black;
+        border-bottom: 2px solid #000;
+    }
+    
+    .tableSm {
+        border: 1px solid #ddd;
+    }
+}

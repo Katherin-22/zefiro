@@ -1,6 +1,7 @@
 package com.backend.proyect.controller.usuario;
 
 import com.backend.proyect.dto.usuario.UsuarioRequest;
+import com.backend.proyect.dto.usuario.ValidationGroups;
 import com.backend.proyect.exception.usuario.ResourceNotFoundException;
 import com.backend.proyect.model.usuario.Usuario;
 import com.backend.proyect.repository.usuario.EstadoUsuarioRepository;
@@ -16,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.backend.proyect.security.usuario.UsuarioPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +72,7 @@ public class UsuarioController {
      * Endpoint para actualizar el perfil del usuario logeado (PUT /api/usuarios/perfil).
      */
     @PutMapping("/perfil")
-    public ResponseEntity<Usuario> actualizarMiPerfil(@Valid @RequestBody UsuarioRequest usuarioRequest) {
+    public ResponseEntity<Usuario> actualizarMiPerfil(@Validated(ValidationGroups.OnUpdate.class) @RequestBody UsuarioRequest usuarioRequest) {
         // 1. Obtener el ID del usuario logeado del contexto de seguridad
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UsuarioPrincipal usuarioPrincipalWrapper = (UsuarioPrincipal) authentication.getPrincipal();

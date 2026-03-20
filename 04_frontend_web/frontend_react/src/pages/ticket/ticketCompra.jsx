@@ -109,7 +109,6 @@ useEffect(() => {
             console.log("📦 response.data:", response.data);
             
             if (response?.data) {
-                // ✅ CORRECCIÓN: Si response.data es un array, tomar el primer elemento
                 const datosPedido = Array.isArray(response.data) ? response.data[0] : response.data;
                 
                 console.log("🔍 Datos a procesar:", datosPedido);
@@ -361,7 +360,7 @@ useEffect(() => {
                                 <div className="text-center mt-3">
                                     <button 
                                         className="btn btn-secondary"
-                                        onClick={() => navigate('/pedidos')}
+                                        onClick={() => navigate('/pedidos/${userId}')}
                                     >
                                         Volver a mis pedidos
                                     </button>

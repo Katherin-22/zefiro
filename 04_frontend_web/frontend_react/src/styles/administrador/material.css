@@ -1,0 +1,424 @@
+:root {
+    --primary-color: #E0B253;
+    --secondary-color: #000000;
+    --bg-body-dark: #000000;
+    --bg-body-light: #ffffff;
+    --text-light: #ffffff;
+    --text-dark: #000000;
+    --hover-color: #c89c3f;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
+}
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+#container-admin-material {
+    width: 81.5%;
+    margin: 18px 18px 15px 18% !important;
+    padding: 5px 18px;
+    transition: var(--tran-03);
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* ===== HEADER FIJO ===== */
+.custom-header {
+    white-space: nowrap;
+    width: 100%;
+    height: auto;
+    background: var(--primary-color);
+    justify-content: start !important;
+    padding: 22px 15px 22px 5%;
+    border-radius: 15px 15px 0 0;
+    margin-bottom: 15px !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    color: var(--text-light);
+    box-sizing: border-box;
+}
+
+h1 {
+    font-weight: bold !important;
+    font-size: 2rem;
+    margin: 0;
+}
+
+/* ===== ISLA DE BOTONES FIJA ===== */
+.isla-Material {
+    background: var(--bg-body-light);
+    display: flex;
+    justify-content: center !important;
+    align-items: center;
+    width: 350px !important;
+    height: 50px;
+    border-radius: 15px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    gap: 8px;
+    padding: 0 0 5px 10px;
+}
+
+.custom-btn-material {
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
+    border-radius: 10px;
+    color: var(--text-light);
+    font-weight: 600 !important;
+    padding: 8px 15px;
+    transition: var(--tran-03);
+    border: 1px solid transparent;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.custom-btn-material:hover {
+    background-color: transparent;
+    color: var(--primary-color);
+    box-shadow: 0 5px 20px rgba(224, 178, 83, 0.5);
+    transform: translateY(-2px);
+    border-color: var(--primary-color);
+}
+
+/* ===== CONTENEDOR DE TABLA CON SCROLL ===== */
+.table-responsive-material {
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin: 20px 0;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(224, 178, 83, 0.3);
+    background: white;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) #f1f1f1;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Personalizar la barra de scroll */
+.table-responsive-material::-webkit-scrollbar {
+    height: 8px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+}
+
+.table-responsive-material::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.table-responsive-material::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+
+.table-responsive-material::-webkit-scrollbar-thumb:hover {
+    background: var(--hover-color);
+}
+
+/* ===== TABLA ===== */
+.table-material {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    margin-bottom: 0;
+    /* SIN min-width para que se adapte al contenido */
+}
+
+.table-material thead th {
+    padding: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 14px;
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+    white-space: nowrap;
+    text-align: left;
+}
+
+.table-material thead th:first-child {
+    border-top-left-radius: 15px;
+}
+
+.table-material thead th:last-child {
+    border-top-right-radius: 15px;
+}
+
+.table-material tbody tr {
+    border-bottom: 1px solid #edf2f7;
+    transition: var(--tran-03);
+}
+
+.table-material tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table-material tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 15px;
+}
+
+.table-material tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 15px;
+}
+
+.table-material tbody td {
+    padding: 12px 15px;
+    vertical-align: middle;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+/* Efecto hover en filas */
+.table-material tbody tr:hover {
+    background-color: rgba(224, 178, 83, 0.05);
+}
+
+/* ===== BOTONES DE ACCIÓN ===== */
+.btn-material-editar {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold !important;
+    white-space: nowrap;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: var(--tran-03);
+    display: inline-block;
+    text-decoration: none;
+    margin-right: 5px;
+}
+
+.btn-material-editar:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(224, 178, 83, 0.5);
+    color: white;
+}
+
+.btn-material-eliminar {
+    background-color: #dc3545;
+    color: white;
+    font-weight: bold !important;
+    white-space: nowrap;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: var(--tran-03);
+    cursor: pointer;
+}
+
+.btn-material-eliminar:hover {
+    background-color: #bb2d3b;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.5);
+}
+
+/* ===== RESPONSIVE ===== */
+/* Desktop mediano (1025px - 1200px) */
+@media (min-width: 1025px) and (max-width: 1200px) {
+    #container-admin-material {
+        width: 78%;
+        margin-left: 20% !important;
+    }
+}
+
+/* Tablet horizontal y Desktop pequeño (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    #container-admin-material {
+        width: 72% !important;
+        margin: 15px 15px 15px 26% !important;
+        padding: 10px;
+    }
+    
+    .custom-header {
+        padding: 15px 10px 15px 3%;
+    }
+    
+    h1 {
+        font-size: 1.6rem;
+    }
+    
+    .isla-Material {
+        width: 300px !important;
+        height: 45px;
+    }
+    
+    .custom-btn-material {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Tablet vertical (481px - 768px) - TUS MEDIDAS */
+@media (min-width: 481px) and (max-width: 768px) {
+    #container-admin-material {
+        width: 90% !important;
+        margin: 80px auto 20px auto !important;
+        padding: 15px;
+    }
+    
+    .custom-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 15px;
+        white-space: normal;
+        padding: 20px;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+        width: 100%;
+    }
+    
+    .isla-Material {
+        width: 100% !important;
+        height: auto;
+        padding: 10px !important;
+        margin: 0 !important;
+        flex-wrap: wrap;
+        justify-content: center !important;
+        background: transparent;
+        box-shadow: none;
+    }
+    
+    .custom-btn-material {
+        width: calc(50% - 5px);
+        margin: 0;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Móvil pequeño (<480px) */
+@media (max-width: 480px) {
+    #container-admin-material {
+        width: 100% !important;
+        margin: 60px 0 20px 0 !important;
+        padding: 10px;
+    }
+    
+    .custom-header {
+        flex-direction: column;
+        align-items: center !important;
+        gap: 15px;
+        white-space: normal;
+        padding: 15px;
+        text-align: center;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+        width: 100%;
+    }
+    
+    .isla-Material {
+        width: 100% !important;
+        height: auto;
+        padding: 10px !important;
+        margin: 0 !important;
+        flex-direction: column;
+        background: transparent;
+        box-shadow: none;
+        gap: 8px;
+    }
+    
+    .custom-btn-material {
+        width: 100%;
+        margin: 0;
+        padding: 12px;
+        font-size: 1rem;
+    }
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.table-material tbody tr {
+    animation: fadeIn 0.3s ease-out;
+    animation-fill-mode: both;
+}
+
+.table-material tbody tr:nth-child(1) { animation-delay: 0.05s; }
+.table-material tbody tr:nth-child(2) { animation-delay: 0.1s; }
+.table-material tbody tr:nth-child(3) { animation-delay: 0.15s; }
+.table-material tbody tr:nth-child(4) { animation-delay: 0.2s; }
+.table-material tbody tr:nth-child(5) { animation-delay: 0.25s; }
+.table-material tbody tr:nth-child(6) { animation-delay: 0.3s; }
+.table-material tbody tr:nth-child(7) { animation-delay: 0.35s; }
+.table-material tbody tr:nth-child(8) { animation-delay: 0.4s; }
+.table-material tbody tr:nth-child(9) { animation-delay: 0.45s; }
+.table-material tbody tr:nth-child(10) { animation-delay: 0.5s; }
+
+/* ===== MEJORAS DE ACCESIBILIDAD ===== */
+.custom-btn-material:focus-visible,
+.btn-material-editar:focus-visible,
+.btn-material-eliminar:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* ===== SAFE AREA PARA IPHONE ===== */
+@supports (padding-top: env(safe-area-inset-top)) {
+    @media (max-width: 480px) {
+        #container-admin-material {
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+    }
+}
+
+/* ===== VERSIÓN IMPRESIÓN ===== */
+@media print {
+    #container-admin-material {
+        width: 100%;
+        margin: 0 !important;
+        padding: 20px;
+    }
+    
+    .custom-header {
+        background: none;
+        color: black;
+        box-shadow: none;
+        border-bottom: 2px solid #000;
+    }
+    
+    .isla-Material,
+    .btn-material-editar,
+    .btn-material-eliminar {
+        display: none;
+    }
+    
+    .table-responsive-material {
+        overflow-x: visible;
+        box-shadow: none;
+    }
+    
+    .table-material {
+        min-width: auto;
+        border: 1px solid #ddd;
+    }
+    
+    .table-material thead th {
+        background: #f0f0f0;
+        color: black;
+        border-bottom: 2px solid #000;
+    }
+    
+    .table-material tbody td {
+        border-bottom: 1px solid #ddd;
+    }
+}

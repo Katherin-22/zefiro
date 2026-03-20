@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import api_url from '../../services/administrador/api';
 import MenuHome from '../../layouts/home/menuHome';
 import useAuth from '../../hooks/token/useAuth';
+import DevolucionFormModal from "../../components/gestiondevoluciones/modals/DevolucionFormModal";
+import "../../styles/gestionusuarios/userDevoluciones.css";
 
 const PedidosUsuario = () => {
     const { userData, isAuthenticated } = useAuth();
@@ -13,18 +15,31 @@ const PedidosUsuario = () => {
     const [error, setError] = useState(null);
     const [pedidosExpandidos, setPedidosExpandidos] = useState({});
     const [formData, setFormData] = useState(null);
+    
+    // Estados para el modal de devolución
+    const [isDevolucionModalOpen, setIsDevolucionModalOpen] = useState(false);
+    const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
+    const [productoSeleccionado, setProductoSeleccionado] = useState(null);
 
     const userId = userData?.id || userData?.idUsuario || null;
 
+    // Función para verificar si han pasado menos de 15 días
+    const puedeSolicitarDevolucion = (fechaPedido) => {
+        if (!fechaPedido) return false;
+        
+        const fechaPedidoDate = new Date(fechaPedido);
+        const fechaActual = new Date();
+        const diffTime = Math.abs(fechaActual - fechaPedidoDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        return diffDays <= 15;
+    };
+
     const formatearCOP = (precio) => {
-    if (!precio && precio !== 0) return '$0';
-    
-    // Convertir a número y redondear
-    const valor = Math.round(Number(precio));
-    
-    // Formato colombiano: puntos para miles
-    return '$' + valor.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-};
+        if (!precio && precio !== 0) return '$0';
+        const valor = Math.round(Number(precio));
+        return '$' + valor.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
     
     // 📌 FUNCIÓN PARA AGRUPAR PEDIDOS (ADAPTADA A TU ESTRUCTURA)
     const agruparPedidos = (datos) => {
@@ -41,26 +56,25 @@ const PedidosUsuario = () => {
                 const variacion = stock.variacion || {};
                 
                 return {
+                    idProducto: producto.idProducto,
                     nombreProducto: producto.nombreProducto || 'Producto',
                     nombreColor: color.nombreColor || 'N/A',
                     nombreVariacion: variacion.nombre || 'N/A',
                     cantidad: detalle.cantidad || 0,
                     precioUnitario: detalle.precioUnitario || 0,
-                    codigoReferencia: producto.codigoReferencia || 'N/A'
+                    codigoReferencia: producto.codigoReferencia || 'N/A',
+                    idStock: stock.idStock
                 };
             }) || [];
             
             console.log("📦 Productos extraídos:", productos);
             
             if (pedidoExistente) {
-                // Si ya existe, agregamos los productos
                 pedidoExistente.productos = [...pedidoExistente.productos, ...productos];
-                // Recalculamos total
                 pedidoExistente.totalFinal = pedidoExistente.productos.reduce(
                     (total, prod) => total + (prod.cantidad * prod.precioUnitario), 0
                 );
             } else {
-                // Nuevo pedido
                 acc.push({
                     idPedido: item.idPedido,
                     fechaPedido: item.fechaPedido,
@@ -69,7 +83,8 @@ const PedidosUsuario = () => {
                     totalFinal: productos.reduce(
                         (total, prod) => total + (prod.cantidad * prod.precioUnitario), 0
                     ),
-                    productos: productos
+                    productos: productos,
+                    puedeDevolver: puedeSolicitarDevolucion(item.fechaPedido)
                 });
             }
             return acc;
@@ -156,6 +171,24 @@ const PedidosUsuario = () => {
         fetchPedidos();
     }, [userId]);
 
+    // Función para abrir el modal de devolución con el producto seleccionado
+    const handleSolicitarDevolucion = (pedido, producto) => {
+        // Prevenir scroll en el body cuando el modal está abierto
+        document.body.style.overflow = 'hidden';
+        setPedidoSeleccionado(pedido);
+        setProductoSeleccionado(producto);
+        setIsDevolucionModalOpen(true);
+    };
+
+    // Función para cerrar el modal
+    const handleCloseModal = () => {
+        // Restaurar scroll en el body
+        document.body.style.overflow = 'auto';
+        setIsDevolucionModalOpen(false);
+        setPedidoSeleccionado(null);
+        setProductoSeleccionado(null);
+    };
+
     const toggleExpandir = (idPedido) => {
         setPedidosExpandidos(prev => ({
             ...prev,
@@ -241,7 +274,6 @@ const PedidosUsuario = () => {
                                                 <th>Estado</th>
                                                 <th>Fecha</th>
                                                 <th>Total</th>
-                                                <th>Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -269,14 +301,7 @@ const PedidosUsuario = () => {
                                                             </span>
                                                         </td>
                                                         <td>{formatearFecha(pedido.fechaPedido)}</td>
-<td>{formatearCOP(pedido.totalFinal)}</td>                                                        <td>
-                                                            <button 
-                                                                className="btn btn-sm btn-primary"
-                                                                onClick={() => navigate(`/pedido-detalle/${pedido.idPedido}`)}
-                                                            >
-                                                                Ver detalles
-                                                            </button>
-                                                        </td>
+                                                        <td>{formatearCOP(pedido.totalFinal)}</td>
                                                     </tr>
                                                     
                                                     {pedidosExpandidos[pedido.idPedido] && (
@@ -293,6 +318,7 @@ const PedidosUsuario = () => {
                                                                                 <th className="text-center">Cantidad</th>
                                                                                 <th className="text-end">Precio Unit.</th>
                                                                                 <th className="text-end">Subtotal</th>
+                                                                                <th className="text-center">Devolución</th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
@@ -316,6 +342,24 @@ const PedidosUsuario = () => {
                                                                                         <td className="text-center">{cantidad}</td>
                                                                                         <td className="text-end">{formatearCOP(producto.precioUnitario)}</td>
                                                                                         <td className="text-end fw-bold">{formatearCOP(subtotal)}</td>
+                                                                                        <td className="text-center">
+                                                                                            {pedido.puedeDevolver && pedido.estado === 'Entregado' ? (
+                                                                                                <button
+                                                                                                    className="btn btn-sm btn-warning"
+                                                                                                    onClick={() => handleSolicitarDevolucion(pedido, producto)}
+                                                                                                    title="Solicitar devolución o cambio"
+                                                                                                >
+                                                                                                    🔄 Devolver
+                                                                                                </button>
+                                                                                            ) : (
+                                                                                                <span className="text-muted small">
+                                                                                                    {!pedido.puedeDevolver ? 
+                                                                                                        '⏰ +15 días' : 
+                                                                                                        pedido.estado !== 'Entregado' ? 
+                                                                                                        '⏳ Pendiente' : ''}
+                                                                                                </span>
+                                                                                            )}
+                                                                                        </td>
                                                                                     </tr>
                                                                                 );
                                                                             })}
@@ -324,8 +368,9 @@ const PedidosUsuario = () => {
                                                                             <tr>
                                                                                 <td colSpan="5" className="text-end fw-bold">Total del pedido:</td>
                                                                                 <td className="text-end fw-bold text-success">
-                                                                                    <td>{formatearCOP(pedido.totalFinal)}</td>
+                                                                                    {formatearCOP(pedido.totalFinal)}
                                                                                 </td>
+                                                                                <td></td>
                                                                             </tr>
                                                                         </tfoot>
                                                                     </table>
@@ -348,6 +393,23 @@ const PedidosUsuario = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Modal de Devolución - CON Z-INDEX ALTO */}
+            <div 
+
+            >
+                <DevolucionFormModal
+                    isOpen={isDevolucionModalOpen}
+                    onClose={handleCloseModal}
+                    onSave={() => {
+                        handleCloseModal();
+                        // Aquí puedes actualizar la lista si es necesario
+                    }}
+                    userRole="cliente"
+                    pedido={pedidoSeleccionado}
+                    producto={productoSeleccionado}
+                />
             </div>
         </div>
     );

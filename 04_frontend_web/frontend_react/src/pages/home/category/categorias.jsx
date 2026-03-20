@@ -23,10 +23,15 @@ const CategoriasMobilePage = () => {
     'calzado': '👟',
     'zapato': '👠',
     'tenis': '👟',
+    'running': '🏃',
+    'casual': '👞',
+    'formal': '👔',
+    'deportivo': '⚽',
     'bolso': '👜',
     'cartera': '👛',
-    'ropa': '👕',
-    'accesorio': '🧣',
+    'mochila': '🎒',
+    'bandolera': '👜',
+    'tote': '🛍️',
     'default': '📦'
   }), []);
 
@@ -44,7 +49,7 @@ const CategoriasMobilePage = () => {
     "#417505"  // verde oscuro
   ], []);
 
-    // Función para obtener icono basado en nombre de categoría
+  // Función para obtener icono basado en nombre de categoría
   const obtenerIconoCategoria = useCallback((nombre) => {
     if (!nombre) return iconosPorTipo.default;
 
@@ -59,10 +64,47 @@ const CategoriasMobilePage = () => {
     return iconosPorTipo.default;
   }, [iconosPorTipo]);
 
+  // Función para mapear categorías a valores que entiende el catálogo
+  const mapearValorFiltro = (categoria) => {
+    const nombre = categoria.nombreCategoria || categoria.nombre || '';
+    const nombreLower = nombre.toLowerCase();
+    
+    // Mapeo de categorías especiales
+    if (nombreLower.includes('mujer')) return 'mujer';
+    if (nombreLower.includes('hombre')) return 'hombre';
+    if (nombreLower.includes('niño') || nombreLower.includes('nino')) return 'nino';
+    
+    // Para calzado, mapeamos a 'calzado'
+    if (nombreLower.includes('calzado') || 
+        nombreLower.includes('zapato') || 
+        nombreLower.includes('tenis') || 
+        nombreLower.includes('running') || 
+        nombreLower.includes('casual') || 
+        nombreLower.includes('deportivo')) {
+      return 'calzado';
+    }
+    
+    // Para bolsos, mapeamos a 'bolsos'
+    if (nombreLower.includes('bolso') || 
+        nombreLower.includes('cartera') || 
+        nombreLower.includes('mochila') || 
+        nombreLower.includes('bandolera') || 
+        nombreLower.includes('tote')) {
+      return 'bolsos';
+    }
+    
+    // Si tiene ID numérico, usarlo
+    if (categoria.idCategoria && !isNaN(categoria.idCategoria)) {
+      return categoria.idCategoria;
+    }
+    
+    // Por defecto, usar el nombre completo (puede no funcionar)
+    return nombreLower;
+  };
+
   // Obtener categorías del backend
   useEffect(() => {
     const fetchCategorias = async () => {
-      // [Contenido de la función fetchCategorias sin cambios]
       try {
         setLoading(true);
         const response = await api_url.get('/publico/categorias');
@@ -73,7 +115,9 @@ const CategoriasMobilePage = () => {
           descripcion: cat.descripcion || `Productos de ${cat.nombreCategoria || 'esta categoría'}`,
           tipoProducto: cat.nombreTipoProducto || cat.tipo || '',
           icono: obtenerIconoCategoria(cat.nombreCategoria || cat.nombre),
-          color: coloresCategoria[index % coloresCategoria.length]
+          color: coloresCategoria[index % coloresCategoria.length],
+          // Valor para el filtro (mapeado)
+          filtroValue: mapearValorFiltro(cat)
         }));
 
         setCategorias(categoriasMapeadas);
@@ -88,28 +132,87 @@ const CategoriasMobilePage = () => {
     };
 
     fetchCategorias();
-  }, [coloresCategoria, obtenerIconoCategoria]); // Dependencias estables, sin warning
-
-
+  }, [coloresCategoria, obtenerIconoCategoria]);
 
   // Categorías de respaldo si falla el backend
   const getCategoriasRespaldo = () => {
     return [
-      { id: "todos", nombre: "Todos", descripcion: "Ver todos los productos", icono: "📦", color: "#E0B253" },
-      { id: "mujer", nombre: "Mujer", descripcion: "Productos para mujer", icono: "👩", color: "#FF6B9D" },
-      { id: "hombre", nombre: "Hombre", descripcion: "Productos para hombre", icono: "👨", color: "#4A90E2" }
+      { 
+        id: "todos", 
+        nombre: "Todos", 
+        descripcion: "Ver todos los productos", 
+        icono: "📦", 
+        color: "#E0B253",
+        filtroValue: "todos"
+      },
+      { 
+        id: "mujer", 
+        nombre: "Mujer", 
+        descripcion: "Productos para mujer", 
+        icono: "👩", 
+        color: "#FF6B9D",
+        filtroValue: "mujer"
+      },
+      { 
+        id: "hombre", 
+        nombre: "Hombre", 
+        descripcion: "Productos para hombre", 
+        icono: "👨", 
+        color: "#4A90E2",
+        filtroValue: "hombre"
+      },
+      { 
+        id: "calzado", 
+        nombre: "Calzado", 
+        descripcion: "Todo el calzado", 
+        icono: "👟", 
+        color: "#7ED321",
+        filtroValue: "calzado"
+      },
+      { 
+        id: "running", 
+        nombre: "Running", 
+        descripcion: "Calzado para running", 
+        icono: "🏃", 
+        color: "#F5A623",
+        filtroValue: "calzado" // ¡Importante! Mapeamos running a calzado
+      },
+      { 
+        id: "casual", 
+        nombre: "Casual", 
+        descripcion: "Calzado casual", 
+        icono: "👞", 
+        color: "#50E3C2",
+        filtroValue: "calzado" // ¡Importante! Mapeamos casual a calzado
+      },
+      { 
+        id: "deportivo", 
+        nombre: "Deportivo", 
+        descripcion: "Calzado deportivo", 
+        icono: "⚽", 
+        color: "#BD10E0",
+        filtroValue: "calzado" // ¡Importante! Mapeamos deportivo a calzado
+      },
+      { 
+        id: "bolsos", 
+        nombre: "Bolsos", 
+        descripcion: "Todos los bolsos", 
+        icono: "👜", 
+        color: "#9013FE",
+        filtroValue: "bolsos"
+      }
     ];
   };
 
-  const seleccionarCategoria = (categoriaId) => {
-    // Encontrar la categoría seleccionada
-    const categoriaSeleccionada = categorias.find(cat => cat.id === categoriaId);
-
-    // Guardar en contexto el filtro (puedes usar ID o nombre según tu lógica)
-    setFiltro(categoriaSeleccionada?.nombre || categoriaId);
-
-    // Navegar al catálogo
-    navigate("/catalogo");
+  const seleccionarCategoria = (categoria) => {
+    console.log("Categoría seleccionada:", categoria);
+    console.log("Valor para filtro:", categoria.filtroValue);
+    
+    // Establecer el filtro con el valor mapeado
+    setFiltro(categoria.filtroValue);
+    
+    // Navegar al catálogo móvil
+    navigate("/home/catalogo");
   };
 
   if (loading) {
@@ -146,7 +249,7 @@ const CategoriasMobilePage = () => {
           <div className="categorias-header-content">
             <button
               className="categorias-back-btn"
-              onClick={() => navigate(-1)}// boton y funcionalidad para volver atras
+              onClick={() => navigate(-1)}
               aria-label="Volver"
             >
               ←
@@ -165,7 +268,7 @@ const CategoriasMobilePage = () => {
             <div
               key={cat.id}
               className="categoria-card-mobile"
-              onClick={() => seleccionarCategoria(cat.id)}
+              onClick={() => seleccionarCategoria(cat)}
               style={{ '--categoria-color': cat.color }}
             >
               <div className="categoria-card-content">

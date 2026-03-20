@@ -5,6 +5,7 @@ import "../../../styles/administrador/gestion_producto.css";
 import "../../../styles/administrador/inventario.css";
 import {createImagen, getImagenById, deleteImagen} from "../../../services/administrador/ImagenService.js";
 import api_url from "../../../services/administrador/api.js";
+import "../../../styles/administrador/formularios-admin.css"
 
 export default function CreateImagen() {
 

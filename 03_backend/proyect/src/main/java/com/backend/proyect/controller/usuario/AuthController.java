@@ -2,6 +2,7 @@ package com.backend.proyect.controller.usuario;
 
 import com.backend.proyect.dto.usuario.ResetPasswordRequest;
 import com.backend.proyect.dto.usuario.UsuarioRequest;
+import com.backend.proyect.dto.usuario.ValidationGroups;
 import com.backend.proyect.exception.usuario.ResourceNotFoundException;
 import com.backend.proyect.model.usuario.EstadoUsuario;
 import com.backend.proyect.model.usuario.Rol;
@@ -19,6 +20,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -40,7 +42,8 @@ public class AuthController {
 
     // Registrar usuario
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody UsuarioRequest usuarioRequest) {
+    public ResponseEntity<Map<String, Object>> register(
+            @Validated(ValidationGroups.OnCreate.class) @RequestBody UsuarioRequest usuarioRequest) {
 
         // Buscar las entidades por ID, si no existen, lanza una excepción
         Rol rol = rolRepository.findById(usuarioRequest.getIdRol())

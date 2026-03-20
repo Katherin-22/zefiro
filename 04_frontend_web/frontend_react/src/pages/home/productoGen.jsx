@@ -13,6 +13,9 @@ import useAuth from "../../hooks/token/useAuth";
 import { getStockByProducto, deleteStock } from "../../services/administrador/StockService";
 import { useCart } from "../../components/carrito/CarritoContext.jsx";
 
+// Definir la URL base para las imágenes (igual que en CreateImagen)
+const BASE_URL = "http://35.171.131.177:8080";
+
 const ProductoGen = () => {
     const { stock } = useGetStock();
     const { codigoReferencia, idProducto } = useParams();
@@ -120,7 +123,7 @@ const ProductoGen = () => {
     }, [producto]);
 
     // ============================
-    // 3️⃣ Cargar IMÁGENES del producto
+    // 3️⃣ Cargar IMÁGENES del producto (CORREGIDO)
     // ============================
     useEffect(() => {
         if (!producto) return;
@@ -130,7 +133,11 @@ const ProductoGen = () => {
                 const response = await getImagenById(producto.idProducto);
                 if (response.data && response.data.length > 0) {
                     setImagenesProducto(response.data);
-                    setImagenPrincipal(`${api_url}${response.data[0].urlImagen}`);
+                    // Aseguramos que la URL no tenga doble slash
+                    const urlImagen = response.data[0].urlImagen.startsWith('/') 
+                        ? response.data[0].urlImagen 
+                        : `/${response.data[0].urlImagen}`;
+                    setImagenPrincipal(`${BASE_URL}${urlImagen}`);
                 } else {
                     setImagenPrincipal(producto.imagen || "/imagenes_prueba/default.jpg");
                 }
@@ -728,24 +735,40 @@ const ProductoGen = () => {
                                                     onClick={() => abrirModalImagen()}
                                                     style={{ cursor: 'pointer' }}
                                                     id="producto-imagen-principal"
+                                                    onError={(e) => {
+                                                        console.error("Error cargando imagen principal:", imagenPrincipal);
+                                                        e.target.src = "/imagenes_prueba/default.jpg";
+                                                    }}
                                                 />
                                             </div>
 
                                             {imagenesProducto.length > 1 && (
                                                 <div className="producto-miniaturas-container mt-3" id="producto-miniaturas-container">
                                                     <div className="row g-2 justify-content-center" id="producto-miniaturas-row">
-                                                        {imagenesProducto.map((imagen, index) => (
-                                                            <div key={index} className="col-auto" id={`producto-miniatura-col-${index}`}>
-                                                                <img
-                                                                    src={`${api_url}${imagen.urlImagen}`}
-                                                                    alt={`${producto.nombreProducto} ${index + 1}`}
-                                                                    className={`producto-miniatura img-thumbnail ${imagenPrincipal === `${api_url}${imagen.urlImagen}` ? 'miniatura-activa' : ''}`}
-                                                                    onClick={() => cambiarImagenPrincipal(`${api_url}${imagen.urlImagen}`)}
-                                                                    style={{ cursor: 'pointer', width: '60px', height: '60px', objectFit: 'cover' }}
-                                                                    id={`producto-miniatura-${index}`}
-                                                                />
-                                                            </div>
-                                                        ))}
+                                                        {imagenesProducto.map((imagen, index) => {
+                                                            // Construir URL correctamente (igual que en CreateImagen)
+                                                            const urlImagen = imagen.urlImagen.startsWith('/') 
+                                                                ? imagen.urlImagen 
+                                                                : `/${imagen.urlImagen}`;
+                                                            const imagenUrl = `${BASE_URL}${urlImagen}`;
+                                                            
+                                                            return (
+                                                                <div key={index} className="col-auto" id={`producto-miniatura-col-${index}`}>
+                                                                    <img
+                                                                        src={imagenUrl}
+                                                                        alt={`${producto.nombreProducto} ${index + 1}`}
+                                                                        className={`producto-miniatura img-thumbnail ${imagenPrincipal === imagenUrl ? 'miniatura-activa' : ''}`}
+                                                                        onClick={() => cambiarImagenPrincipal(imagenUrl)}
+                                                                        style={{ cursor: 'pointer', width: '60px', height: '60px', objectFit: 'cover' }}
+                                                                        id={`producto-miniatura-${index}`}
+                                                                        onError={(e) => {
+                                                                            console.error(`Error cargando miniatura: ${imagenUrl}`);
+                                                                            e.target.src = "/imagenes_prueba/default.jpg";
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                            );
+                                                        })}
                                                     </div>
                                                 </div>
                                             )}
@@ -766,9 +789,6 @@ const ProductoGen = () => {
                                                         </p>
 
                                                         {/* VALORACIÓN DE COMENTARIOS */}
-                                                        <div className="producto-valoracion-detalle mb-3" id="producto-valoracion-detalle">
-                                                            Valoración: {renderEstadisticasComentarios()}
-                                                        </div>
 
                                                         <p className="producto-descripcion-detalle" id="producto-descripcion-detalle">
                                                             <span id="producto-descripcion-valor">{producto.descripcion}</span>
@@ -1030,6 +1050,10 @@ const ProductoGen = () => {
                                 alt={imagenModal.nombre}
                                 className="modal-image"
                                 id="producto-modal-image"
+                                onError={(e) => {
+                                    console.error("Error cargando imagen modal:", imagenModal.imagen);
+                                    e.target.src = "/imagenes_prueba/default.jpg";
+                                }}
                             />
                         </div>
                     </div>

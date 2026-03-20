@@ -15,7 +15,7 @@ const api_url = axios.create({
 
 api_url.interceptors.request.use(
     (config) => {
-        const tokenRaw = localStorage.getItem("authToken");
+        const tokenRaw = localStorage.getItem("authToken"); 
         const token = tokenRaw ? tokenRaw.replace(/"/g, "") : null;
 
         if (token) {
@@ -78,7 +78,7 @@ export const CartProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState(getLocalCart);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [showCartMenu, setShowCartMenu] = useState(false);
+    const [showCartMenu, setShowCartMenu] = useState(false); 
 
     // Cálculo correcto del total de UNIDADES (usando la data del servidor/local)
     const totalItemsCount = useMemo(() => cartItems.reduce((sum, item) => sum + (item.cantidad ?? 0), 0), [cartItems]);
@@ -101,7 +101,7 @@ export const CartProvider = ({ children }) => {
 
             console.log("Estructura completa del carrito (Backend):", response.data);
 
-            const dataServidor = response.data.detalles || [];
+            const dataServidor = response.data.detalles ||  [];
 
             setCartItems(dataServidor); // Asumo que el endpoint devuelve un objeto Carrito con una propiedad 'detalles'
             setError(null);
@@ -166,10 +166,10 @@ export const CartProvider = ({ children }) => {
 
                     if (localCartOnLogin.length > 0) {
                         // 1. Hay items de invitado. Sincronizar.
-                        await syncLocalCartToBackend(localCartOnLogin);
+                       await syncLocalCartToBackend(localCartOnLogin);
                     } else {
                         // 2. No hay items de invitado. Solo cargar el del servidor.
-                        await fetchCartItems();
+                       await fetchCartItems();
                     }
                 } else {
                     // 3. Deslogueado: Asegurar que el estado muestre el carrito local.
@@ -178,7 +178,7 @@ export const CartProvider = ({ children }) => {
             }
 
         };
-
+        
         handleAuthChange();
     }, [userId, isAuthenticated, isAuthLoading, fetchCartItems, syncLocalCartToBackend]);
 
@@ -191,7 +191,7 @@ export const CartProvider = ({ children }) => {
             // Logueado: Llama al backend (que devuelve la data completa)
             setLoading(true);
             try {
-                const response = await api_url.post(`/agregar/${userId}`, { idStock: productoData.idStock, cantidad });
+                const response = await api_url.post(`/agregar/${userId}`, { idStock: productoData.idStock , cantidad });
                 setCartItems(response.data.detalles || []); // Asumo la estructura de respuesta
                 setError(null);
                 return true;
@@ -220,7 +220,7 @@ export const CartProvider = ({ children }) => {
                     newCart = [...prevItems, {
                         idStock: productoData.idStock,
                         cantidad: cantidad,
-                        nombreProducto: productoData.nombreProducto,
+                        nombreProducto: productoData.nombreProducto, 
                         precio: productoData.precio,
                         imagen: productoData.imagen,
                         stockActual: productoData.stockActual // <--- AGREGADO
@@ -243,11 +243,11 @@ export const CartProvider = ({ children }) => {
     const updateQuantity = async (id, nuevaCantidad) => {
 
         if (nuevaCantidad <= 0) return removeFromCart(id);
-
+        
         if (!isAuthenticated || !userId) {
             // Invitado: Actualización local usando idStock
             setCartItems(prev => {
-                const newCart = prev.map(item =>
+                const newCart = prev.map(item => 
                     item.idStock === id ? { ...item, cantidad: nuevaCantidad } : item
                 );
                 saveLocalCart(newCart);
@@ -261,8 +261,8 @@ export const CartProvider = ({ children }) => {
 
         setLoading(true);
         try {
-            const response = await api_url.patch(`/${id}`, { cantidad: nuevaCantidad });
-            setCartItems(response.data.detalles || []);
+            const response = await api_url.patch(`/${id}`, { cantidad : nuevaCantidad });
+            setCartItems(response.data.detalles || []); 
             return true;
         } catch (err) {
             setError("Error al actualizar cantidad. Posiblemente por stock insuficiente.");
@@ -351,7 +351,7 @@ export const CartProvider = ({ children }) => {
         totalItems: totalItemsCount,
         loading,
         error,
-        showCartMenu,
+        showCartMenu,         
         setShowCartMenu,
         setError,
         addToCart,
