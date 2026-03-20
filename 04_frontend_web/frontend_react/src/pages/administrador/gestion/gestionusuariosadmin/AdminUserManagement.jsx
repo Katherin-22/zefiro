@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import { PencilIcon, TrashIcon, UserPlusIcon, Search } from "lucide-react";
-import "../../../../styles/gestionusuarios/adminUsuarios.css";
+import styles from "../../../../styles/gestionusuarios/adminUsuarios.module.css";
 
 // 🔑 Importamos los subcomponentes y las constantes
 import MenuAdmin from "../../../../layouts/administrador/menuAdmin";
@@ -145,132 +145,131 @@ const AdminUserManagement = () => {
   // --------------------------------------------------------------------
 
   return (
-
-    <div className="admin-theme">
-          <nav>
-      <MenuAdmin />
-    </nav>
-    <div className="container-fluid" id='container-admin'>
-      <div className="admin-container">
-        <div className="admin-header">
-          <h2>Panel de Gestión de Usuarios</h2>
-        </div>
-
-        <div className="admin-actions">
-          <button
-            className="btn-crear"
-            onClick={() => {
-              setUserToEdit(null);
-              setIsModalOpen(true);
-            }}
-          >
-            <UserPlusIcon size={18} /> Crear Usuario
-          </button>
-
-          <div className="search-box">
-            <Search className="icon-search" size={18} />
-            <input
-              type="text"
-              placeholder="Buscar usuario..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+    <div className={styles.adminTheme}>
+      <nav>
+        <MenuAdmin />
+      </nav>
+      <div className="container-fluid" id='container-admin'>
+        <div className={styles.adminContainer}>
+          <div className={styles.adminHeader}>
+            <h2>Panel de Gestión de Usuarios</h2>
           </div>
-        </div>
 
-        <div className="table-container">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Manejo de estados: Carga, Error, Vacío */}
-              {isLoading ? (
+          <div className={styles.adminActions}>
+            <button
+              className={styles.btnCrear}
+              onClick={() => {
+                setUserToEdit(null);
+                setIsModalOpen(true);
+              }}
+            >
+              <UserPlusIcon size={18} /> Crear Usuario
+            </button>
+
+            <div className={styles.searchBox}>
+              <Search className={styles.iconSearch} size={18} />
+              <input
+                type="text"
+                placeholder="Buscar usuario..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className={styles.tableContainer}>
+            <table className={styles.adminTable}>
+              <thead>
                 <tr>
-                  <td colSpan="6" className="no-users">
-                    Cargando usuarios... 🔄
-                  </td>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Email</th>
+                  <th>Rol</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
                 </tr>
-              ) : fetchError ? (
-                <tr>
-                  <td colSpan="6" className="no-users error-text">
-                    {fetchError} ⚠️
-                  </td>
-                </tr>
-              ) : filteredUsers.length > 0 ? (
-                filteredUsers.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.id}</td>
-                    <td>
-                      {user.nombreUsuario} {user.primerApellido}
-                    </td>
-                    <td>{user.correoElectronico}</td>
-                    <td>{user.rol}</td>
-                    <td>
-                      <span
-                        className={
-                          user.activo ? "estado-activo" : "estado-inactivo"
-                        }
-                      >
-                        {user.activo ? "Activo" : "Inactivo"}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        className="btn-editar"
-                        onClick={() => {
-                          console.log("Usuario a editar:", user);
-                          setUserToEdit(user);
-                          setIsModalOpen(true);
-                        }}
-                      >
-                        <PencilIcon size={16} />
-                      </button>
-                      <button
-                        className="btn-eliminar"
-                        onClick={() => setUserToDelete(user)}
-                      >
-                        <TrashIcon size={16} />
-                      </button>
+              </thead>
+              <tbody>
+                {/* Manejo de estados: Carga, Error, Vacío */}
+                {isLoading ? (
+                  <tr>
+                    <td colSpan="6" className={styles.noUsers}>
+                      Cargando usuarios... 🔄
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="no-users">
-                    No se encontraron usuarios.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                ) : fetchError ? (
+                  <tr>
+                    <td colSpan="6" className={`${styles.noUsers} ${styles.errorText}`}>
+                      {fetchError} ⚠️
+                    </td>
+                  </tr>
+                ) : filteredUsers.length > 0 ? (
+                  filteredUsers.map((user) => (
+                    <tr key={user.id}>
+                      <td>{user.id}</td>
+                      <td>
+                        {user.nombreUsuario} {user.primerApellido}
+                      </td>
+                      <td>{user.correoElectronico}</td>
+                      <td>{user.rol}</td>
+                      <td>
+                        <span
+                          className={
+                            user.activo ? styles.estadoActivo : styles.estadoInactivo
+                          }
+                        >
+                          {user.activo ? "Activo" : "Inactivo"}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          className={styles.btnEditar}
+                          onClick={() => {
+                            console.log("Usuario a editar:", user);
+                            setUserToEdit(user);
+                            setIsModalOpen(true);
+                          }}
+                        >
+                          <PencilIcon size={16} />
+                        </button>
+                        <button
+                          className={styles.btnEliminar}
+                          onClick={() => setUserToDelete(user)}
+                        >
+                          <TrashIcon size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className={styles.noUsers}>
+                      No se encontraron usuarios.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <UserFormModal
+            isOpen={isModalOpen}
+            onClose={() => {
+              setIsModalOpen(false);
+              setUserToEdit(null);
+            }}
+            onSave={handleSaveUser}
+            userToEdit={userToEdit}
+          />
+
+          <DeleteConfirmModal
+            isOpen={!!userToDelete}
+            onClose={() => setUserToDelete(null)}
+            userName={userToDelete?.nombreUsuario || ""}
+            onConfirm={handleDeleteUser}
+          />
         </div>
-
-        <UserFormModal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setUserToEdit(null);
-          }}
-          onSave={handleSaveUser}
-          userToEdit={userToEdit}
-        />
-
-        <DeleteConfirmModal
-          isOpen={!!userToDelete}
-          onClose={() => setUserToDelete(null)}
-          userName={userToDelete?.nombreUsuario || ""}
-          onConfirm={handleDeleteUser}
-        />
       </div>
-    </div>
     </div>
   );
 };

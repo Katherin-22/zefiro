@@ -4,17 +4,16 @@ import {
   deleteStock,
 } from "../../../services/administrador/StockService";
 import MenuAdmin from "../../../layouts/administrador/menuAdmin";
+import { Link } from "react-router-dom";
 
-import "../../../styles/administrador/stockgeneral.css";
+import styles from "../../../styles/administrador/stockgeneral.module.css";
 import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
-import { Link } from "react-router-dom";
 
 export default function Stock() {
   const [stock, setStock] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Traer los stocks al cargar la página
   useEffect(() => {
     const fetchStock = async () => {
       try {
@@ -31,54 +30,37 @@ export default function Stock() {
     fetchStock();
   }, []);
 
-  // Función para eliminar un stock directamente desde el service
-  const handleDeleteStock = async (idStock) => {
-    console.log("Intentando eliminar idStock:", idStock);
-    if (!window.confirm("¿Estás seguro de eliminar este stock?")) return;
-
-    try {
-      await deleteStock(idStock);
-      setStock(stock.filter((s) => s.idStock !== idStock));
-      alert("Stock eliminado");
-    } catch (error) {
-      console.error("Error al eliminar stock", error);
-      alert(
-        "No se pudo eliminar el stock. Revisa si tiene relaciones activas.",
-      );
-    }
-  };
-
   if (loading) return <p>Cargando stock...</p>;
 
   return (
-    <div className="main-content">
+    <div>
       <nav>
         <MenuAdmin />
       </nav>
-      <div className="container-fluid" id="container-admin-stockGen">
-        <div className="header">
-          <div className="row custom-header">
+      <div className={styles.containerAdminStockGen}>
+        <div>
+          <div className={`row ${styles.customHeader}`}>
             <div className="col-3 d-flex align-items-center justify-content-between">
-              <h1 className="mb-0">STOCK GENERAL</h1>
+              <h1 className={`mb-0 ${styles.h1}`}>STOCK GENERAL</h1>
             </div>
           </div>
           <div className="row">
-            <div className="col-9 d-flex align-items-end px-1 gap-2 w-50 isla-StockGen">
+            <div className={`col-9 d-flex align-items-end px-1 gap-2 w-50 ${styles.islaStockGen}`}>
               <Link
                 to="/ver_categoria"
-                className="btn custom-btn-genStock btn-light"
+                className={`btn ${styles.customBtnGenStock}`}
               >
                 Categoria
               </Link>
               <Link
                 to="/ver_producto"
-                className="btn custom-btn-genStock btn-light"
+                className={`btn ${styles.customBtnGenStock}`}
               >
                 Producto
               </Link>
               <Link
                 to="/ver_promocion"
-                className="btn custom-btn-genStock btn-light"
+                className={`btn ${styles.customBtnGenStock}`}
               >
                 Promoción
               </Link>
@@ -87,8 +69,8 @@ export default function Stock() {
         </div>
         <div className="row">
           <div className="col">
-            <div className="table-responsive">
-              <table className="table">
+            <div className={styles.tableResponsive}>
+              <table className={styles.table}>
                 <thead>
                   <tr>
                     <th>Código</th>
@@ -114,11 +96,15 @@ export default function Stock() {
                       <td>{s.nombre || "No especificado"}</td>
                       <td>{s.nombreColor || "No especificado"}</td>
                       <td>{s.stockActual}</td>
-                      <td>{s.estadoProducto}</td>
+                      <td>
+                        <span className={`${styles.estadoBadge} ${s.estadoProducto === 'Activo' ? styles.activo : styles.inactivo}`}>
+                          {s.estadoProducto}
+                        </span>
+                      </td>
                       <td>
                         <Link
                           to={`/stock/producto/${s.idProducto}`}
-                          className="btn btn-light"
+                          className={`btn ${styles.btnLight}`}
                         >
                           Agregar Stock
                         </Link>

@@ -28,7 +28,8 @@
   --tran-05: all 0.5s ease;
 }
 
-.admin-theme .admin-container {
+/* ===== MEJORAS APLICADAS DEL SEGUNDO CSS ===== */
+.adminContainer {
   padding: 30px;
   background: var(--bg-body-light);
   min-height: 100vh;
@@ -36,7 +37,7 @@
   width: 100%;
 }
 
-.admin-theme .admin-header {
+.adminHeader {
   background: var(--primary-color);
   color: #fff;
   padding: 25px;
@@ -44,12 +45,12 @@
   box-shadow: 0 4px 10px var(--hover-color-transparent);
 }
 
-.admin-theme .admin-header h2 {
+.adminHeader h2 {
   margin: 0;
   font-weight: 700;
 }
 
-.admin-theme .admin-actions {
+.adminActions {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -58,7 +59,8 @@
   gap: 15px;
 }
 
-.admin-theme .btn-crear {
+/* Botón Crear mejorado */
+.btnCrear {
   background: var(--primary-color);
   color: white;
   font-weight: bold;
@@ -73,17 +75,18 @@
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.admin-theme .btn-crear:hover {
+.btnCrear:hover {
   background: var(--secondary-color-transparent);
   transform: scale(1.03);
 }
 
-.admin-theme .search-box {
+/* Search box mejorado */
+.searchBox {
   position: relative;
   width: 280px;
 }
 
-.admin-theme .search-box input {
+.searchBox input {
   width: 100%;
   padding: 10px 35px;
   border-radius: 8px;
@@ -92,12 +95,12 @@
   transition: all 0.2s;
 }
 
-.admin-theme .search-box input:focus {
+.searchBox input:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px var(--secondary-color-transparent);
 }
 
-.admin-theme .icon-search {
+.iconSearch {
   position: absolute;
   left: 10px;
   top: 50%;
@@ -105,20 +108,21 @@
   color: #999;
 }
 
-.admin-theme .table-container {
+/* Tabla mejorada */
+.tableContainer {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   overflow-x: auto;
 }
 
-.admin-theme .admin-table {
+.adminTable {
   width: 100%;
   border-collapse: collapse;
-  min-width: 800px;
+  min-width: 900px;
 }
 
-.admin-theme .admin-table th {
+.adminTable th {
   background: #f9fafb;
   text-align: left;
   padding: 12px;
@@ -127,16 +131,17 @@
   border-bottom: 2px solid #e5e7eb;
 }
 
-.admin-theme .admin-table td {
+.adminTable td {
   padding: 12px;
   border-bottom: 1px solid #eee;
 }
 
-.admin-theme .admin-table tr:hover {
+.adminTable tr:hover {
   background: #f4f4ff;
 }
 
-.admin-theme .estado-activo {
+/* Estados mejorados */
+.estadoActivo {
   color: #059669;
   font-weight: 600;
   background: #d1fae5;
@@ -145,7 +150,7 @@
   display: inline-block;
 }
 
-.admin-theme .estado-inactivo {
+.estadoInactivo {
   color: #dc2626;
   font-weight: 600;
   background: #fee2e2;
@@ -154,8 +159,27 @@
   display: inline-block;
 }
 
-.admin-theme .btn-editar,
-.admin-theme .btn-eliminar {
+.tipoCambio,
+.tipoDevolucion {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.tipoCambio {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.tipoDevolucion {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Botones de acción mejorados */
+.btnEditar,
+.btnEliminar {
   border: none;
   background: transparent;
   cursor: pointer;
@@ -165,24 +189,24 @@
   margin: 0 4px;
 }
 
-.admin-theme .btn-editar:hover {
+.btnEditar:hover {
   background: rgba(79, 70, 229, 0.1);
   color: var(--primary-color);
 }
 
-.admin-theme .btn-eliminar:hover {
+.btnEliminar:hover {
   background: rgba(220, 38, 38, 0.1);
   color: #dc2626;
 }
 
-.admin-theme .no-users {
+.noUsers {
   text-align: center;
   color: #888;
   padding: 30px 0;
 }
 
-/* === Modal === */
-.admin-theme .modal-overlay {
+/* === MODAL MEJORADO (DEL SEGUNDO CSS) === */
+.modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -195,7 +219,7 @@
   z-index: 999;
 }
 
-.admin-theme .modal-container {
+.modalContainer {
   background-color: #FAF9F6;
   border-radius: 15px;
   width: 800px;
@@ -204,33 +228,37 @@
   padding: 30px 40px;
   box-shadow: 0 0px 20px rgba(0, 0, 0, 0.25);
   overflow-y: auto;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transition: var(--tran-05) !important;
+  position: relative;
+  animation: fadeIn 0.3s ease;
 }
 
-/* Opcional: Personalizar scrollbar */
-.admin-theme .modal-container::-webkit-scrollbar {
+/* Modal de confirmación */
+.modalContainer.confirmDelete {
+  width: 400px;
+  text-align: center;
+  padding: 30px 20px;
+}
+
+/* Scrollbar personalizado */
+.modalContainer::-webkit-scrollbar {
   width: 8px;
 }
 
-.admin-theme .modal-container::-webkit-scrollbar-track {
+.modalContainer::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 4px;
 }
 
-.admin-theme .modal-container::-webkit-scrollbar-thumb {
+.modalContainer::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 4px;
 }
 
-.admin-theme .modal-container::-webkit-scrollbar-thumb:hover {
+.modalContainer::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
 
-.admin-theme .modal-header {
+.modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -238,101 +266,194 @@
   margin-bottom: 20px;
 }
 
-.admin-theme .modal-header h3 {
+.modalHeader h3 {
   color: #0F0F0F;
   font-size: 22px;
   font-weight: bold;
   text-transform: capitalize;
+  margin: 0 0 10px 0;
 }
 
-.admin-theme .close-btn {
+.closeBtn {
   background: transparent;
   border: none;
   cursor: pointer;
   color: #0F0F0F;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--tran-03);
 }
 
-.admin-theme .modal-form .form-group {
+.closeBtn:hover {
+  color: var(--primary-color);
+  transform: rotate(90deg);
+}
+
+.modalForm {
+  width: 100%;
+}
+
+.formGroup {
   margin-bottom: 15px;
 }
 
-.admin-theme .modal-form label {
+.formGroup label {
   font-weight: 600;
   font-size: 0.9rem;
   color: #333;
+  display: block;
+  margin-bottom: 5px;
 }
 
-.admin-theme .modal-form input,
-.admin-theme .modal-form select {
+.formGroup input,
+.formGroup select {
   width: 100%;
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
   outline: none;
+  transition: all 0.2s;
   margin-top: 5px;
 }
 
-.admin-theme .input-error {
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--secondary-color-transparent);
+}
+
+.inputError {
   border-color: #dc2626 !important;
 }
 
-.admin-theme .error-text {
+.errorText {
   color: #dc2626;
-  font-size: 0.8rem;
-  margin-top: 4px;
+  font-size: 0.85rem;
+  margin-top: 5px;
+  padding: 8px;
+  background: #fee2e2;
+  border-radius: 6px;
+  text-align: center;
 }
 
-.admin-theme .modal-footer {
+.successText {
+  color: #059669;
+  font-size: 0.85rem;
+  margin-top: 5px;
+  padding: 8px;
+  background: #d1fae5;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.modalFooter {
   display: flex;
   justify-content: flex-end;
-  gap: 20px;
-  margin-top: 10px;
+  gap: 15px;
+  margin-top: 20px;
 }
 
-.admin-theme .btn-cancelar {
+.modalFooter.confirmFooter {
+  justify-content: center;
+  margin-top: 25px;
+}
+
+/* Botones del modal mejorados */
+.btnCancelar {
   background: #e5e7eb;
   border: none;
   color: #333;
-  padding: 8px 16px;
+  padding: 8px 20px;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 500;
+  transition: var(--tran-03);
 }
 
-.admin-theme .btn-guardar {
-  background: var(--primary-color);
+.btnCancelar:hover {
+  background: #d1d5db;
+  transform: translateY(-2px);
+}
+
+.btnGuardar {
+  background: #E0B253;
   border: none;
   color: white;
-  padding: 8px 16px;
+  padding: 8px 20px;
   border-radius: 8px;
   cursor: pointer;
-  border: 2px solid var(--primary-color);
   font-weight: bold;
+  border: 2px solid var(--primary-color);
+  transition: var(--tran-03);
 }
 
-.admin-theme .btn-guardar:hover{
+.btnGuardar:hover {
   background: transparent;
   color: var(--text-dark);
-  transition: var(--tran-05);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px var(--primary-color-transparent);
 }
 
-.btn-cancelar:hover{
-  border: 1px solid var(--secondary-color);
-  transition: var(--tran-05);
-}
-
-.admin-theme .btn-eliminar {
+.btnEliminarModal {
   background: #dc2626;
   border: none;
   color: white;
-  padding: 8px 16px;
+  padding: 8px 20px;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 500;
+  transition: var(--tran-03);
 }
 
+.btnEliminarModal:hover {
+  background: #b91c1c;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+}
+
+/* Icono de advertencia */
+.iconWarning {
+  color: #dc2626;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 15px;
+}
+
+/* Checkbox personalizado */
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.formCheck {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.formCheckInput {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+}
+
+.formCheckLabel {
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  margin: 0;
+}
+
+/* Animación mejorada */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
@@ -341,268 +462,297 @@
 }
 
 /* ===== RESPONSIVE MEJORADO ===== */
-
-/* Pantallas grandes (1200px - 1400px) */
 @media (max-width: 1400px) {
-  .admin-theme .admin-container {
+  .adminContainer {
     width: 80%;
     padding: 25px;
   }
 }
 
-/* Desktop mediano (992px - 1200px) */
 @media (max-width: 1200px) {
-  .admin-theme .admin-container {
+  .adminContainer {
     width: 78%;
     padding: 20px;
   }
   
-  .admin-theme .admin-header h2 {
+  .adminHeader h2 {
     font-size: 1.5rem;
   }
   
-  .admin-theme .admin-header p {
-    font-size: 0.9rem;
-  }
-  
-  .admin-theme .btn-crear {
+  .btnCrear {
     padding: 8px 16px;
     font-size: 0.9rem;
   }
   
-  .admin-theme .search-box {
+  .searchBox {
     width: 250px;
   }
 }
 
-/* Tablet horizontal y Desktop pequeño (769px - 992px) */
 @media (max-width: 992px) {
-  .admin-theme .admin-container {
+  .adminContainer {
     width: 75%;
     margin-left: 23%;
     padding: 20px;
   }
   
-  .admin-theme .admin-actions {
+  .adminActions {
     flex-direction: column;
     align-items: stretch;
   }
   
-  .admin-theme .btn-crear {
+  .btnCrear {
     width: 100%;
     justify-content: center;
   }
   
-  .admin-theme .search-box {
+  .searchBox {
     width: 100%;
   }
   
-  .admin-theme .admin-table th,
-  .admin-theme .admin-table td {
+  .adminTable th,
+  .adminTable td {
     padding: 10px 8px;
     font-size: 0.85rem;
   }
   
-  .admin-theme .modal-container {
+  .modalContainer {
     width: 95%;
     padding: 20px;
   }
 }
 
-/* Tablet vertical (481px - 768px) - TUS MEDIDAS */
+/* Tablet vertical (481px - 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
-  .admin-theme .admin-container {
+  .adminContainer {
     width: 100% !important;
     margin: 80px 0 20px 0 !important;
     padding: 15px;
   }
   
-  .admin-theme .admin-header {
+  .adminHeader {
     padding: 20px;
   }
   
-  .admin-theme .admin-header h2 {
+  .adminHeader h2 {
     font-size: 1.3rem;
   }
   
-  .admin-theme .admin-header p {
-    font-size: 0.85rem;
-  }
-  
-  .admin-theme .btn-crear {
+  .btnCrear {
     padding: 10px;
     font-size: 0.85rem;
   }
   
-  .admin-theme .table-container {
+  .btnCrear svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .searchBox {
+    width: 100%;
+  }
+  
+  .searchBox input {
+    padding: 8px 35px;
+    font-size: 0.85rem;
+  }
+  
+  .tableContainer {
     overflow-x: auto;
   }
   
-  .admin-theme .admin-table {
-    min-width: 700px;
+  .adminTable {
+    min-width: 800px;
   }
   
-  .admin-theme .admin-table th,
-  .admin-theme .admin-table td {
+  .adminTable th,
+  .adminTable td {
     padding: 8px 6px;
     font-size: 0.8rem;
   }
   
-  .admin-theme .estado-activo,
-  .admin-theme .estado-inactivo {
+  .estadoActivo,
+  .estadoInactivo,
+  .tipoCambio,
+  .tipoDevolucion {
     padding: 3px 6px;
     font-size: 0.75rem;
   }
   
-  .admin-theme .btn-editar,
-  .admin-theme .btn-eliminar {
+  .btnEditar,
+  .btnEliminar {
     padding: 4px;
   }
   
-  .admin-theme .modal-container {
+  .btnEditar svg,
+  .btnEliminar svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .modalContainer {
     width: 95%;
     padding: 20px;
     max-height: 80vh;
   }
   
-  .admin-theme .modal-header h3 {
+  .modalContainer.confirmDelete {
+    width: 90%;
+    padding: 20px;
+  }
+  
+  .modalHeader h3 {
     font-size: 1.1rem;
   }
   
-  .admin-theme .modal-form label {
+  .formGroup label {
     font-size: 0.8rem;
   }
   
-  .admin-theme .modal-form input,
-  .admin-theme .modal-form select {
+  .formGroup input,
+  .formGroup select {
     padding: 6px 8px;
     font-size: 0.85rem;
   }
   
-  .admin-theme .modal-footer {
+  .modalFooter {
     flex-direction: column;
     gap: 10px;
   }
   
-  .admin-theme .btn-cancelar,
-  .admin-theme .btn-guardar {
+  .btnCancelar,
+  .btnGuardar,
+  .btnEliminarModal {
     width: 100%;
     padding: 10px;
+  }
+  
+  .iconWarning {
+    width: 40px;
+    height: 40px;
   }
 }
 
 /* Móvil pequeño (menos de 480px) */
 @media (max-width: 480px) {
-  .admin-theme .admin-container {
+  .adminContainer {
     width: 100% !important;
     margin: 70px 0 20px 0 !important;
     padding: 12px;
   }
   
-  .admin-theme .admin-header {
+  .adminHeader {
     padding: 15px;
   }
   
-  .admin-theme .admin-header h2 {
+  .adminHeader h2 {
     font-size: 1.2rem;
   }
   
-  .admin-theme .admin-header p {
-    font-size: 0.8rem;
-  }
-  
-  .admin-theme .btn-crear {
+  .btnCrear {
     padding: 8px;
     font-size: 0.8rem;
   }
   
-  .admin-theme .btn-crear svg {
-    width: 16px;
-    height: 16px;
-  }
-  
-  .admin-theme .search-box input {
-    padding: 8px 30px;
-    font-size: 0.8rem;
-  }
-  
-  .admin-theme .search-box svg {
-    width: 16px;
-    height: 16px;
-  }
-  
-  .admin-theme .table-container {
-    overflow-x: auto;
-  }
-  
-  .admin-theme .admin-table {
-    min-width: 600px;
-  }
-  
-  .admin-theme .admin-table th,
-  .admin-theme .admin-table td {
-    padding: 6px 4px;
-    font-size: 0.7rem;
-  }
-  
-  .admin-theme .estado-activo,
-  .admin-theme .estado-inactivo {
-    padding: 2px 4px;
-    font-size: 0.65rem;
-  }
-  
-  .admin-theme .btn-editar,
-  .admin-theme .btn-eliminar {
-    padding: 3px;
-  }
-  
-  .admin-theme .btn-editar svg,
-  .admin-theme .btn-eliminar svg {
+  .btnCrear svg {
     width: 14px;
     height: 14px;
   }
   
-  .admin-theme .modal-container {
+  .searchBox input {
+    padding: 8px 30px;
+    font-size: 0.8rem;
+  }
+  
+  .searchBox svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .tableContainer {
+    overflow-x: auto;
+  }
+  
+  .adminTable {
+    min-width: 700px;
+  }
+  
+  .adminTable th,
+  .adminTable td {
+    padding: 6px 4px;
+    font-size: 0.7rem;
+  }
+  
+  .estadoActivo,
+  .estadoInactivo,
+  .tipoCambio,
+  .tipoDevolucion {
+    padding: 2px 4px;
+    font-size: 0.65rem;
+  }
+  
+  .btnEditar,
+  .btnEliminar {
+    padding: 3px;
+  }
+  
+  .btnEditar svg,
+  .btnEliminar svg {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .modalContainer {
     width: 95%;
     padding: 15px;
     max-height: 70vh;
   }
   
-  .admin-theme .modal-header h3 {
+  .modalContainer.confirmDelete {
+    padding: 15px;
+  }
+  
+  .modalHeader h3 {
     font-size: 1rem;
   }
   
-  .admin-theme .modal-form .form-group {
+  .formGroup {
     margin-bottom: 10px;
   }
   
-  .admin-theme .modal-form label {
+  .formGroup label {
     font-size: 0.75rem;
   }
   
-  .admin-theme .modal-form input,
-  .admin-theme .modal-form select {
+  .formGroup input,
+  .formGroup select {
     padding: 5px 6px;
     font-size: 0.8rem;
   }
   
-  .admin-theme .modal-footer {
+  .modalFooter {
     flex-direction: column;
     gap: 8px;
   }
   
-  .admin-theme .btn-cancelar,
-  .admin-theme .btn-guardar {
+  .btnCancelar,
+  .btnGuardar,
+  .btnEliminarModal {
     width: 100%;
     padding: 8px;
     font-size: 0.8rem;
+  }
+  
+  .iconWarning {
+    width: 36px;
+    height: 36px;
   }
 }
 
 /* Safe area para iPhone */
 @supports (padding-top: env(safe-area-inset-top)) {
   @media (max-width: 768px) {
-    .admin-theme .admin-container {
+    .adminContainer {
       padding-left: env(safe-area-inset-left);
       padding-right: env(safe-area-inset-right);
     }
