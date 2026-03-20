@@ -169,6 +169,8 @@ h1 {
     vertical-align: middle;
     font-size: 0.95rem;
     white-space: nowrap;
+    word-wrap: break-word !important;
+    overflow: hidden    ;
 }
 
 /* Efecto hover en filas */

@@ -409,13 +409,6 @@ const FavoritosPage = () => {
                         ${producto.precio?.toLocaleString() || '0'}
                       </span>
                       
-                      <Link 
-                        to={obtenerUrlProducto(producto)}
-                        className="btn btn-outline-primary btn-sm"
-                      >
-                        <i className="bi bi-eye me-1"></i>
-                        Ver Detalles
-                      </Link>
                     </div>
                     
                     {/* INFORMACIÓN ADICIONAL */}

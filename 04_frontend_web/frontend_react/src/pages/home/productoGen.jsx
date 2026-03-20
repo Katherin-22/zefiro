@@ -339,10 +339,7 @@ const ProductoGen = () => {
             return;
         }
 
-        if (esAdmin) {
-            alert("Los administradores no pueden usar la lista de favoritos");
-            return;
-        }
+
 
         if (!producto?.idProducto) {
             console.error("No se pudo obtener el ID del producto");
@@ -528,19 +525,7 @@ const ProductoGen = () => {
     // ============================
     const renderBotonFavorito = () => {
         // Si es admin, mostrar botón deshabilitado (aunque no debería llegar aquí)
-        if (esAdmin) {
-            return (
-                <button
-                    className="btn producto-btn-favorito btn-secondary"
-                    disabled
-                    title="Los administradores no tienen lista de favoritos"
-                    id="producto-btn-favorito"
-                >
-                    <i className="bi bi-heart producto-icono-favorito" id="producto-icono-favorito"></i>
-                    Favoritos no disponible para admins
-                </button>
-            );
-        }
+    
 
         // Si no está autenticado
         if (!isAuthenticated) {
@@ -947,11 +932,12 @@ const ProductoGen = () => {
                                     {/* BOTONES DE ACCIÓN - MODIFICADO: Botón de favoritos solo para rol 1 */}
                                     <div className="row producto-botones-fila justify-content-center mt-4" id="producto-botones-fila">
                                         {/* SOLO MOSTRAR BOTÓN DE FAVORITOS SI ES ROL 1 (CLIENTE) */}
-                                        {userData?.rol === 1 && (
+                                       
+                                    
                                             <div className="col-auto" id="producto-boton-favorito-col">
                                                 {renderBotonFavorito()}
                                             </div>
-                                        )}
+                                        
 
                                         <div className="col-auto" id="producto-boton-comprar-col">
                                             <button

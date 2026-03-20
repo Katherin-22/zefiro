@@ -360,7 +360,7 @@ const MenuHome = () => {
             </li>
 
             {/* FAVORITOS - Solo mostrar si está autenticado */}
-            {userData?.rol === 1 && isAuthenticated ? (
+            { isAuthenticated ? (
               <li className="nav-item" id="navBarHome-favorites-item">
                 <Link
                   className="nav-link"
@@ -451,7 +451,7 @@ const MenuHome = () => {
               <span>categorias</span>
             </Link>
             {/* FAVORITOS - Solo para clientes autenticados (rol 1) */}
-            {userData?.rol === 1 && isAuthenticated && (
+            { isAuthenticated && (
               <Link
                 to="/favoritos"
                 className={`mobile-nav-item ${activeMobileNav === "favorites" ? "active" : ""}`}

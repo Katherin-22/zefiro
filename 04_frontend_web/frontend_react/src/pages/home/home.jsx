@@ -288,7 +288,6 @@ export default function Home() {
                     id={`home-${tipo}-card-container-${index + 1}`}>
 
                     {/* BOTÓN DE FAVORITOS */}
-                    {userData?.rol === 1 && (
                         <button
                             className="btn btn-link text-decoration-none position-absolute top-0 end-0 p-3"
                             onClick={() => handleFavoritoClick(producto)}
@@ -311,7 +310,6 @@ export default function Home() {
                                     }}></i>
                             )}
                         </button>
-                    )}
 
                     {/* IMAGEN DEL PRODUCTO */}
                     <div className="producto-imagen-container-home" id={`home-${tipo}-image-container-${index + 1}`}>
@@ -424,7 +422,7 @@ export default function Home() {
                 </div>
         
                 {/* BANNER DE FAVORITOS */}
-                {userData?.rol === 1 && isAuthenticated && (
+                { isAuthenticated && (
                     <div className="container-fluid py-3 bg-dark bg-opacity-50">
                         <div className="container">
                             <div className="row align-items-center">
