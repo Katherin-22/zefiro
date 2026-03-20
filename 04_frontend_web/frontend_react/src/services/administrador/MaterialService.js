@@ -24,6 +24,3 @@ export const updateMaterial = async (idMaterial, materialData) => {
 export const deleteMaterial = async (idMaterial) => {
     return await api_url.delete(`/material/${idMaterial}`);
 };
-
-
-

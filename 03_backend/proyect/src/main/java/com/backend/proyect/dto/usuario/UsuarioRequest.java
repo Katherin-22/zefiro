@@ -1,106 +1,53 @@
 package com.backend.proyect.dto.usuario;
 
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+
 public class UsuarioRequest {
 
+    @NotNull(message = "El documento no puede ser nulo")
     private Integer numeroDocumento;
+
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombreUsuario;
+
+    @NotBlank(message = "El apellido es obligatorio")
     private String primerApellido;
+
     private String segundoApellido;
+
+    @NotBlank(message = "El teléfono es obligatorio")
+    @Pattern(regexp = "^[0-9]{10}$", message = "El teléfono debe tener 10 dígitos numéricos")
     private String telefono;
+
+    @NotBlank(groups = ValidationGroups.OnCreate.class, message = "La contraseña es obligatoria al registrarse")
+    @Size(min = 8, max = 20, message = "La contraseña debe tener entre 8 y 20 caracteres")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).*$",
+            message = "Debe incluir mayúsculas, minúsculas, números y símbolos")
     private String password;
+
+    @Email(message = "Formato de correo inválido")
+    @NotBlank(message = "El correo es obligatorio")
     private String correoElectronico;
+
+    @NotBlank(message = "La dirección es obligatoria")
     private String direccion;
 
+    @NotNull(message = "El rol es obligatorio")
     private Integer idRol;
+
+    @NotNull(message = "El tipo de documento es obligatorio")
     private Integer idTipoDeDocumento;
+
+    @NotNull(message = "El estado de usuario es obligatorio")
     private Integer idEstadoUsuario;
 
-    // Getters y Setters
-    public Integer getNumeroDocumento() {
-        return numeroDocumento;
-    }
-
-    public void setNumeroDocumento(Integer numeroDocumento) {
-        this.numeroDocumento = numeroDocumento;
-    }
-
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
-
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
-
-    public String getPrimerApellido() {
-        return primerApellido;
-    }
-
-    public void setPrimerApellido(String primerApellido) {
-        this.primerApellido = primerApellido;
-    }
-
-    public String getSegundoApellido() {
-        return segundoApellido;
-    }
-
-    public void setSegundoApellido(String segundoApellido) {
-        this.segundoApellido = segundoApellido;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getCorreoElectronico() {
-        return correoElectronico;
-    }
-
-    public void setCorreoElectronico(String correoElectronico) {
-        this.correoElectronico = correoElectronico;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
-    public Integer getIdRol() {
-        return idRol;
-    }
-
-    public void setIdRol(Integer idRol) {
-        this.idRol = idRol;
-    }
-
-    public Integer getIdTipoDeDocumento() {
-        return idTipoDeDocumento;
-    }
-
-    public void setIdTipoDeDocumento(Integer idTipoDeDocumento) {
-        this.idTipoDeDocumento = idTipoDeDocumento;
-    }
-
-    public Integer getIdEstadoUsuario() {
-        return idEstadoUsuario;
-    }
-
-    public void setIdEstadoUsuario(Integer idEstadoUsuario) {
-        this.idEstadoUsuario = idEstadoUsuario;
-    }
 }

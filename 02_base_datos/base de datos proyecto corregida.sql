@@ -1,0 +1,937 @@
+-- Crear la base de datos
+DROP DATABASE IF EXISTS Innovation_Fusion;
+Create database Innovation_Fusion;
+USE Innovation_Fusion;
+
+-- -----------------------------------------------------
+-- MÓDULO DE GESTIÓN DE USUARIOS
+-- -----------------------------------------------------
+
+-- Tabla tipo_de_documento
+CREATE TABLE tipo_de_documento (
+idTipoDeDocumento INT AUTO_INCREMENT NOT NULL ,
+nombreTipoDeDocumento VARCHAR(45) NOT NULL,
+
+PRIMARY KEY (idTipoDeDocumento)
+);
+
+-- Tabla rol
+CREATE TABLE rol (
+  idRol INT AUTO_INCREMENT NOT NULL,
+  nombreRol ENUM("cliente","administrador") NOT NULL,
+  
+  PRIMARY KEY(idRol)
+) ;
+
+-- Tabla estado_usuario
+CREATE TABLE estado_usuario (
+  idestado_usuario INT AUTO_INCREMENT NOT NULL,
+  nombre_Estado_usuario VARCHAR(45) NOT NULL,
+  
+  PRIMARY KEY(idestado_usuario)
+) ;
+
+-- Tabla usuario
+CREATE TABLE Usuario (
+  idUsuario INT AUTO_INCREMENT NOT NULL UNIQUE,
+  numeroDocumento INT NOT NULL,
+  nombreUsuario VARCHAR(45) NOT NULL,
+  primerApellido VARCHAR(45) NOT NULL,
+  segundoApellido VARCHAR(45) NULL,
+  telefono VARCHAR(45) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  correoElectronico VARCHAR(45) NOT NULL UNIQUE,
+  Direccion VARCHAR(45) NOT NULL,
+  idRol INT NOT NULL,
+  idTipoDeDocumento INT NOT NULL,
+  idestado_usuario INT NOT NULL,
+  verify_otp VARCHAR(255),
+  is_account_verified TINYINT(1) DEFAULT 0,
+  verify_otp_expire_at BIGINT,
+  reset_otp VARCHAR(255),
+  reset_otp_expire_at BIGINT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  PRIMARY KEY(idUsuario),
+  FOREIGN KEY (idRol) REFERENCES rol( idRol),
+  FOREIGN KEY (idTipoDeDocumento) REFERENCES tipo_de_documento(idTipoDeDocumento),
+  FOREIGN KEY (idestado_usuario) REFERENCES estado_usuario(idestado_usuario)
+  
+) ;
+-- -----------------------------------------------------
+-- MÓDULO DE PROMOCIONES Y DESCUENTOS            			1.1
+-- -----------------------------------------------------
+
+CREATE TABLE Promocion(
+idPromocion INT AUTO_INCREMENT NOT NULL,
+nombrePromocion VARCHAR(50) NOT NULL,
+codigo_Promocion VARCHAR(45) NOT NULL,
+descuento INT NOT NULL,
+descripcion VARCHAR(200) NOT NULL,
+fecha_inicio DATE NOT NULL,
+fecha_fin DATE NOT NULL,
+estadoPromocion ENUM('Activo','Inactivo') NOT NULL,
+
+PRIMARY KEY (idPromocion)
+);
+-- -----------------------------------------------------
+-- MÓDULO DE ADMINISTRADOR
+-- -----------------------------------------------------
+-- Tabla TipoProducto
+CREATE TABLE TipoProducto (
+  idTipoProducto  INT AUTO_INCREMENT NOT NULL,
+  nombreTipoProducto  VARCHAR(45) NOT NULL,
+  
+  PRIMARY KEY(idTipoProducto)
+) ;
+
+-- Tabla Categoria
+CREATE TABLE Categoria (
+  idCategoria INT AUTO_INCREMENT NOT NULL,
+  nombreCategoria  VARCHAR(45) NOT NULL,
+  idTipoProducto INT NOT NULL,
+
+  PRIMARY KEY (idCategoria),
+  FOREIGN KEY (idTipoProducto) REFERENCES TipoProducto(idTipoProducto)
+
+) ;
+
+CREATE TABLE Marca (
+  idMarca INT AUTO_INCREMENT NOT NULL,
+  nombreMarca VARCHAR(45) NOT NULL,
+  PRIMARY KEY (idMarca)
+) ;
+
+
+CREATE TABLE Material (
+  idMaterial INT AUTO_INCREMENT NOT NULL,
+  nombreMaterial VARCHAR(45) NOT NULL,
+
+  PRIMARY KEY (idMaterial)
+) ;
+
+CREATE TABLE TipoPublico (
+  idPublico INT AUTO_INCREMENT NOT NULL,
+  nombrePublico VARCHAR(45) NOT NULL,
+
+  PRIMARY KEY (idPublico)
+) ;
+
+-- Tabla producto
+CREATE TABLE Producto (
+  idProducto INT AUTO_INCREMENT NOT NULL,
+  nombreProducto VARCHAR(45) NOT NULL, 
+  codigoReferencia VARCHAR(20) NOT NULL,
+  descripcion VARCHAR(200) NOT NULL,
+  precio DOUBLE NOT NULL, 
+  fechaCreacion DATE NOT NULL,
+  fechaModificacion DATE NOT NULL,
+  estadoProducto ENUM('Activo', 'Inactivo', 'Descontinuado') NOT NULL,
+  idCategoria INT NOT NULL,
+  idMarca INT NOT NULL ,
+  idMaterial INT NOT NULL,
+  idPublico INT NOT NULL,
+  idPromocion INT NULL,
+  
+
+  PRIMARY KEY (idProducto),
+  FOREIGN KEY (idCategoria) REFERENCES Categoria(idCategoria),
+  FOREIGN KEY (idMarca) REFERENCES Marca(idMarca),
+  FOREIGN KEY (idMaterial) REFERENCES Material(idMaterial),
+  FOREIGN KEY (idPublico) REFERENCES TipoPublico(idPublico),
+  FOREIGN KEY (idPromocion) REFERENCES Promocion(idPromocion)
+) ;
+
+-- Tabla proveedor
+CREATE TABLE Color (
+  idColor INT AUTO_INCREMENT NOT NULL,
+  nombreColor VARCHAR(45) NOT NULL,
+
+  PRIMARY KEY (idColor)
+) ;
+
+-- Tabla proveedor
+CREATE TABLE Variacion (
+  idVariacion INT AUTO_INCREMENT NOT NULL,
+  nombre VARCHAR(50) NOT NULL,
+  tipo ENUM('Talla_Calzado', 'Tamano_Bolso') NOT NULL,
+
+  PRIMARY KEY (idVariacion)
+) ;
+
+-- Tabla Inventario
+CREATE TABLE Stock (
+  idStock INT AUTO_INCREMENT NOT NULL,
+  stockMinimo INT NOT NULL DEFAULT 1,
+  stockActual INT NOT NULL DEFAULT 0,
+  idColor INT NULL,
+  idVariacion INT NULL,
+  idProducto INT NOT NULL,
+  
+  PRIMARY KEY (idStock),
+  FOREIGN KEY (idColor) REFERENCES Color(idColor),
+  FOREIGN KEY (idVariacion) REFERENCES Variacion(idVariacion),
+  FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
+) ;
+
+-- Tabla imagen
+CREATE TABLE Imagen(
+	idImagen INT AUTO_INCREMENT NOT NULL, 
+    urlImagen VARCHAR(255) NOT NULL,
+    idProducto INT NOT NULL,   -- asociamos directamente al producto
+    
+    PRIMARY KEY (idImagen),
+    FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE
+);
+
+
+CREATE TABLE banner (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(255),
+    descripcion VARCHAR(500),
+    file_name VARCHAR(255),
+    url VARCHAR(500),
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- Tabla Mensajes del inbox
+CREATE TABLE mensajes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(100) NOT NULL,
+    tipo ENUM('RECLAMO', 'SOLICITUD_CAMBIO', 'PREGUNTA', 'SUGERENCIA') NOT NULL,
+    contenido TEXT NOT NULL,
+    respuesta TEXT,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_respuesta TIMESTAMP NULL
+);
+
+-- -----------------------------------------------------
+-- MÓDULO DE GESTION DE COMPRAS								PARTE 1.1
+-- -----------------------------------------------------
+-- Tabla carrito
+CREATE TABLE Carrito (
+  idCarrito INT AUTO_INCREMENT NOT NULL ,
+  fechaCreacion DATETIME NOT NULL ,
+  estadoCarrito ENUM('Activo','Procesado','Cancelado') NOT NULL DEFAULT 'Activo',
+  idUsuario INT NOT NULL ,
+  PRIMARY KEY (idCarrito),
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
+) ;
+
+-- Tabla MetodoPago
+CREATE TABLE MetodoPago (
+    idMetodoPago INT AUTO_INCREMENT NOT NULL,
+    nombreMetodoPago VARCHAR(45) NOT NULL,
+    
+    PRIMARY KEY (idMetodoPago)
+);
+
+-- Esta tabla guarda lo que tú envías al sistema de pagos: monto, moneda, descripción.
+
+CREATE TABLE SolicitudPago (
+	idSolicitudPago INT AUTO_INCREMENT NOT NULL,
+	amount BIGINT NULL,
+    currency VARCHAR(10) NOT NULL,
+    description VARCHAR(200) NULL,
+	idUsuario INT NOT NULL,
+    
+	PRIMARY KEY (idSolicitudPago),
+	FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)    
+);
+
+CREATE TABLE RespuestaPago (
+    id VARCHAR(255) NOT NULL,          
+    amount BIGINT NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    status VARCHAR(200) NOT NULL,
+    clientSecret VARCHAR(200) NOT NULL,
+	idUsuario INT NOT NULL,    
+    
+	PRIMARY KEY (id),
+	FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)        
+);
+
+
+-- Tabla DetalleCarrito 
+CREATE TABLE DetalleCarrito (
+  idDetalleCarrito INT AUTO_INCREMENT NOT NULL,
+  idCarrito INT NOT NULL,
+  idStock  INT NOT NULL,
+  cantidad INT NOT NULL CHECK (cantidad > 0),
+  precioUnitario DOUBLE NOT NULL,
+  idPromocionAplicada INT NULL,            
+  porcentajeDescuento INT NULL, 
+  
+  PRIMARY KEY (idDetalleCarrito),
+  FOREIGN KEY (idCarrito) REFERENCES Carrito(idCarrito),
+  FOREIGN KEY (idStock) REFERENCES Stock(idStock),
+  FOREIGN KEY (idPromocionAplicada) REFERENCES Promocion(idPromocion) 
+) ;
+
+
+
+-- -----------------------------------------------------
+-- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
+-- -----------------------------------------------------
+
+-- Tabla Pedido
+CREATE TABLE Pedido (
+  idPedido INT AUTO_INCREMENT NOT NULL,
+  fechaPedido DATE NOT NULL, 
+  idUsuario INT NOT NULL,
+  idCarrito INT NOT NULL,
+  idPromocion INT  NULL,
+  idMetodoPago INT NOT NULL,
+  estadoPedido enum('Pendiente','Procesando','Entregado')default 'Pendiente',
+  total_final DECIMAL(10,2) NOT NULL DEFAULT 0,
+  
+  PRIMARY KEY(idPedido),
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
+  FOREIGN KEY (idCarrito) REFERENCES Carrito (idCarrito),
+  FOREIGN KEY (idPromocion) REFERENCES Promocion (idPromocion),
+  FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago)
+) ;
+
+-- Tabla detallePedido
+CREATE TABLE DetallePedido (
+  idDetallePedido INT AUTO_INCREMENT NOT NULL,
+  idPedido INT NOT NULL,
+  idStock INT NOT NULL, 
+  cantidad INT NOT NULL,
+  precioUnitario DOUBLE NOT NULL,
+  subtotal DECIMAL(10,2) NOT NULL ,
+  PRIMARY KEY(idDetallePedido),
+  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido),
+  FOREIGN KEY (idStock) REFERENCES Stock(idStock)
+) ;
+
+-- -----------------------------------------------------
+-- MÓDULO DE GESTION DE COMPRAS									PARTE 1.2
+-- -----------------------------------------------------
+-- Tabla ComprobanteDeVenta
+CREATE TABLE ComprobanteDeVenta (
+  idComprobanteDeVenta INT AUTO_INCREMENT NOT NULL,
+  idPedido INT NOT NULL,
+  idUsuario INT NOT NULL,
+  fechaEmision DATETIME NOT NULL,
+  nombreUsuario VARCHAR (45) NOT NULL,
+  primerApellidoUsuario VARCHAR(45) NOT NULL, 
+  segundoApellidoUsuario VARCHAR(45) NOT NULL,
+
+  PRIMARY KEY (idComprobanteDeVenta),
+  FOREIGN KEY (idPedido) REFERENCES Pedido (idPedido),
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
+) ;
+
+-- Tabla DetallesComprobanteDeVenta 
+CREATE TABLE DetallesComprobanteDeVenta (
+  idDetallesComprobanteDeVenta INT AUTO_INCREMENT NOT NULL,
+  idComprobanteDeVenta INT NOT NULL,
+  idDetallePedido INT NOT NULL, 
+  idProducto INT NOT NULL,
+  cantidad INT NOT NULL,
+  precio_unitario DOUBLE NOT NULL,
+
+
+  PRIMARY KEY (idDetallesComprobanteDeVenta),
+  FOREIGN KEY (idComprobanteDeVenta) REFERENCES ComprobanteDeVenta(idComprobanteDeVenta),
+  FOREIGN KEY (idDetallePedido) REFERENCES DetallePedido (idDetallePedido),
+  FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
+
+) ;
+-- -----------------------------------------------------
+-- MÓDULO DE GESTIÓN DE DEVOLUCIONES							
+-- -----------------------------------------------------
+
+-- Tabla devoluciones_Cambios
+CREATE TABLE devoluciones_Cambios (
+  id_devolucion INT AUTO_INCREMENT NOT NULL,
+  motivo VARCHAR(255) NOT NULL, 
+  tipo_solicitud VARCHAR(200) NOT NULL, 
+  estado_solicitud VARCHAR(45) NOT NULL,
+  fecha_solicitud VARCHAR(40) NOT NULL,
+  fecha_respuesta VARCHAR(45) NULL, 
+  idUsuario INT NOT NULL,
+  idPedido INT NOT NULL,     
+  idProducto INT NOT NULL,
+
+  PRIMARY KEY (id_devolucion),
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
+  FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido),
+  FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
+
+) ;
+
+-- -----------------------------------------------------
+-- MÓDULO DE FAVORITOS
+-- -----------------------------------------------------
+
+-- Tabla Favoritos
+CREATE TABLE Favoritos (
+  idFavorito INT AUTO_INCREMENT NOT NULL,
+  idUsuario INT NOT NULL,
+  idProducto INT NOT NULL,
+  fechaAgregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  
+  PRIMARY KEY (idFavorito),
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE,
+  FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE,
+  
+  -- Un usuario no puede agregar el mismo producto dos veces a favoritos
+  UNIQUE KEY unique_usuario_producto (idUsuario, idProducto)
+);
+
+-- Tabla de Comentarios para productos
+CREATE TABLE ComentarioProducto (
+  idComentario INT AUTO_INCREMENT NOT NULL,
+  idProducto INT NOT NULL,
+  idUsuario INT NOT NULL,
+  comentario TEXT NOT NULL,
+  calificacion INT NOT NULL CHECK (calificacion >= 1 AND calificacion <= 5),
+  fechaComentario TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  estado ENUM('Activo', 'Eliminado') DEFAULT 'Activo',
+  
+  PRIMARY KEY (idComentario),
+  FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE,
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE,
+  
+  -- Un usuario solo puede comentar una vez por producto
+  UNIQUE KEY unique_usuario_producto (idUsuario, idProducto)
+);
+
+-- Índice para búsquedas más rápidas
+CREATE INDEX idx_comentario_producto ON ComentarioProducto(idProducto, estado, fechaComentario);
+
+
+								-- DML: Insert - Insertar registros de las tablas:
+-- -----------------------------------------------------
+-- MÓDULO DE GESTIÓN DE USUARIOS
+-- -----------------------------------------------------
+
+-- Tabla tipoDocumento
+INSERT INTO tipo_de_documento  (nombreTipoDeDocumento)
+VALUES
+("Cédula de Ciudadanía"),
+("Cédula de Extranjería"),
+("Permiso Especial de Permanencia");
+
+-- Tabla rol
+INSERT INTO rol (nombreRol)
+VALUES
+("cliente"),
+("administrador");
+
+
+-- Tabla estado_usuario
+INSERT INTO estado_usuario (nombre_Estado_usuario)
+VALUES
+("Activo"),
+("Inactivo");
+
+
+-- Tabla Usuario 
+INSERT INTO Usuario 
+(numeroDocumento, nombreUsuario, primerApellido, segundoApellido,Direccion,telefono,password, 
+ correoElectronico,idestado_usuario, idRol, idTipoDeDocumento) 
+VALUES
+(103347235,"Katherin","Morcillo","Quiroga","Chapinero, Calle 45 #7-89", "3124567890","Contraseña12345","katherinquiroga@gmail.com",1,2,1),
+(159350145,"Jhonatan","Carvajal","Bonilla","Usaquén, Carrera 15 #104-22", "3209876543","soyAdmi123","Jhonatan_Bonilla@gmail.com",1,2,1),
+(103353635,"Daniela","Bohorquez","Diaz","Suba, Calle 127 #71B-10", "3012345678","Lorena456","DanielaBoDiaz@gmail.com",1,2,1),
+(10000001, "carlos", "Martínez", "López","Engativá, Avenida Boyacá #52A-34", "3112233445","pass123", "carlosm@gmail.com",1, 1, 1),
+(10000002, "laura", "Gómez", "Ramírez","Fontibón, Carrera 96 #16-20", "3159988776","laura456", "laurag@gmail.com",1, 1, 1),
+(10000003, "andres", "Rodríguez", "Torres","Kennedy,Carrera 74 #42 Sur-15", "3161122334", "andres789", "andresr@gmail.com",1, 1, 1),
+(10000004, "julian", "Pérez", "García", "Bosa, Calle 63 Sur #79-12", "3185566778","julian321", "julianp@gmail.com",1, 1, 2),
+(10000005, "maria", "Castaño", "Londoño", "San Cristóbal, Carrera 4 Este #32B-11", "3223344556","maria654", "mariac@gmail.com",1, 1, 1),
+(10000006, "diego", "Alvarez", "Peña","Rafael Uribe Uribe, Calle 36 Sur #21-08", "3194433221", "diego000", "diegoa@gmail.com",1, 1, 3),
+(10000007, "paula", "Ríos", "Moreno", "Ciudad Bolívar, Diagonal 62 Sur #18C-55", "3177766554","paula321", "paular@gmail.com",1, 1, 2),
+(10000008, "sebastian", "González", "Martínez","Teusaquillo, Carrera 24 #39A-10", "3136677889","sebas888", "sebastiang@gmail.com",1, 1, 1),
+(10000009, "camila", "Ruiz", "Sánchez","Tunjuelito, Carrera 53 #49B-67 Sur", "3001112233", "camila777", "camilar@gmail.com",1, 1, 1),
+(10000010, "diana", "Morales", "Sanchez","Antonio Nariño, Carrera 24 #17-50 Sur", "3147788990","diana111", "dianam@gmail.com",1, 1, 3);
+
+-- -----------------------------------------------------
+-- MÓDULO DE PROMOCIONES Y DESCUENTOS						1.1
+-- -----------------------------------------------------
+-- Promociones (MÁS PROMOCIONES AGREGADAS)
+INSERT INTO Promocion (nombrePromocion, codigo_Promocion, descuento, descripcion, fecha_inicio, fecha_fin, estadoPromocion) 
+VALUES 
+("Promo Verano", "VER2025", 15.50, "Descuento especial de verano", "2025-06-01", "2025-06-30", "Activo"),
+("Black Friday", "BF2025", 30.00, "Ofertas por Black Friday", "2025-11-25", "2025-11-30", "Activo"),
+("Cyber Monday", "CYB2025", 25.00, "Ofertas exclusivas online", "2025-12-01", "2025-12-02", "Activo"),
+("Día del Padre", "DDP2025", 20.00, "Descuento para el día del padre", "2025-06-15", "2025-06-20", "Inactivo"),
+("Back to School", "BTS2025", 15.00, "Vuelta a clases", "2025-01-15", "2025-02-15", "Inactivo"),
+("Navidad", "NAV2025", 35.00, "Promoción navideña", "2025-12-15", "2025-12-25", "Activo"),
+("Año Nuevo", "AN2026", 10.00, "Comienza bien el año", "2025-12-26", "2026-01-10", "Activo"),
+("Primavera", "PRI2025", 12.00, "Descuento de primavera", "2025-09-21", "2025-10-05", "Activo");
+
+
+-- -----------------------------------------------------
+-- MÓDULO DE ADMINISTRADOR
+-- -----------------------------------------------------
+-- TipoProducto
+INSERT INTO TipoProducto (nombreTipoProducto) VALUES ("Calzado");
+INSERT INTO TipoProducto (nombreTipoProducto) VALUES ("Bolso");
+
+-- Categorías (MÁS CATEGORÍAS AGREGADAS)
+INSERT INTO Categoria (nombreCategoria, idTipoProducto) VALUES 
+("Running", 1),
+("Bandolera", 2),
+("Casual", 1),
+("Formal", 1),
+("Deportivo", 1),
+("Sandalia", 1),
+("Botas", 1),
+("Tenis", 1),
+("Mochila", 2),
+("Cartera", 2),
+("Riñonera", 2),
+("Maletín", 2);
+
+-- Marca (MÁS MARCAS AGREGADAS)
+INSERT INTO Marca (nombreMarca) VALUES 
+("Nike"),
+("Adidas"),
+("Puma"),
+("Reebok"),
+("Converse"),
+("Vans"),
+("Skechers"),
+("Timberland"),
+("Steve Madden"),
+("Michael Kors"),
+("Calvin Klein"),
+("Fila"),
+("New Balance");
+
+-- Material (MÁS MATERIALES AGREGADOS)
+INSERT INTO Material (nombreMaterial) VALUES 
+("Cuero"),
+("Sintético"),
+("Lona"),
+("Gamuza"),
+("Cuero sintético"),
+("Malla"),
+("Poliéster"),
+("Nylon"),
+("Tela"),
+("Ante"),
+("Caucho"),
+("Plástico");
+
+-- TipoPublico
+INSERT INTO TipoPublico (nombrePublico) VALUES 
+("Hombre"),
+("Mujer"),
+("Unisex");
+
+-- Productos (MUCHOS MÁS PRODUCTOS AGREGADOS)
+INSERT INTO Producto (nombreProducto, codigoReferencia, descripcion, precio, fechaCreacion, fechaModificacion, estadoProducto, idCategoria, idMarca, idMaterial, idPublico, idPromocion) 
+VALUES 
+-- ZAPATOS RUNNING
+("Nike Running Air", "NR001", "Zapatillas deportivas de running con tecnología Air", 299000, "2025-09-01", "2025-09-02", "Activo", 1, 1, 2, 1, 1),
+("Adidas Ultraboost", "AU002", "Zapatillas running con amortiguación Boost", 349000, "2025-09-05", "2025-09-06", "Activo", 1, 2, 2, 2, 2),
+("New Balance Fresh Foam", "NBF003", "Zapatillas running con Fresh Foam", 279000, "2025-09-10", "2025-09-11", "Activo", 1, 13, 2, 3, 3),
+("Puma Velocity Nitro", "PVN004", "Zapatillas running de alto rendimiento", 259000, "2025-09-15", "2025-09-16", "Activo", 1, 3, 2, 1, 4),
+
+-- ZAPATOS CASUAL
+("Vans Old Skool", "VOS005", "Zapatillas casual clásicas", 189000, "2025-08-20", "2025-08-21", "Activo", 3, 6, 3, 3, 5),
+("Converse Chuck Taylor", "CCT006", "Zapatillas de lona icónicas", 179000, "2025-08-22", "2025-08-23", "Activo", 3, 5, 3, 3, 6),
+("Adidas Stan Smith", "ASS007", "Zapatillas casual de cuero", 229000, "2025-08-25", "2025-08-26", "Activo", 3, 2, 1, 2, 7),
+("Nike Air Force 1", "NAF008", "Zapatillas deportivas clásicas", 259000, "2025-08-28", "2025-08-29", "Activo", 3, 1, 1, 1, 8),
+
+-- ZAPATOS FORMALES
+("Steve Madden Oxford", "SMO009", "Zapatos formales Oxford de cuero", 329000, "2025-09-05", "2025-09-06", "Activo", 4, 9, 1, 1, 1),
+("Calvin Klein Formal", "CKF010", "Zapatos formales elegantes", 359000, "2025-09-10", "2025-09-11", "Activo", 4, 11, 1, 2, 2),
+
+-- BOTAS
+("Timberland Premium", "TPR011", "Botas resistentes al agua", 459000, "2025-09-01", "2025-09-02", "Activo", 7, 8, 1, 1, 3),
+("Nike ACG Mountain", "NAM012", "Botas para montaña", 399000, "2025-09-05", "2025-09-06", "Activo", 7, 1, 2, 3, 4),
+
+-- ZAPATOS TENIS
+("Nike Court Air Zoom", "NCA013", "Zapatillas para tenis profesional", 379000, "2025-09-10", "2025-09-11", "Activo", 8, 1, 2, 1, 5),
+("Adidas Courtjam Bounce", "ACB014", "Zapatillas tenis con bounce", 289000, "2025-09-15", "2025-09-16", "Activo", 8, 2, 2, 2, 6),
+
+-- SANDALIAS
+("Skechers Relaxed Fit", "SRF015", "Sandalias cómodas para caminar", 159000, "2025-08-20", "2025-08-21", "Activo", 6, 7, 11, 2, 7),
+("Adidas Adilette", "AAD016", "Sandalias deportivas", 129000, "2025-08-25", "2025-08-26", "Activo", 6, 2, 11, 1, 8),
+
+-- BOLSOS BANDOLERA
+("Bandolera Casual Adidas", "BCA017", "Bolso bandolera casual deportivo", 159000, "2025-09-01", "2025-09-02", "Activo", 2, 2, 1, 2, NULL),
+("Bandolera Nike Heritage", "BNH018", "Bandolera estilo retro", 179000, "2025-09-05", "2025-09-06", "Activo", 2, 1, 5, 1, 1),
+("Bandolera Michael Kors", "BMK019", "Bandolera de cuero genuino", 299000, "2025-09-10", "2025-09-11", "Activo", 2, 10, 1, 2, 2),
+
+-- MOCHILAS
+("Mochila Nike Sport", "MNS020", "Mochila deportiva con múltiples bolsillos", 189000, "2025-08-15", "2025-08-16", "Activo", 9, 1, 7, 3, 3),
+("Mochila Adidas Tiro", "MAT021", "Mochila para entrenamiento", 169000, "2025-08-20", "2025-08-21", "Activo", 9, 2, 7, 3, 4),
+("Mochila Puma Urban", "MPU022", "Mochila urbana moderna", 149000, "2025-08-25", "2025-08-26", "Activo", 9, 3, 7, 3, 5),
+
+-- CARTERAS
+("Cartera Calvin Klein", "CCK023", "Cartera elegante de cuero", 259000, "2025-09-05", "2025-09-06", "Activo", 10, 11, 1, 2, 6),
+("Cartera Steve Madden", "CSM024", "Cartera con múltiples compartimentos", 229000, "2025-09-10", "2025-09-11", "Activo", 10, 9, 1, 2, 7),
+
+-- RIÑONERAS
+("Riñonera Nike Swoosh", "RNS025", "Riñonera deportiva ajustable", 89000, "2025-08-20", "2025-08-21", "Activo", 11, 1, 7, 3, 8),
+("Riñonera Adidas Essentials", "RAE026", "Riñonera básica para deporte", 79000, "2025-08-25", "2025-08-26", "Activo", 11, 2, 7, 3, 1),
+
+-- MALETINES
+("Maletín Formal Michael Kors", "MFM027", "Maletín ejecutivo de cuero", 389000, "2025-09-01", "2025-09-02", "Activo", 12, 10, 1, 1, 2),
+("Maletín Calvin Klein", "MCK028", "Maletín profesional elegante", 349000, "2025-09-05", "2025-09-06", "Activo", 12, 11, 1, 1, 3);
+
+-- Colores (MÁS COLORES AGREGADOS)
+INSERT INTO Color (nombreColor) VALUES 
+("Rojo"),
+("Negro"),
+("Blanco"),
+("Azul"),
+("Gris"),
+("Verde"),
+("Amarillo"),
+("Rosa"),
+("Morado"),
+("Naranja"),
+("Marrón"),
+("Beige"),
+("Multicolor"),
+("Plateado"),
+("Dorado");
+
+-- Variaciones (tallas y tamaños - MÁS VARIACIONES)
+INSERT INTO Variacion (nombre, tipo) VALUES 
+-- Tamaños de bolso
+("Pequeño", "Tamano_Bolso"),
+("Mediano", "Tamano_Bolso"),
+("Grande", "Tamano_Bolso"),
+("Extra Grande", "Tamano_Bolso"),
+
+-- Tallas de calzado para niños
+("21", "Talla_Calzado"),
+("22", "Talla_Calzado"),
+("23", "Talla_Calzado"),
+("24", "Talla_Calzado"),
+("25", "Talla_Calzado"),
+("26", "Talla_Calzado"),
+("27", "Talla_Calzado"),
+("28", "Talla_Calzado"),
+("29", "Talla_Calzado"),
+("30", "Talla_Calzado"),
+("31", "Talla_Calzado"),
+("32", "Talla_Calzado"),
+("33", "Talla_Calzado"),
+
+-- Tallas de calzado para adultos
+("34", "Talla_Calzado"),
+("35", "Talla_Calzado"),
+("36", "Talla_Calzado"),
+("37", "Talla_Calzado"),
+("38", "Talla_Calzado"),
+("39", "Talla_Calzado"),
+("40", "Talla_Calzado"),
+("41", "Talla_Calzado"),
+("42", "Talla_Calzado"),
+("43", "Talla_Calzado"),
+("44", "Talla_Calzado"),
+("45", "Talla_Calzado"),
+("46", "Talla_Calzado");
+
+-- Stock (MUCHOS MÁS REGISTROS DE STOCK)
+INSERT INTO Stock (stockMinimo, stockActual, idColor, idVariacion, idProducto) 
+VALUES 
+-- Producto 1 - Nike Running Air (diferentes colores y tallas)
+(5, 25, 1, 17, 1),  -- Rojo, talla 36
+(5, 20, 2, 18, 1),  -- Negro, talla 37
+(5, 18, 3, 19, 1),  -- Blanco, talla 38
+(5, 15, 4, 20, 1),  -- Azul, talla 39
+(5, 12, 2, 21, 1),  -- Negro, talla 40
+
+-- Producto 2 - Bandolera Casual (diferentes colores y tamaños)
+(3, 15, 2, 1, 2),   -- Negro, Pequeño
+(3, 12, 3, 2, 2),   -- Blanco, Mediano
+(3, 10, 1, 3, 2),   -- Rojo, Grande
+(3, 8, 4, 4, 2),    -- Azul, Extra Grande
+
+-- Producto 3 - Adidas Ultraboost
+(4, 20, 2, 18, 3),  -- Negro, talla 37
+(4, 18, 3, 19, 3),  -- Blanco, talla 38
+(4, 16, 5, 20, 3),  -- Gris, talla 39
+(4, 14, 6, 21, 3),  -- Verde, talla 40
+
+-- Producto 4 - New Balance Fresh Foam
+(3, 15, 3, 19, 4),  -- Blanco, talla 38
+(3, 12, 2, 20, 4),  -- Negro, talla 39
+(3, 10, 4, 21, 4),  -- Azul, talla 40
+(3, 8, 5, 22, 4),   -- Gris, talla 41
+
+-- Producto 5 - Vans Old Skool
+(4, 22, 2, 17, 5),  -- Negro, talla 36
+(4, 20, 3, 18, 5),  -- Blanco, talla 37
+(4, 18, 1, 19, 5),  -- Rojo, talla 38
+(4, 16, 4, 20, 5),  -- Azul, talla 39
+
+-- Producto 6 - Converse Chuck Taylor
+(3, 18, 3, 19, 6),  -- Blanco, talla 38
+(3, 16, 2, 20, 6),  -- Negro, talla 39
+(3, 14, 4, 21, 6),  -- Azul, talla 40
+(3, 12, 1, 22, 6),  -- Rojo, talla 41
+
+-- Producto 7 - Adidas Stan Smith
+(5, 20, 3, 18, 7),  -- Blanco, talla 37
+(5, 18, 2, 19, 7),  -- Negro, talla 38
+(5, 15, 5, 20, 7),  -- Gris, talla 39
+(5, 12, 4, 21, 7),  -- Azul, talla 40
+
+-- Producto 8 - Nike Air Force 1
+(4, 25, 3, 19, 8),  -- Blanco, talla 38
+(4, 22, 2, 20, 8),  -- Negro, talla 39
+(4, 20, 4, 21, 8),  -- Azul, talla 40
+(4, 18, 5, 22, 8),  -- Gris, talla 41
+
+-- Producto 9 - Steve Madden Oxford
+(3, 12, 2, 20, 9),  -- Negro, talla 39
+(3, 10, 11, 21, 9), -- Marrón, talla 40
+(3, 8, 2, 22, 9),   -- Negro, talla 41
+(3, 6, 11, 23, 9),  -- Marrón, talla 42
+
+-- Producto 10 - Calvin Klein Formal
+(2, 10, 2, 17, 10), -- Negro, talla 36
+(2, 8, 3, 18, 10),  -- Blanco, talla 37
+(2, 6, 2, 19, 10),  -- Negro, talla 38
+(2, 4, 11, 20, 10), -- Marrón, talla 39
+
+-- Producto 11 - Timberland Premium
+(2, 8, 11, 20, 11), -- Marrón, talla 39
+(2, 6, 2, 21, 11),  -- Negro, talla 40
+(2, 4, 11, 22, 11), -- Marrón, talla 41
+(2, 3, 2, 23, 11),  -- Negro, talla 42
+
+-- Producto 12 - Nike ACG Mountain
+(3, 10, 6, 20, 12), -- Verde, talla 39
+(3, 8, 11, 21, 12), -- Marrón, talla 40
+(3, 6, 2, 22, 12),  -- Negro, talla 41
+(3, 4, 5, 23, 12),  -- Gris, talla 42
+
+-- Producto 13 - Nike Court Air Zoom
+(2, 12, 3, 20, 13), -- Blanco, talla 39
+(2, 10, 4, 21, 13), -- Azul, talla 40
+(2, 8, 2, 22, 13),  -- Negro, talla 41
+(2, 6, 3, 23, 13),  -- Blanco, talla 42
+
+-- Producto 14 - Adidas Courtjam Bounce
+(3, 15, 4, 18, 14), -- Azul, talla 37
+(3, 12, 2, 19, 14), -- Negro, talla 38
+(3, 10, 3, 20, 14), -- Blanco, talla 39
+(3, 8, 1, 21, 14),  -- Rojo, talla 40
+
+-- Producto 15 - Skechers Relaxed Fit
+(4, 20, 2, 17, 15), -- Negro, talla 36
+(4, 18, 3, 18, 15), -- Blanco, talla 37
+(4, 16, 5, 19, 15), -- Gris, talla 38
+(4, 14, 4, 20, 15), -- Azul, talla 39
+
+-- Producto 16 - Adidas Adilette
+(5, 25, 3, 18, 16), -- Blanco, talla 37
+(5, 22, 2, 19, 16), -- Negro, talla 38
+(5, 20, 4, 20, 16), -- Azul, talla 39
+(5, 18, 5, 21, 16), -- Gris, talla 40
+
+-- Producto 17 - Bandolera Casual Adidas
+(3, 15, 2, 1, 17),  -- Negro, Pequeño
+(3, 12, 3, 2, 17),  -- Blanco, Mediano
+(3, 10, 4, 3, 17),  -- Azul, Grande
+(3, 8, 1, 4, 17),   -- Rojo, Extra Grande
+
+-- Producto 18 - Bandolera Nike Heritage
+(2, 12, 2, 1, 18),  -- Negro, Pequeño
+(2, 10, 5, 2, 18),  -- Gris, Mediano
+(2, 8, 11, 3, 18),  -- Marrón, Grande
+(2, 6, 2, 4, 18),   -- Negro, Extra Grande
+
+-- Producto 19 - Bandolera Michael Kors
+(1, 8, 2, 2, 19),   -- Negro, Mediano
+(1, 6, 11, 3, 19),  -- Marrón, Grande
+(1, 4, 12, 4, 19),  -- Beige, Extra Grande
+(1, 3, 15, 2, 19);  -- Dorado, Mediano
+
+-- -----------------------------------------------------
+-- MÓDULO DE GESTION DE COMPRAS								PARTE 1.1
+-- -----------------------------------------------------
+-- Tabla carrito
+INSERT INTO Carrito (fechaCreacion, idUsuario)
+VALUES
+("2025-11-02 10:00:00", 4),
+("2025-12-03 11:20:00", 5),
+("2025-04-03 09:30:00", 6),
+("2025-01-04 14:15:00", 7),
+("2025-02-04 16:40:00", 8),
+("2025-04-05 12:10:00", 9),
+("2025-02-05 18:55:00", 10),
+("2025-03-01 08:05:00", 11),
+("2025-10-01 20:30:00", 12),
+("2025-08-01 07:50:00", 13);
+
+
+-- Tabla MetodoPago
+INSERT INTO MetodoPago (nombreMetodoPago)
+ VALUES
+("PSE"),
+("Tarjeta de Crédito / Stripe");
+
+-- Tabla DetalleCarrito 
+INSERT INTO DetalleCarrito ( idCarrito, idStock, cantidad, precioUnitario, idPromocionAplicada, porcentajeDescuento) 
+VALUES
+(1, 1, 2, 4.00, 1, 15),
+(2, 2, 3, 5.00, 1, 15),
+(1, 3, 1, 6.00, 2, 30),
+(2, 1, 2, 7.00, 1, 15),
+(1, 2, 2, 8.00, 1, 15),
+(1, 3, 3, 9.00, 2, 30),
+(2, 1, 1, 10.00, 1, 15),
+(1, 2, 2, 11.00, 1, 15),
+(2, 3, 3, 12.00, 2, 30),
+(1, 1, 2, 13.00, 1, 15);
+
+
+-- -----------------------------------------------------
+-- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
+-- -----------------------------------------------------
+
+-- Tabla Pedido
+INSERT INTO Pedido 
+(fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago, estadoPedido, total_final)
+ VALUES
+("2026-03-18", 4, 1, 1, 1, 'Pendiente', 120000.00),
+("2026-03-18", 5, 2, 2, 1, 'Procesando', 85000.00), 
+("2026-03-19", 6, 3, 1, 1, 'Procesando', 99000.00),
+("2026-03-19", 7, 4, 2, 1, 'Entregado', 130000.00),
+("2026-03-20", 8, 5, 1, 1, 'Entregado', 115000.00),
+("2026-03-20", 9, 6, 2, 1, 'Pendiente', 78000.00),
+("2026-03-21", 10, 7, 1, 1, 'Procesando', 145000.00),
+("2026-03-21", 11, 8, 2, 1, 'Entregado', 92000.00),
+("2026-03-22", 12, 9, 1, 1, 'Pendiente', 160000.00),
+("2026-03-22", 13, 10, 2, 1, 'Procesando', 110000.00);
+
+-- Tabla detallePedido
+INSERT INTO DetallePedido (idPedido, idStock, cantidad, precioUnitario, subtotal) 
+VALUES
+(1, 1, 2, 75000, 150000),
+(2, 2, 1, 235000, 235000),
+(3, 3, 3, 320000, 960000),
+(4, 1, 1, 120000, 120000),
+(5, 2, 2, 28000, 56000),
+(6, 3, 1, 30000, 30000),
+(7, 1, 2, 225000, 450000),
+(8, 2, 1, 89000, 89000),
+(9, 3, 1, 175000, 175000),
+(10, 1, 2, 105000, 210000);
+
+-- -----------------------------------------------------
+-- MÓDULO DE GESTION DE COMPRAS									PARTE 1.2
+-- -----------------------------------------------------
+-- Tabla ComprobanteDeVenta
+INSERT INTO ComprobanteDeVenta 
+(idPedido, idUsuario, fechaEmision, nombreUsuario, primerApellidoUsuario, segundoApellidoUsuario) 
+VALUES
+(1, 4, "2025-07-01 10:30:00","carlos", "Martínez", "López"),
+(2, 5, "2025-07-01 11:45:00","laura", "Gómez", "Ramírez"),
+(3, 6, "2025-07-02 09:50:00","andres", "Rodríguez", "Torres"),
+(4, 7, "2025-07-02 15:00:00","julian", "Pérez", "García"),
+(5, 8, "2025-07-03 08:40:00", "maria", "Castaño", "Londoño"),
+(6, 9, "2025-07-03 17:20:00", "diego", "Alvarez", "Peña"),
+(7, 10, "2025-07-04 13:10:00", "paula", "Ríos", "Moreno"),
+(8, 11, "2025-07-04 18:45:00", "sebastian", "González", "Martínez"),
+(9, 12, "2025-07-05 08:25:00", "camila", "Ruiz", "Sánchez"),
+(10, 13, "2025-07-05 22:10:00", "diana", "Morales", "Sanchez");
+
+-- Tabla DetallesComprobanteDeVenta 
+INSERT INTO DetallesComprobanteDeVenta 
+(idComprobanteDeVenta, idDetallePedido, idProducto, cantidad, precio_unitario)
+VALUES 
+(1, 1, 1, 2, 150000),
+(1, 1, 2, 1, 98500),
+(2, 2, 1,1, 235000),
+(2, 4, 2,3, 120000),
+(3, 4, 1,2, 56000),
+(3, 7, 2,1, 300000),
+(4, 7, 1,1, 175000),
+(4, 6, 2,2, 450000),
+(5, 5, 1,2, 210000),
+(5, 10, 2,1, 89000),
+(1, 3, 1,2, 150000),
+(1, 8, 1,1, 98500),
+(2, 8, 2,1, 235000),
+(2, 9, 1,3, 120000);
+
+-- -----------------------------------------------------
+-- MÓDULO DE GESTIÓN DE DEVOLUCIONES							
+-- ----------------------------------------------------
+
+-- Tabla DevolucionCambio
+-- Tabla Devoluciones y Cambios con relaciones completas
+INSERT INTO devoluciones_Cambios 
+(motivo, tipo_solicitud, estado_solicitud, fecha_solicitud, fecha_respuesta, idUsuario, idPedido, idProducto)
+VALUES
+("Producto defectuoso al recibirlo", "Devolución", "Aprobada", "2025-06-20", "2025-06-22", 1, 1, 1),
+("Talla incorrecta enviada", "Cambio", "En proceso", "2025-06-21", NULL, 2, 2, 3),
+("No era lo que esperaba", "Devolución", "Rechazada", "2025-06-22", "2025-06-24", 1, 3, 2),
+("Producto llegó incompleto", "Devolución", "Aprobada", "2025-06-23", "2025-06-25", 2, 4, 5),
+("Color distinto al solicitado", "Cambio", "Pendiente", "2025-06-24", NULL, 1, 5, 4),
+("No me quedó bien", "Cambio", "Rechazada", "2025-06-24", "2025-06-26", 2, 6, 1),
+("No quede satisfecho con el Producto ", "Devolución", "Aprobada", "2025-06-25", "2025-06-27", 1, 7, 2),
+("Error en el modelo recibido", "Cambio", "En proceso", "2025-06-26", NULL, 2, 8, 3),
+("Me equivoqué en el pedido", "Devolución", "Rechazada", "2025-06-26", "2025-06-28", 1, 9, 5),
+("La talla no me queda", "Devolución", "Aprobada", "2025-06-26", "2025-06-28", 2, 10, 4);
+
+
+								-- cosultas avanzadas:
+-- -----------------------------------------------------
+-- Disparadores
+-- -----------------------------------------------------
+-- trigger para que cuando se cree un producto, se guarde en un stoc vacio
+DELIMITER $$
+
+CREATE TRIGGER trg_producto_after_insert
+AFTER INSERT ON Producto
+FOR EACH ROW
+BEGIN
+    INSERT INTO Stock (stockMinimo, stockActual, idColor, idVariacion, idProducto)
+    VALUES (0, 0, Null, Null, NEW.idProducto);
+END$$
+
+DELIMITER ;
+
+-- consulta para agrupar el stok segun el idProducto
+
+SELECT 
+    p.idProducto,
+    ANY_VALUE(p.codigoReferencia) AS codigoReferencia,
+    ANY_VALUE(p.nombreProducto) AS nombreProducto,
+    ANY_VALUE(tp.nombreTipoProducto) AS nombreTipoProducto, 
+    ANY_VALUE(p.precio) AS precio,
+    GROUP_CONCAT(DISTINCT v.nombre SEPARATOR ', ') AS nombre,
+    GROUP_CONCAT(DISTINCT c.nombreColor SEPARATOR ', ') AS nombreColor,
+    SUM(s.stockActual) AS stockActual,
+    ANY_VALUE(p.estadoProducto) AS estadoProducto
+FROM Stock s
+JOIN Producto p ON s.idProducto = p.idProducto
+JOIN Categoria cat ON p.idCategoria = cat.idCategoria
+JOIN TipoProducto tp ON cat.idTipoProducto = tp.idTipoProducto
+LEFT JOIN Variacion v ON v.idVariacion = s.idVariacion
+LEFT JOIN Color c ON c.idColor = s.idColor
+GROUP BY p.idProducto
+ORDER BY p.nombreProducto ASC;
+
+SELECT * FROM Stock;
+
+-- 2. Verificar que el método de pago 2 exista (el que pide tu fetch)
+SELECT * FROM MetodoPago WHERE idMetodoPago = 2;
+
+-- 3. Verificar que el usuario 15 tenga un carrito ACTIVO con items
+SELECT * FROM Carrito WHERE idUsuario = 15 AND estadoCarrito = 'Activo';
+
+SELECT * FROM Usuario;
+
+
+
+
+

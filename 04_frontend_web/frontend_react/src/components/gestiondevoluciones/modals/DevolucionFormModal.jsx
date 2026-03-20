@@ -3,7 +3,9 @@ import { X } from "lucide-react";
 import axios from "axios";
 import { ESTADOS, TIPOS_SOLICITUD } from "../constants/devolucionesConstants";
 
-const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
+const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit, userRole = "cliente", pedido, producto }) => {
+  const isClient = userRole === "cliente";
+
   const [formData, setFormData] = useState({
     id: null,
     motivo: "",
@@ -12,12 +14,21 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
     fechaSolicitud: new Date().toISOString().substring(0, 10),
     fechaRespuesta: null,
     idUsuario: "",
+    idProducto: "",
+    idPedido: "",
   });
 
   const [isError, setIsError] = useState("");
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
+ useEffect(() => {
+    if (!isOpen) {
+      setIsError("");
+      setMessage("");
+      return;
+    }
+
+    // CASO 1: EDITAR DEVOLUCIÓN EXISTENTE
     if (devolucionToEdit) {
       setFormData({
         id: devolucionToEdit.id_devolucion,
@@ -27,21 +38,28 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
         fechaSolicitud: devolucionToEdit.fechaSolicitud || new Date().toISOString().substring(0, 10),
         fechaRespuesta: devolucionToEdit.fechaRespuesta || null,
         idUsuario: devolucionToEdit.usuario?.idUsuario || "",
+        idProducto: devolucionToEdit.producto?.idProducto || "",
+        idPedido: devolucionToEdit.pedido?.idPedido || "",
       });
-    } else {
+    } 
+    // CASO 2: NUEVA DEVOLUCIÓN DESDE "MIS PEDIDOS"
+    else if (pedido || producto) {
+      const idPedFinal = pedido?.idPedido || pedido?.id || "";
+      const idProdFinal = producto?.idProducto || producto?.id || "";
+
       setFormData({
         id: null,
         motivo: "",
         tipoSolicitud: TIPOS_SOLICITUD[0],
-        estadoSolicitud: ESTADOS[0],
+        estadoSolicitud: "Pendiente",
         fechaSolicitud: new Date().toISOString().substring(0, 10),
         fechaRespuesta: null,
-        idUsuario: "",
+        idUsuario: "", 
+        idProducto: idProdFinal,
+        idPedido: idPedFinal,
       });
     }
-    setIsError("");
-    setMessage("");
-  }, [devolucionToEdit, isOpen]);
+  }, [isOpen, devolucionToEdit, pedido, producto]);
 
   if (!isOpen) return null;
 
@@ -55,12 +73,20 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
     setIsError("");
     setMessage("");
 
-    if (!formData.idUsuario || isNaN(Number(formData.idUsuario))) {
+    if (!isClient && (!formData.idUsuario || isNaN(Number(formData.idUsuario)))) {
       setIsError("❌ El ID de Usuario es obligatorio y debe ser un número.");
       return;
     }
     if (!formData.motivo.trim()) {
       setIsError("❌ El motivo de la solicitud es obligatorio.");
+      return;
+    }
+
+    const idPedFinal = formData.idPedido ? Number(formData.idPedido) : null;
+    const idProdFinal = formData.idProducto ? Number(formData.idProducto) : null;
+
+    if (!idPedFinal || !idProdFinal) {
+      setIsError("❌ Error: No se ha detectado el pedido o producto.");
       return;
     }
 
@@ -75,11 +101,15 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
       const payload = {
         motivo: formData.motivo,
         tipoSolicitud: formData.tipoSolicitud,
-        estadoSolicitud: formData.estadoSolicitud,
+        estadoSolicitud: isClient ? 'Pendiente' : formData.estadoSolicitud,
         fechaSolicitud: formData.fechaSolicitud || now,
-        fechaRespuesta: formData.estadoSolicitud === 'Pendiente' ? null : (formData.fechaRespuesta || now),
-        idUsuario: Number(formData.idUsuario),
+        fechaRespuesta: isClient || formData.estadoSolicitud === 'Pendiente' ? null : (formData.fechaRespuesta || now),
+        idUsuario: isClient ? null : Number(formData.idUsuario),
+        idProducto: idProdFinal,
+        idPedido: idPedFinal,
       };
+
+      console.log("🚀 Payload listo para enviar:", payload);
 
       if (devolucionToEdit) {
         const devolucionId = devolucionToEdit.id_devolucion;
@@ -129,43 +159,101 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit }) => {
                   {TIPOS_SOLICITUD.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
-              <div className="field">
-                <label>Estado de la Solicitud *</label>
-                <select name="estadoSolicitud" value={formData.estadoSolicitud} onChange={handleChange} required>
-                  {ESTADOS.map(e => <option key={e} value={e}>{e}</option>)}
-                </select>
-              </div>
+
+              {/* Solo el administrador puede ver y editar el estado */}
+              {!isClient && (
+                <div className="field">
+                  <label>Estado de la Solicitud *</label>
+                  <select name="estadoSolicitud" value={formData.estadoSolicitud} onChange={handleChange} required>
+                    {ESTADOS.map(e => <option key={e} value={e}>{e}</option>)}
+                  </select>
+                </div>
+              )}
             </div>
 
-            <div className="form-group">
-              <div className="field">
-                <label>ID de Usuario *</label>
-                <input type="number" name="idUsuario" value={formData.idUsuario} onChange={handleChange} required min="1" />
+            {/* Visualización informativa para el cliente */}
+            {isClient && !devolucionToEdit && (
+              <div className="info-preseleccion" style={{ background: '#f0f7ff', padding: '10px', borderRadius: '5px', marginBottom: '15px', fontSize: '0.9rem', border: '1px solid #d0e7ff' }}>
+                <p style={{ margin: '2px 0' }}><strong>Pedido:</strong> #{formData.idPedido || "No detectado"}</p>
+                <p style={{ margin: '2px 0' }}><strong>Producto ID:</strong> {formData.idProducto || "No detectado"}</p>
               </div>
-              <div className="field">
-                <label>Fecha de Solicitud *</label>
-                <input type="date" name="fechaSolicitud" value={formData.fechaSolicitud} onChange={handleChange} required />
-              </div>
-            </div>
+            )}
 
-            {formData.estadoSolicitud !== 'Pendiente' && (
+            {/* Inputs ocultos para asegurar que viajen en el form */}
+            <input type="hidden" name="idPedido" value={formData.idPedido} />
+            <input type="hidden" name="idProducto" value={formData.idProducto} />
+
+            {/* Tus inputs hidden actuales */}
+            <input type="hidden" name="idPedido" value={formData.idPedido} />
+            <input type="hidden" name="idProducto" value={formData.idProducto} />
+
+            {!isClient && (
+              <div className="form-group">
+                <div className="field">
+                  <label>ID de Usuario *</label>
+                  <input type="number" name="idUsuario" value={formData.idUsuario} onChange={handleChange} required={!isClient} min="1" />
+                </div>
+                <div className="field">
+                  <label>Fecha de Solicitud *</label>
+                  <input type="date" name="fechaSolicitud" value={formData.fechaSolicitud} onChange={handleChange} required />
+                </div>
+              </div>
+            )}
+
+            {!isClient && formData.estadoSolicitud !== 'Pendiente' && (
               <div className="form-group full-width">
                 <label>Fecha de Respuesta</label>
                 <input type="date" name="fechaRespuesta" value={formData.fechaRespuesta || new Date().toISOString().substring(0, 10)} onChange={handleChange} />
               </div>
             )}
 
+            {userRole === "admin" ? (
+              <div className="form-group">
+                <div className="field">
+                  <label>ID del Pedido</label>
+                  <input
+                    type="number"
+                    name="idPedido"
+                    value={formData.idPedido}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="field">
+                  <label>ID del Producto</label>
+                  <input
+                    type="number"
+                    name="idProducto"
+                    value={formData.idProducto}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            ) : (
+              <>
+                <input type="hidden" name="idPedido" value={formData.idPedido} />
+                <input type="hidden" name="idProducto" value={formData.idProducto} />
+              </>
+            )}
+
             {isError && <p className="error-text">{isError}</p>}
             {message && <p className="success-text">{message}</p>}
 
+            {isClient && devolucionToEdit && devolucionToEdit.estadoSolicitud !== 'Pendiente' && (
+              <p style={{ color: '#666', fontSize: '0.85rem', textAlign: 'center', marginBottom: '10px' }}>
+                ℹ️ Esta solicitud está en estado <strong>{devolucionToEdit.estadoSolicitud}</strong> y no puede ser modificada.
+              </p>
+            )}
+
             <div className="modal-footer full-width">
               <button type="button" onClick={onClose} className="btn-cancelar">Cancelar</button>
-              <button type="submit" className="btn-guardar">{devolucionToEdit ? "Guardar Cambios" : "Crear Devolución"}</button>
+              <button type="submit" className="btn-guardar" disabled={isClient && devolucionToEdit && devolucionToEdit.estadoSolicitud !== 'Pendiente'}>
+                {devolucionToEdit ? "Guardar Cambios" : "Crear Devolución"}
+              </button>
             </div>
           </form>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

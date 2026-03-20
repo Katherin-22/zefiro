@@ -2,6 +2,7 @@ package com.backend.proyect.model.usuario;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,6 +13,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(name = "Usuario")
 
@@ -19,7 +21,7 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idUsuario" )
+    @Column(name = "idUsuario", unique = true )
     private Integer idUsuario;
 
     @Column(name = "numeroDocumento", nullable = false)
@@ -40,7 +42,7 @@ public class Usuario {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "correoElectronico")
+    @Column(name = "correoElectronico" , unique = true)
     private String correoElectronico;
 
     @Column(name = "Direccion")
@@ -48,6 +50,9 @@ public class Usuario {
 
     @Column(name = "verify_otp")
     private String verify_otp;
+
+    @Column(name = "is_account_verified", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private Boolean isAccountVerified;
 
     @Column(name = "verify_otp_expire_at")
     private Timestamp verify_otp_expire_at;
