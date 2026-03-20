@@ -59,7 +59,7 @@ const EmailVerify = () => {
                     state: { email: emailFinal, otp: otp, step: 'new-password' }
                 });
             } else {
-                const response = await axios.post('http://localhost:8080/api/auth/verify-otp', {
+                const response = await axios.post('http://35.171.131.177:8080/api/auth/verify-otp', {
                     correoElectronico: emailFinal,
                     otp
                 });
@@ -114,7 +114,7 @@ const EmailVerify = () => {
                     ))}
                 </div>
 
-                <button className="btn-auth" disabled={loading} onClick={handleVerify}>
+                <button className="btn-auth" disabled={loading} onClick={handleVerify} to="/loginpage">
                     {loading ? "Verifying..." : "Verify email"}
                 </button>
 

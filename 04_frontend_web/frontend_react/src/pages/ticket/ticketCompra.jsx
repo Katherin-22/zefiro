@@ -360,7 +360,7 @@ useEffect(() => {
                                 <div className="text-center mt-3">
                                     <button 
                                         className="btn btn-secondary"
-                                        onClick={() => navigate('/pedidos')}
+                                        onClick={() => navigate('/pedidos/${userId}')}
                                     >
                                         Volver a mis pedidos
                                     </button>

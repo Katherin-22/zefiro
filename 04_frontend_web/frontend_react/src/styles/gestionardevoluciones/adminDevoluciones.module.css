@@ -758,3 +758,63 @@
     }
   }
 }
+
+/* Estilos para el nuevo botón de estado */
+.btnEstado {
+    background: var(--primary-color-transparent);
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    border: 1px solid var(--primary-color);
+}
+
+.btnEstado:hover {
+    background: transparent;
+    transform: scale(1.05);
+}
+
+/* Estilos para los diferentes estados */
+.estadoPendiente {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.estadoProceso {
+    background-color: #cce5ff;
+    color: #004085;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.estadoAprobada {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.estadoRechazada {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.estadoCompletada {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}

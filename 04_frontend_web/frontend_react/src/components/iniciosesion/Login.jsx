@@ -26,7 +26,7 @@ function Login({ stateOverride }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/auth/login",
+        "http://35.171.131.177:8080/api/auth/login",
         {
           email,
           password,
