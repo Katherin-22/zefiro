@@ -12,11 +12,11 @@ import com.backend.proyect.model.usuario.Usuario;
 
 import com.backend.proyect.model.pedido.Pedido;
 import com.backend.proyect.model.pedido.DetallePedido;
-import com.backend.proyect.model.metodosPago.MetodoPago;
+import com.backend.proyect.model.metodoPagos.*;
 
 // Paquetes del Repositorio
 import com.backend.proyect.repository.carrito.CarritoRepository;
-import com.backend.proyect.repository.metodosPago.MetodoPagoRepository;
+import com.backend.proyect.repository.metodoPagos.*;
 import com.backend.proyect.repository.productos.StockRepository;
 import com.backend.proyect.repository.usuario.UsuarioRepository;
 import com.backend.proyect.repository.carrito.DetalleCarritoRepository;
@@ -393,7 +393,7 @@ public class CarritoService {
         MetodoPago metodoPago = metodoPagoRepository.getReferenceById(idMetodoPago);
         nuevoPedido.setMetodoPago(metodoPago);
 
-        nuevoPedido.setEstadoPedido(EstadoPedido.Pendiente);
+        nuevoPedido.setEstado(EstadoPedido.Pendiente);
 
         Pedido pedidoGuardado = pedidoRepository.save(nuevoPedido);
 

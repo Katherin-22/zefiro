@@ -52,8 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        String correo = jwtUtil.extractUsername(token);
-
+        String correo = jwtUtil.extractUsername(token);;
 
         try {
             // Si el correo es nulo o el contexto ya tiene autenticación, pasamos al siguiente filtro.
@@ -83,12 +82,7 @@ public class JwtFilter extends OncePerRequestFilter {
             // En caso de cualquier error (token inválido, expirado, etc.),
             // el filtro no continúa la cadena y la solicitud es rechazada con un 401 Unauthorized.
 
-
-            System.err.println("JWT Error: " + e.getMessage());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Token inválido o expirado\"}");
-
+            System.err.println("Error de autenticación JWT (Token inválido o expirado): " + e.getMessage());
         }
 
         filterChain.doFilter(request, response);
