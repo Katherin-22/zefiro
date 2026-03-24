@@ -36,7 +36,7 @@ export default function Home() {
   const [bannerError, setBannerError] = useState("");
 
   // Usa tu hook useAuth
-  const { isAuthenticated, userData } = useAuth();
+  const { isAuthenticated, userData , isLoading  } = useAuth();
 
   const userId = userData?.idUsuario;
   // Log de autenticación (solo cuando cambien)
@@ -320,7 +320,7 @@ export default function Home() {
     try {
       const response = await getImagenById(idProducto);
       if (response.data && response.data.length > 0) {
-        return `http://localhost:8080:8080${response.data[0].urlImagen}`;
+        return `http://localhost:8080${response.data[0].urlImagen}`;
       }
       return null;
     } catch (error) {
@@ -505,6 +505,19 @@ export default function Home() {
       </div>
     );
   }
+
+  if (isLoading) {
+  return (
+    <div className="allHome" style={{ backgroundColor: '#121212', height: '100vh' }}>
+      <div className="container h-100 d-flex flex-column justify-content-center align-items-center text-white">
+        <div className="spinner-border text-danger" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
+        <h4 className="mt-4">Verificando sesión...</h4>
+      </div>
+    </div>
+  );
+}
 
   if (error) {
     return (

@@ -41,17 +41,17 @@ public class DevolucionesCambios {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUsuario", referencedColumnName = "idUsuario")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password", "pedidos", "devoluciones"})
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idPedido", referencedColumnName = "idPedido")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "usuario", "carrito", "detalles"})
     private Pedido pedido;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idProducto", referencedColumnName = "idProducto")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "stocks", "categoria"})
     private Producto producto;
 
 }

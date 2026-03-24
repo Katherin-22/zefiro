@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-    // Función para cerrar sesión
+  // Función para cerrar sesión
   const logout = useCallback(() => {
     setUser(null); // Limpiamos el estado del usuario
     setToken(null); // Al actualizar el estado, React avisa a todos los componentes
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("authToken"); // Eliminamos el token de localStorage también, por seguridad
   }, []);
 
-  
+
   // Función para obtener datos frescos del perfil desde el backend
   const getUserData = useCallback(async () => {
     try {
@@ -34,38 +34,66 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (response.status === 200) {
-        setUser(response.data);
+        const updatedUser = {
+        ...response.data,
+        email: response.data.correoElectronico // Creamos el alias para que no se pierda
+      };
+        setUser(updatedUser);
         localStorage.setItem("userData", JSON.stringify(response.data));
       }
     } catch (error) {
       console.error("Error al recuperar perfil:", error);
       // Si el servidor dice que el token no vale (401 o 403), cerramos sesión
       if (error.response?.status === 401 || error.response?.status === 403) {
-        logout(); 
+        logout();
       }
 
-    } 
+    }
   }, [logout]);
 
-  // useEffect que se ejecuta una sola vez cuando el componente se monta
+  // checkPersistence que se ejecuta una sola vez cuando el componente se monta
   // Intenta cargar los datos del usuario desde localStorage si existen
-  useEffect(() => {
-    const storedUser = localStorage.getItem("userData"); // Recuperamos el usuario desde localStorage
+
+  const checkPersistence = useCallback(() => {
+    const storedUser = localStorage.getItem("userData");  // Recuperamos el usuario desde localStorage
     const storedToken = localStorage.getItem("authToken");
 
     if (storedUser && storedToken) {
       try {
-        setUser(JSON.parse(storedUser)); // Si existe, lo parseamos y lo seteamos en el estado
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser); // Si existe, lo parseamos y lo seteamos en el estado
         setToken(storedToken); // Seteamos el token en el estado
-        getUserData();
+        return true;
       } catch (error) {
-        console.error("Error al cargar datos de sesión:", error);
+        console.error("Error parseando datos de persistencia:", error);
         localStorage.clear();
+        return false;
       }
     }
-    setIsLoading(false);
-  }, [getUserData]); // La dependencia vacía asegura que esto se ejecute solo una vez al inicio
+    return false;
+  }, []); // La dependencia vacía asegura que esto se ejecute solo una vez al inicio
 
+  // --- EFECTO DE MONTAJE (AL RECARGAR PAGINA) ---
+  useEffect(() => {
+    const hasSession = checkPersistence();
+
+    if (hasSession) {
+      // Si hay sesión en localStorage, pedimos datos frescos al servidor en segundo plano
+      getUserData();
+    }
+
+    setIsLoading(false);
+
+    //  Escuchar cambios en otras pestañas (o si el storage cambia)
+    const handleStorageChange = (e) => {
+      if (e.key === 'authToken' || e.key === 'userData') {
+        checkPersistence();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [getUserData, checkPersistence]);
 
   // Función para guardar al usuario en el estado y en el localStorage cuando hace login
   const login = (userData, token) => {
@@ -77,7 +105,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     // Proveedor del contexto que pasa los valores del estado y funciones a los componentes hijos
-    <AuthContext.Provider value={{ user, userData: user, userId: user?.id || user?.idUsuario, token, isAuthenticated: !!token, login, logout, isLoading, getUserData }}>
+    <AuthContext.Provider value={{ user, userData: user, userId: user?.idUsuario || user?.id, userName: user?.nombreUsuario || user?.nombre, userEmail: user?.correoElectronico, token, isAuthenticated: !!token, login, logout, isLoading, getUserData }}>
       {children} {/* Renderiza los componentes hijos que estarán dentro de este proveedor */}
     </AuthContext.Provider>
   );

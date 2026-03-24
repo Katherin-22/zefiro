@@ -263,14 +263,13 @@ const PedidosUsuario = () => {
                                                             <span className={`badge ${pedido.estado === 'Entregado' ? 'bg-success' :
                                                                 pedido.estado === 'Cancelado' ? 'bg-danger' :
                                                                     pedido.estado === 'Enviado' ? 'bg-info' :
-                                                                        pedido.estado === 'Pagado' ? 'bg-primary' :
-                                                                            'bg-warning'
-                                                                }`}>
+                                                                        pedido.estado === 'Pagado' ? 'bg-primary' : 'bg-warning'}`}>
                                                                 {pedido.estado}
                                                             </span>
                                                         </td>
                                                         <td>{formatearFecha(pedido.fechaPedido)}</td>
-                                                        <td>{formatearCOP(pedido.totalFinal)}</td>                                                        <td>
+                                                        <td>{formatearCOP(pedido.totalFinal)}</td>
+                                                        <td>
                                                             <button
                                                                 className="btn btn-sm btn-primary"
                                                                 onClick={() => navigate(`/pedido-detalle/${pedido.idPedido}`)}
@@ -279,7 +278,6 @@ const PedidosUsuario = () => {
                                                             </button>
                                                         </td>
                                                     </tr>
-
                                                     {pedidosExpandidos[pedido.idPedido] && (
                                                         <tr>
                                                             <td colSpan="6" className="p-0">
@@ -317,24 +315,6 @@ const PedidosUsuario = () => {
                                                                                         <td className="text-center">{cantidad}</td>
                                                                                         <td className="text-end">{formatearCOP(producto.precioUnitario)}</td>
                                                                                         <td className="text-end fw-bold">{formatearCOP(subtotal)}</td>
-                                                                                        <td className="text-center">
-                                                                                            {/* BOTÓN DE DEVOLUCIÓN AQUÍ */}
-                                                                                            <button
-                                                                                                className="btn btn-sm btn-warning"
-                                                                                                onClick={() => {
-
-                                                                                                    console.log("Navegando con:", { pedido, producto });
-                                                                                                    navigate('/userdevoluciones', {
-                                                                                                        state: {
-                                                                                                            pedidoSeleccionado: pedido,
-                                                                                                            productoSeleccionado: producto
-                                                                                                        }
-                                                                                                    })
-                                                                                                }}
-                                                                                            >
-                                                                                                Devolver
-                                                                                            </button>
-                                                                                        </td>
                                                                                     </tr>
                                                                                 );
                                                                             })}
@@ -343,7 +323,7 @@ const PedidosUsuario = () => {
                                                                             <tr>
                                                                                 <td colSpan="5" className="text-end fw-bold">Total del pedido:</td>
                                                                                 <td className="text-end fw-bold text-success">
-                                                                                    <td>{formatearCOP(pedido.totalFinal)}</td>
+                                                                                    {formatearCOP(pedido.totalFinal)}
                                                                                 </td>
                                                                             </tr>
                                                                         </tfoot>

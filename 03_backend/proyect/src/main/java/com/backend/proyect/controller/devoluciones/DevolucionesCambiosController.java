@@ -1,5 +1,6 @@
 package com.backend.proyect.controller.devoluciones;
 
+import com.backend.proyect.dto.devoluciones.DevolucionResumen;
 import com.backend.proyect.dto.devoluciones.DevolucionesCambiosRequest;
 import com.backend.proyect.exception.usuario.ResourceNotFoundException;
 import com.backend.proyect.model.devoluciones.DevolucionesCambios;
@@ -43,8 +44,8 @@ public class DevolucionesCambiosController {
     // El administrador puede ver  todas las devoluciones
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @GetMapping
-    public List<DevolucionesCambios> listarDevoluciones() {
-        return devolucionesCambiosRepository.findAll();
+    public ResponseEntity<List<DevolucionResumen>> listarDevoluciones() {
+        return ResponseEntity.ok(devolucionesCambiosRepository.findAllProjectedBy());
     }
 
     // Ver  una devolucion de un usuario por ID
@@ -52,16 +53,16 @@ public class DevolucionesCambiosController {
     // Un cliente solo puede ver su propia devolucion
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') or hasAuthority('ROLE_CLIENTE')")
     @GetMapping("/{id}")
-    public ResponseEntity<DevolucionesCambios> listarDevolucionPorId(@PathVariable Integer id) {
-        DevolucionesCambios devolucionescambios = devolucionesCambiosRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("La devolucion con ese ID no existe: " + id));
+    public ResponseEntity<DevolucionResumen> listarDevolucionPorId(@PathVariable Integer id) {
+        DevolucionResumen devolucionescambios = devolucionesCambiosRepository.findResumenById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("La devolución con ID " + id + " no existe."));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         UsuarioPrincipal usuarioPrincipalWrapper = (UsuarioPrincipal) authentication.getPrincipal();
         Usuario usuarioPrincipal = usuarioPrincipalWrapper.getUsuario();
 
-        boolean isOwner = devolucionescambios.getUsuario().getIdUsuario().equals(usuarioPrincipal.getIdUsuario());
+        boolean isOwner = devolucionescambios.getIdUsuario().equals(usuarioPrincipal.getIdUsuario());
         boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
 
         if (isOwner || isAdmin) {
@@ -78,7 +79,7 @@ public class DevolucionesCambiosController {
 
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') or hasAuthority('ROLE_CLIENTE')")
     @GetMapping("/mis-devoluciones")
-    public ResponseEntity<List<DevolucionesCambios>> listarMisDevoluciones() {
+    public ResponseEntity<List<DevolucionResumen>> listarMisDevoluciones() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 
@@ -86,7 +87,7 @@ public class DevolucionesCambiosController {
         Usuario usuarioLogeado = usuarioPrincipalWrapper.getUsuario();
 
         // Usar el nuevo método del repository (findByUsuario)
-        List<DevolucionesCambios> misDevoluciones = devolucionesCambiosRepository.findByUsuario(usuarioLogeado);
+        List<DevolucionResumen> misDevoluciones = devolucionesCambiosRepository.findByUsuario(usuarioLogeado);
 
         return ResponseEntity.ok(misDevoluciones);
     }
@@ -150,7 +151,7 @@ public class DevolucionesCambiosController {
     // El administrador puede actualizar cualquier devolucion.
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') or hasAuthority('ROLE_CLIENTE')")
     @PutMapping("/{id}")
-    public ResponseEntity<DevolucionesCambios> actualizarDevolucion(@PathVariable Integer id, @RequestBody DevolucionesCambiosRequest devolucionesCambiosRequest) {
+    public ResponseEntity<?> actualizarDevolucion(@PathVariable Integer id, @RequestBody DevolucionesCambiosRequest devolucionesCambiosRequest) {
         DevolucionesCambios devolucionescambios = devolucionesCambiosRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("La devolucion con ese ID no existe: " + id));
 
@@ -185,13 +186,14 @@ public class DevolucionesCambiosController {
             }
             devolucionescambios.setMotivo(devolucionesCambiosRequest.getMotivo());
             devolucionescambios.setTipoSolicitud(devolucionesCambiosRequest.getTipoSolicitud());
-            
+
         } else {
             // 7. Lanzar Acceso Denegado si la verificación falla
             throw new AccessDeniedException("No tiene permiso para actualizar esta devolucion. Solo puede actualizar sus propias devoluciones.");
         }
 
-        DevolucionesCambios devolucionActualizada = devolucionesCambiosRepository.save(devolucionescambios);
+        DevolucionResumen devolucionActualizada = devolucionesCambiosRepository.findResumenById(devolucionescambios.getId_devolucion())
+                .orElseThrow(() -> new ResourceNotFoundException("Error al recuperar la devolución actualizada"));
         return ResponseEntity.ok(devolucionActualizada);
     }
 

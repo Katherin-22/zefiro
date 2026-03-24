@@ -66,6 +66,8 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/carrito/**", "/api/carrito/agregar/**", "/api/carrito/sincronizar/**").authenticated()
 
+                        .requestMatchers("/api/devoluciones/**").authenticated()
+
                         .requestMatchers("/api/usuarios", "/api/usuarios/{id}").hasAuthority("ROLE_ADMINISTRADOR") //Rutas de Administración (Requieren el rol explícito)
 
                         .anyRequest().authenticated() // lo demás requiere autenticación

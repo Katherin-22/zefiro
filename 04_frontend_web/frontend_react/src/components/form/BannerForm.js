@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "../../styles/administrador/GestionPagina.css"
 
 const BannerForm = ({ onUpload }) => {
     const [file, setFile] = useState(null);
@@ -19,7 +20,7 @@ const BannerForm = ({ onUpload }) => {
         formData.append("file", file);
 
         try {
-            const response = await fetch("http://localhost:8080/api/banners/upload", {
+            const response = await fetch("http://35.171.131.177:8080/api/banners/upload", {
                 method: "POST",
                 body: formData,
             });
@@ -91,7 +92,7 @@ const BannerForm = ({ onUpload }) => {
 
             <button
                 type="submit"
-                className="btn btn-primary btn-lg rounded-3 shadow px-5"
+                className="btn btn-addB btn-primary btn-lg rounded-3 shadow px-5"
                 disabled={loading || !file}
             >
                 {loading ? (
@@ -101,7 +102,7 @@ const BannerForm = ({ onUpload }) => {
                     </>
                 ) : (
                     <>
-                        <i className="bi bi-cloud-arrow-up me-2"></i>
+                        <i className="bi bi-add bi-cloud-arrow-up me-2"></i>
                         Subir Banner
                     </>
                 )}

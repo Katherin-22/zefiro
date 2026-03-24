@@ -80,242 +80,16 @@ const SearchInputDesktop = ({ onSearch, initialValue = '' }) => {
   );
 };
 
-// Componente separado para el modal de búsqueda MOBILE - VERSIÓN CORREGIDA
-const MobileSearchModal = ({ isOpen, onClose, onSearch }) => {
-  const [query, setQuery] = useState('');
-  const inputRef = useRef(null);
-  const modalRef = useRef(null);
-  const wasOpen = useRef(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      wasOpen.current = true;
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const timer = setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 100);
-
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      clearTimeout(timer);
-      document.body.style.overflow = originalStyle;
-    };
-  }, [isOpen]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (query.trim()) {
-      onSearch(query);
-      setQuery('');
-      onClose();
-    }
-  };
-
-  const handleClear = () => {
-    setQuery('');
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
-
-  const handleContentClick = (e) => {
-    e.stopPropagation();
-  };
-
-  const handleOverlayClick = (e) => {
-    if (modalRef.current && !modalRef.current.contains(e.target)) {
-      onClose();
-    }
-  };
-
-  if (!isOpen && !wasOpen.current) return null;
-  if (!isOpen && wasOpen.current) {
-    wasOpen.current = false;
-    return null;
-  }
-
-  return (
-    <div
-      className="mobile-search-modal"
-      onClick={handleOverlayClick}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        zIndex: 1050,
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        paddingTop: '20vh'
-      }}
-    >
-      <div
-        ref={modalRef}
-        className="mobile-search-content"
-        onClick={handleContentClick}
-        style={{
-          background: 'white',
-          width: '90%',
-          maxWidth: '500px',
-          borderRadius: '12px',
-          padding: '20px',
-          position: 'relative'
-        }}
-      >
-        <div className="mobile-search-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-          <h5 style={{ margin: 0 }}>Buscar productos</h5>
-          <button
-            onClick={onClose}
-            type="button"
-            aria-label="Cerrar"
-            style={{
-              background: 'none',
-              border: 'none',
-              fontSize: '1.5rem',
-              color: '#666',
-              cursor: 'pointer',
-              padding: '5px'
-            }}
-          >
-            <i className="bi bi-x-lg"></i>
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="mobile-search-form">
-          <div className="mobile-search-input-container" style={{ display: 'flex', alignItems: 'center', borderBottom: '2px solid #007bff', marginBottom: '20px' }}>
-            <i className="bi bi-search" style={{ color: '#666', marginRight: '10px' }}></i>
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="Buscar en el catálogo..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="mobile-search-input"
-              style={{
-                fontSize: '16px',
-                border: 'none',
-                background: 'transparent',
-                padding: '15px 0',
-                flex: 1,
-                outline: 'none'
-              }}
-              autoComplete="off"
-            />
-            {query && (
-              <button
-                type="button"
-                className="mobile-search-clear"
-                onClick={handleClear}
-                aria-label="Limpiar búsqueda"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#666',
-                  fontSize: '1.2rem',
-                  cursor: 'pointer',
-                  padding: '5px'
-                }}
-              >
-                <i className="bi bi-x"></i>
-              </button>
-            )}
-          </div>
-
-          {/* Sugerencias de categorías */}
-          <div className="mobile-search-suggestions" style={{ marginBottom: '20px' }}>
-            <h6 style={{ fontSize: '0.9rem', color: '#666', marginBottom: '10px' }}>Categorías populares</h6>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-              <button
-                type="button"
-                onClick={() => {
-                  onSearch('Mujer');
-                  onClose();
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '10px',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '8px',
-                  background: 'white',
-                  cursor: 'pointer'
-                }}
-              >
-                <i className="bi bi-gender-female" style={{ color: '#e83e8c' }}></i>
-                <span>Mujer</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onSearch('Hombre');
-                  onClose();
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '10px',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '8px',
-                  background: 'white',
-                  cursor: 'pointer'
-                }}
-              >
-                <i className="bi bi-gender-male" style={{ color: '#007bff' }}></i>
-                <span>Hombre</span>
-              </button>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="mobile-search-submit"
-            disabled={!query.trim()}
-            style={{
-              width: '100%',
-              background: !query.trim() ? '#6c757d' : '#007bff',
-              color: 'white',
-              border: 'none',
-              padding: '15px',
-              borderRadius: '8px',
-              fontSize: '1.1rem',
-              fontWeight: '600',
-              cursor: !query.trim() ? 'not-allowed' : 'pointer',
-              opacity: !query.trim() ? 0.65 : 1
-            }}
-          >
-            Buscar
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
-
 const MenuHome = () => {
   const { setFiltro } = useFiltro();
   const navigate = useNavigate();
   const location = useLocation();
   const { isMobile } = useResponsive();
   const { totalItems, clearCart } = useCart();
-  const { isAuthenticated, userData, userId, logout } = useAuth();
+  const { isAuthenticated, userData, userId, logout, userName, userEmail } = useAuth();
 
   const [activeMobileNav, setActiveMobileNav] = useState('home');
   const [notification, setNotification] = useState(null);
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   // Detectar ruta activa
   useEffect(() => {
@@ -439,9 +213,9 @@ const MenuHome = () => {
                 aria-expanded="false"
               >
                 <i className="bi bi-person-fill" id="navBarHome-profile-icon"></i>
-                {isAuthenticated && userData?.nombre && (
+                {isAuthenticated && userName && (
                   <span className="ms-1 d-none d-md-inline">
-                    {userData.nombre}
+                    {userName}
                   </span>
                 )}
               </button>
@@ -454,8 +228,8 @@ const MenuHome = () => {
                   <>
                     <li className="dropdown-header">
                       <small className="text-muted">Bienvenido</small>
-                      <div className="fw-bold">{userData?.nombre || 'Usuario'}</div>
-                      <small className="text-muted">{userData?.email || ''}</small>
+                      <div className="fw-bold">{userName || 'Usuario'}</div>
+                      <small className="text-muted">{userEmail || ''}</small>
                     </li>
                     <li><hr className="dropdown-divider" /></li>
                     <li>
@@ -542,36 +316,24 @@ const MenuHome = () => {
 
   // NAVBAR MÓVIL (solo visible en móvil)
   const MobileNavbar = () => {
-    const openMobileSearch = () => {
-      setMobileSearchOpen(true);
-    };
-
-    const closeMobileSearch = () => {
-      setMobileSearchOpen(false);
-    };
-
-    const handleMobileSearch = (query) => {
-      handleSearch(query);
-      closeMobileSearch();
-    };
-
     return (
       <>
-
         <nav className="mobile-top-nav" id="mobileTopNav">
           <div className="mobile-top-container">
-            <Link className="mobile-brand" to="/" onClick={() => setFiltro('todos')}>
+            <Link className="mobile-brand" to="/" onClick={() =>  handleFiltro('todos')}>
               Zéfiro
             </Link>
 
             <div className="mobile-header-search">
-              <button
-                className="mobile-search-btn"
-                onClick={openMobileSearch}
-                type="button"
+              {/* BOTÓN DE BÚSQUEDA ELIMINADO - ESPACIO LIBERADO */}
+
+              <Link
+                className="nav-link btn btn-link"
+                id="navBarHome-bolsos-btn"
+                to="/home/catalogo"
               >
-                <i className="bi bi-search"></i>
-              </button>
+                Catalogo
+              </Link>
 
               <Link to="/carrito" className="mobile-cart-btn">
                 <i className="bi bi-cart-fill"></i>
@@ -588,7 +350,7 @@ const MenuHome = () => {
               className={`mobile-nav-item ${activeMobileNav === 'home' ? 'active' : ''}`}
               onClick={() => {
                 setActiveMobileNav('home');
-                setFiltro('todos');
+                handleFiltro('todos');
               }}
             >
               <i className="bi bi-house"></i>
@@ -711,13 +473,6 @@ const MenuHome = () => {
             </div>
           </div>
         </nav>
-
-        {/* MODAL DE BÚSQUEDA MOBILE */}
-        <MobileSearchModal
-          isOpen={mobileSearchOpen}
-          onClose={closeMobileSearch}
-          onSearch={handleMobileSearch}
-        />
 
         {notification && (
           <div className="mobile-notification">

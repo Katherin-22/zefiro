@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @Table(name = "Pedido")
 
 public class  Pedido {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idPedido")
@@ -29,19 +29,19 @@ public class  Pedido {
     @Column(name = "fechaPedido", nullable = false)
     private LocalDate fechaPedido;
 
-    
+
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
-    
+
     @OneToOne
     @JoinColumn(name = "idCarrito", nullable = false)
     private Carrito carrito;
-    
+
     @ManyToOne
     @JoinColumn(name = "idPromocion")
     private Promocion promocion;
-    
+
     @ManyToOne
     @JoinColumn(name = "idMetodoPago", nullable = false)
     private MetodoPago metodoPago;

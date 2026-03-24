@@ -36,7 +36,11 @@ const AdminDevoluciones = () => {
   };
 
   useEffect(() => { fetchDevoluciones(); }, []);
-  const handleSaveDevolucion = () => fetchDevoluciones();
+  const handleSaveDevolucion = () => {
+    fetchDevoluciones();
+    setIsModalOpen(false);
+    setDevolucionToEdit(null);
+  };
 
   const handleDeleteDevolucion = async () => {
     if (!devolucionToDelete) return;
@@ -60,9 +64,9 @@ const AdminDevoluciones = () => {
     const lower = searchTerm.toLowerCase();
     return devoluciones.filter((d) => {
 
-      const nombreCliente = d.usuario?.nombreUsuario || '';
-      const apellidoCliente = d.usuario?.primerApellido || '';
-      const nombreCompleto = `${nombreCliente} ${apellidoCliente}`.toLowerCase();
+      const nombreUsuario = d.nombreUsuario || '';
+      const apellidoUsuario = d.primerApellido || '';
+      const nombreCompleto = `${nombreUsuario} ${apellidoUsuario}`.toLowerCase();
 
       return (
 
@@ -121,9 +125,9 @@ const AdminDevoluciones = () => {
                 {filteredDevoluciones.length > 0 ? filteredDevoluciones.map(d => (
                   <tr key={d.id_devolucion}>
                     <td>{d.id_devolucion}</td>
-                    <td>{d.usuario?.nombre || d.usuario?.idUsuario}</td>
-                    <td>#{d.pedido?.idPedido}</td>
-                    <td>{d.producto?.nombreProducto}</td>
+                    <td>{d.nombreUsuario} {d.primerApellido}</td>
+                    <td>#{d.idPedido}</td>
+                    <td>{d.nombreProducto || 'N/A'}</td>
                     <td><span className={d.tipoSolicitud.toLowerCase() === 'cambio' ? 'tipo-cambio' : 'tipo-devolucion'}>{d.tipoSolicitud}</span></td>
                     <td>{d.motivo.substring(0, 50) + (d.motivo.length > 50 ? '...' : '')}</td>
                     <td><span className={`estado-${d.estadoSolicitud.toLowerCase().replace(' ', '-')}`}>{d.estadoSolicitud}</span></td>
@@ -133,7 +137,7 @@ const AdminDevoluciones = () => {
                       <button className="btn-eliminar" onClick={() => setDevolucionToDelete(d)}><TrashIcon size={16} /></button>
                     </td>
                   </tr>
-                )) : <tr><td colSpan="7" className="no-users">No se encontraron devoluciones.</td></tr>}
+                )) : <tr><td colSpan="9" className="no-users">No se encontraron devoluciones.</td></tr>}
               </tbody>
             </table>
           </div>

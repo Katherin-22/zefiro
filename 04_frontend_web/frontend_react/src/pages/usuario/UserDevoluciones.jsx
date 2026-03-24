@@ -1,39 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { Truck, CheckCircle, Clock, XCircle, RefreshCw, Eye, Edit3, } from "lucide-react";
+import { Truck, CheckCircle, Clock, XCircle, RefreshCw, Edit3, } from "lucide-react";
 import { useAuth } from "../../context/AuthContext"; // 1. IMPORTA TU HOOK
 import axios from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import DevolucionFormModal from "../../components/gestiondevoluciones/modals/DevolucionFormModal";
 import "../../styles/gestionusuarios/userDevoluciones.css";
 
-// --- COMPONENTE AUXILIAR: ETIQUETA DE ESTADO ---
+// ---  ETIQUETA DE ESTADO ---
 const EstadoDevolucion = ({ estado }) => {
   let Icon = Clock;
   let className = "status-pendiente";
 
   switch (estado) {
-    case "Pendiente":
-      Icon = Clock;
-      className = "status-pendiente";
-      break;
-    case "En proceso":
-      Icon = RefreshCw;
-      className = "status-warning";
-      break;
-    case "Aprobada":
-      Icon = CheckCircle;
-      className = "status-success";
-      break;
-    case "Rechazada":
-      Icon = XCircle;
-      className = "status-error";
-      break;
-    case "Completada":
-      Icon = Truck;
-      className = "status-info";
-      break;
-    default:
-      Icon = Clock;
+    case "Pendiente": Icon = Clock; className = "status-pendiente"; break;
+    case "En proceso": Icon = RefreshCw; className = "status-warning"; break;
+    case "Aprobada": Icon = CheckCircle; className = "status-success"; break;
+    case "Rechazada": Icon = XCircle; className = "status-error"; break;
+    case "Completada": Icon = Truck; className = "status-info"; break;
+    default: Icon = Clock;
   }
 
   return (
@@ -47,17 +31,43 @@ const EstadoDevolucion = ({ estado }) => {
 // --- COMPONENTE PRINCIPAL ---
 const UserDevoluciones = () => {
   const { user } = useAuth();
+  const { idPedido, idProducto } = useParams(); // <--- Captura los datos de la URL
   const location = useLocation();
   const navigate = useNavigate();
 
-// 1. Usamos estados locales para los datos preseleccionados
+  // 1. Usamos estados locales para los datos preseleccionados
+
+  const [pedidosCompletados, setPedidosCompletados] = useState([]);
   const [pedidoPreseleccionado, setPedidoPreseleccionado] = useState(location.state?.pedidoSeleccionado || null);
   const [productoPreseleccionado, setProductoPreseleccionado] = useState(location.state?.productoSeleccionado || null);
   const [devoluciones, setDevoluciones] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(!!pedidoPreseleccionado);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDevolucion, setSelectedDevolucion] = useState(null);
   const userRoleActual = user?.idRol === 2 ? "admin" : "cliente";
+
+  // --- NUEVA FUNCIÓN PARA CARGAR PEDIDOS ---
+  const fetchPedidosCompletados = async (userId) => {
+    const token = localStorage.getItem("authToken")?.replace(/"/g, "");
+    try {
+      const res = await axios.get(`http://localhost:8080/api/pedidos/usuario/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("DATOS DE PEDIDOS RECIBIDOS:", res.data);
+
+      const validos = res.data.filter(p =>
+        p.estadoPedido === "Entregado" ||
+        p.estadoPedido === "Completado" ||
+        p.estadoPedido === "Pendiente"
+      );
+
+      console.log("PEDIDOS QUE PASARON EL FILTRO:", validos);
+      setPedidosCompletados(validos);
+    } catch (error) {
+      console.error("Error cargando pedidos para el selector:", error);
+    }
+  };
 
   // Cargar las devoluciones del usuario logueado
   const fetchMisDevoluciones = async () => {
@@ -92,16 +102,33 @@ const UserDevoluciones = () => {
 
   useEffect(() => {
     if (user) {
-      fetchMisDevoluciones();
+      const id = user.id || user.idUsuario;
+      if (id) {
+        fetchPedidosCompletados(id);
+        fetchMisDevoluciones();
+      }
     }
   }, [user]);
 
   useEffect(() => {
-    if (location.state?.pedidoSeleccionado) {
-      // Limpiamos la "mochila" de la URL para que al recargar o cerrar no se reabra
+
+    if (idPedido) {
+      setPedidoPreseleccionado(idPedido);
+      if (idProducto) {
+        setProductoPreseleccionado(idProducto);
+      }
+      setIsModalOpen(true);
+    }
+    // PRIORIDAD 2: Si viene por estado de navegación (Clic interno)
+    // Solo limpiar si ya tenemos los datos guardados en nuestros estados locales
+
+    else if (location.state?.pedidoSeleccionado) {
+      setPedidoPreseleccionado(location.state.pedidoSeleccionado);
+      setProductoPreseleccionado(location.state.productoSeleccionado);
+      setIsModalOpen(true);
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location, navigate]);
+  }, [idPedido, idProducto, location.state, navigate, location.pathname]);
 
   const handleOpenModal = (dev = null) => {
     if (dev) {
@@ -118,7 +145,7 @@ const UserDevoluciones = () => {
   };
 
   const handleCloseModal = () => {
-   setIsModalOpen(false);
+    setIsModalOpen(false);
     setSelectedDevolucion(null);
     setPedidoPreseleccionado(null); // Limpiamos para la próxima vez
     setProductoPreseleccionado(null);
@@ -146,9 +173,9 @@ const UserDevoluciones = () => {
         <thead>
           <tr>
             <th>ID Devolución</th>
-            <th>Producto</th>
             <th>Pedido</th>
-            <th>Tipo</th>
+            <th>Producto</th>
+            <th>Tipo Solicitud</th>
             <th>Motivo</th>
             <th>Fecha Solicitud</th>
             <th>Estado</th>
@@ -156,43 +183,33 @@ const UserDevoluciones = () => {
           </tr>
         </thead>
         <tbody>
-          {devoluciones.map((dev) => (
-            <tr key={dev.id_devolucion}>
-              <td>{dev.id_devolucion}</td>
-              <td>{dev.producto ? dev.producto.nombreProducto : "N/A"}</td>
-              <td>{dev.pedido ? `#${dev.pedido.idPedido}` : "N/A"}</td>
-              <td>{dev.tipoSolicitud}</td>
-              <td className="motivo-cell">{dev.motivo}</td>
-              <td>{dev.fechaSolicitud}</td>
-              <td>
-                <EstadoDevolucion estado={dev.estadoSolicitud} />
-              </td>
-              <td>
-                <div className="action-buttons">
-                  <button
-                    className="btn-view"
-                    onClick={() => handleOpenModal(dev)}
-                    title="Ver detalles"
-                  >
-                    {" "}
-                    <Eye size={16} />{" "}
-                  </button>
+          {devoluciones.map((dev) => {
+            // 1. IDs Normalizados
+            const idPed = dev.pedido?.idPedido || dev.idPedido;
+            const nombreAMostrar = dev.nombreProducto || "Producto";
+            const uniqueKey = dev.id_devolucion || dev.idDevolucion || Math.random();
 
-                  {/* Lógica del controlador: solo editar si está Pendiente */}
-                  {dev.estadoSolicitud === "Pendiente" && (
-                    <button
-                      className="btn-edit"
-                      onClick={() => handleOpenModal(dev)}
-                      title="Editar solicitud"
-                    >
-                      {" "}
-                      <Edit3 size={16} />{" "}
-                    </button>
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
+            return (
+              <tr key={uniqueKey}>
+                <td>{dev.id_devolucion || dev.idDevolucion}</td>
+                <td>#{idPed || "N/A"}</td>
+               <td >{nombreAMostrar}</td>
+                <td>{dev.tipoSolicitud}</td>
+                <td className="motivo-cell">{dev.motivo}</td>
+                <td>{dev.fechaSolicitud}</td>
+                <td><EstadoDevolucion estado={dev.estadoSolicitud} /></td>
+                <td>
+                  <div className="action-buttons">
+                    {dev.estadoSolicitud === "Pendiente" && (
+                      <button className="btn-edit" onClick={() => handleOpenModal(dev)} title="Editar solicitud">
+                        <Edit3 size={16} />
+                      </button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     );
@@ -218,8 +235,11 @@ const UserDevoluciones = () => {
         }}
         devolucionToEdit={selectedDevolucion}
         userRole={userRoleActual}
-        pedido={pedidoPreseleccionado}
-        producto={productoPreseleccionado}
+        pedidosCompletados={pedidosCompletados}
+
+        pedido={selectedDevolucion?.pedido?.idPedido || pedidoPreseleccionado?.idPedido || pedidoPreseleccionado || null}
+        producto={selectedDevolucion?.producto?.idProducto || productoPreseleccionado?.idProducto || productoPreseleccionado || null}
+        userId={user?.id || user?.idUsuario}
 
       />
     </div>

@@ -3,10 +3,7 @@ import logo from "../../../src/assets/logo.png";
 import "../../../src/styles/administrador/menuAdmin.css";
 import { Link, useLocation } from "react-router-dom";
 
-
-
 const MenuAdmin = () => {
-  const [isClosed, setIsClosed] = useState(false);
   const [activeTab, setActiveTab] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
@@ -33,18 +30,16 @@ const MenuAdmin = () => {
     else if (path.includes("/Administrador/Dashboard")) setActiveTab("Dashboard");
   }, [location]);
 
-
-
   // Sidebar para desktop (versión original con IDs)
   const DesktopSidebar = () => (
-    <nav id="admin-sidebar" className={`slidebar ${isClosed ? "close" : ""}`}>
+    <nav id="admin-sidebar" className="slidebar">
       <header id="admin-sidebar-header">
         <div id="admin-logo-container" className="image-text">
           <div id="admin-title-container" className="text header-text">
             <span id="admin-title" className="name">ADMINISTRADOR</span>
+            <span id="admin-subtitle" className="profession">Panel de Control</span>
           </div>
         </div>
-
       </header>
 
       <div id="admin-menu-container" className="menu-bar">
@@ -91,13 +86,11 @@ const MenuAdmin = () => {
                 <span className="text nav-text admin-menu-text">Gestionar Devoluciones</span>
               </Link>
             </li>
-
           </ul>
         </div>
 
         <div id="admin-bottom-menu" className="botton-content">
-
-          <li id="admin-menu-logout" className="nav link">
+          <li id="admin-menu-home" className="nav link">
             <Link to={"/"} className="admin-menu-link admin-home-link">
               <i className="bi bi-house admin-menu-icon"></i>
               <span className="text nav-text admin-menu-text">Página Principal</span>
@@ -118,12 +111,22 @@ const MenuAdmin = () => {
     </nav>
   );
 
-  // Menú inferior para móvil (5 iconos con IDs)
+  // Menú inferior para móvil (5 iconos) - SIN CAMBIOS
   const MobileBottomNav = () => (
     <>
-      {/* Barra inferior fija con 5 opciones */}
       <nav id="admin-mobile-nav" className="admin-mobile-bottom-nav">
         <div id="admin-mobile-nav-container" className="admin-mobile-nav-container">
+
+          {/* Dashboard */}
+          <Link 
+            id="mobile-nav-dashboard"
+            to="/Administrador/Dashboard" 
+            className={`admin-mobile-nav-item ${activeTab === "Dashboard" ? "active" : ""}`}
+            onClick={() => setActiveTab("Dashboard")}
+          >
+            <i className="bi bi-speedometer2 mobile-nav-icon"></i>
+            <span className="mobile-nav-text">Dashboard</span>
+          </Link>
 
           {/* Inventario */}
           <Link
@@ -156,17 +159,6 @@ const MenuAdmin = () => {
           >
             <i className="bi bi-box2-fill mobile-nav-icon"></i>
             <span className="mobile-nav-text">Pedidos</span>
-          </Link>
-
-          {/* Chat */}
-          <Link
-            id="mobile-nav-chat"
-            to="/Administrador/Inbox"
-            className={`admin-mobile-nav-item ${activeTab === "chat" ? "active" : ""}`}
-            onClick={() => setActiveTab("chat")}
-          >
-            <i className="bi bi-chat-dots-fill mobile-nav-icon"></i>
-            <span className="mobile-nav-text">Chat</span>
           </Link>
 
           {/* Más opciones (dropdown) */}
@@ -213,12 +205,11 @@ const MenuAdmin = () => {
 
               <hr id="dropdown-divider" className="dropdown-divider" />
 
-              <Link
-                id="dropdown-devoluciones"
-                to="/"
+              <Link 
+                id="dropdown-home"
+                to="/" 
                 className="dropdown-item"
                 onClick={() => {
-                  setActiveTab("devoluciones");
                   document.querySelector('.admin-mobile-dropdown')?.classList.remove('show');
                 }}
               >
@@ -230,15 +221,14 @@ const MenuAdmin = () => {
                 id="dropdown-logout"
                 to="/"
                 className="dropdown-item logout"
-                onClick={() => document.querySelector('.admin-mobile-dropdown')?.classList.remove('show')}
+                onClick={(e) => {
+                  e.preventDefault();
+                  localStorage.clear();
+                  window.location.href = '/loginpage';
+                }}
               >
                 <i className="bi bi-door-closed dropdown-icon"></i>
-                <span onClick={() => {
-                  localStorage.removeItem('authToken');
-                  localStorage.removeItem('userData');
-                  window.location.href = '/loginpage';
-                }
-                } className="dropdown-text">Cerrar sesión</span>
+                <span className="dropdown-text">Cerrar sesión</span>
               </Link>
             </div>
           </div>
@@ -247,10 +237,16 @@ const MenuAdmin = () => {
     </>
   );
 
-  // Retornamos el componente apropiado según el dispositivo
+   // Retornamos AMBAS versiones
   return (
     <>
-      {isMobile ? <MobileBottomNav /> : <DesktopSidebar />}
+      <div className="admin-desktop-only">
+        <DesktopSidebar />
+      </div>
+      
+      <div className="admin-mobile-only">
+        <MobileBottomNav />
+      </div>
     </>
   );
 };

@@ -102,7 +102,7 @@ import Login from '../components/iniciosesion/Login'                        // C
 import PerfilUsuario from '../pages/usuario/PerfilUsuario'                  // Perfil usuario
 
 /* ==============================
-   DEVOPLUCIONES USUARIO
+   DEVOLUCIONES USUARIO
 ============================== */
 import UserDevoluciones from '../pages/usuario/UserDevoluciones'                  // Devoluciones usuario
 
@@ -414,7 +414,7 @@ function AppRoutes() {
             } />
 
             {/* 🔓 Devoluciones usuarios */}
-            <Route path='/userdevoluciones' element={<UserDevoluciones />} />
+            <Route path='/userdevoluciones/:idPedido?/:idProducto?' element={<UserDevoluciones />} />
 
             {/* ========== CARRITO USUARIO ========== */}
 
