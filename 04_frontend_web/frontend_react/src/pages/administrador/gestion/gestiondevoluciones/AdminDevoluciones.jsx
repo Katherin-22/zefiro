@@ -19,6 +19,7 @@ const AdminDevoluciones = () => {
   // Nuevo estado para el modal de editar estado
   const [devolucionToEditEstado, setDevolucionToEditEstado] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
 
@@ -51,6 +52,15 @@ const AdminDevoluciones = () => {
     fetchDevoluciones(); 
   }, []);
   
+  // 🕒 Debounce para la búsqueda - mejora el rendimiento
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300); // Espera 300ms después de que el usuario deja de escribir
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+  
   const handleSaveDevolucion = () => fetchDevoluciones();
 
   const handleDeleteDevolucion = async () => {
@@ -77,18 +87,39 @@ const AdminDevoluciones = () => {
     }
   };
 
+  // 🔎 Función para filtrar devoluciones (CORREGIDA Y MEJORADA)
   const filteredDevoluciones = useMemo(() => {
-    if (!searchTerm) return devoluciones;
-    const lower = searchTerm.toLowerCase();
-    return devoluciones.filter(d =>
-      (d.motivo || '').toLowerCase().includes(lower) ||
-      (d.tipoSolicitud || '').toLowerCase().includes(lower) ||
-      (d.estadoSolicitud || '').toLowerCase().includes(lower) ||
-      (d.usuario?.idUsuario?.toString() || '').includes(lower)
-    );
-  }, [devoluciones, searchTerm]);
+    if (!debouncedSearchTerm) return devoluciones;
+    const lower = debouncedSearchTerm.toLowerCase().trim();
+    
+    return devoluciones.filter(d => {
+      // Convertir todo a string de forma segura
+      const motivo = String(d.motivo || '').toLowerCase();
+      const tipoSolicitud = String(d.tipoSolicitud || '').toLowerCase();
+      const estadoSolicitud = String(d.estadoSolicitud || '').toLowerCase();
+      const idDevolucion = String(d.id_devolucion || '').toLowerCase();
+      const usuarioId = String(d.usuario?.idUsuario || '').toLowerCase();
+      const fechaSolicitud = String(d.fechaSolicitud || '').toLowerCase();
+      
+      // Buscar en múltiples campos
+      return (
+        motivo.includes(lower) ||
+        tipoSolicitud.includes(lower) ||
+        estadoSolicitud.includes(lower) ||
+        idDevolucion.includes(lower) ||
+        usuarioId.includes(lower) ||
+        fechaSolicitud.includes(lower)
+      );
+    });
+  }, [devoluciones, debouncedSearchTerm]);
 
-  if (loading) return (
+  // Función para limpiar la búsqueda
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    setDebouncedSearchTerm("");
+  };
+
+  if (loading && devoluciones.length === 0) return (
     <div className={styles.adminContainer}>
       <p className={styles.loadingText}>Cargando devoluciones...</p>
     </div>
@@ -111,6 +142,14 @@ const AdminDevoluciones = () => {
           <div className={styles.adminHeader}>
             <h2>Panel de Gestión de Devoluciones</h2>
             <p>Vista de Administrador: Control total sobre los registros de devoluciones y cambios.</p>
+            {debouncedSearchTerm && (
+              <div className={styles.searchInfo}>
+                Mostrando resultados para: <strong>"{debouncedSearchTerm}"</strong>
+                <button onClick={handleClearSearch} className={styles.clearSearch}>
+                  ✕
+                </button>
+              </div>
+            )}
           </div>
 
           <div className={styles.adminActions}>
@@ -127,7 +166,7 @@ const AdminDevoluciones = () => {
               <Search className={styles.iconSearch} size={18} />
               <input 
                 type="text" 
-                placeholder="Buscar por motivo, estado, o ID de usuario..." 
+                placeholder="Buscar por ID, motivo, tipo, estado, usuario o fecha..." 
                 value={searchTerm} 
                 onChange={(e) => setSearchTerm(e.target.value)} 
               />
@@ -152,7 +191,7 @@ const AdminDevoluciones = () => {
                   <tr key={d.id_devolucion}>
                     <td>{d.id_devolucion}</td>
                     <td>{d.usuario?.idUsuario || 'N/A'}</td>
-                    <td>{d.motivo.substring(0, 50) + (d.motivo.length > 50 ? '...' : '')}</td>
+                    <td title={d.motivo}>{d.motivo.substring(0, 50) + (d.motivo.length > 50 ? '...' : '')}</td>
                     <td>
                       <span className={d.tipoSolicitud?.toLowerCase() === 'cambio' ? styles.tipoCambio : styles.tipoDevolucion}>
                         {d.tipoSolicitud}
@@ -169,9 +208,8 @@ const AdminDevoluciones = () => {
                         {d.estadoSolicitud}
                       </span>
                     </td>
-                    <td>{d.fechaSolicitud}</td>
+                    <td>{new Date(d.fechaSolicitud).toLocaleDateString()}</td>
                     <td>
-                      
                       {/* NUEVO BOTÓN PARA CAMBIAR ESTADO */}
                       <button 
                         className={styles.btnEstado} 
@@ -192,7 +230,11 @@ const AdminDevoluciones = () => {
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan="7" className={styles.noUsers}>No se encontraron devoluciones.</td>
+                    <td colSpan="7" className={styles.noUsers}>
+                      {debouncedSearchTerm 
+                        ? `No se encontraron resultados para "${debouncedSearchTerm}"` 
+                        : "No hay devoluciones registradas."}
+                    </td>
                   </tr>
                 )}
               </tbody>

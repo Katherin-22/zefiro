@@ -15,6 +15,7 @@ const AdminUserManagement = () => {
   const [userToEdit, setUserToEdit] = useState(null);
   const [userToDelete, setUserToDelete] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
 
@@ -85,18 +86,46 @@ const AdminUserManagement = () => {
     fetchUsers();
   }, []);
 
-  // 🔎 Función para filtrar usuarios (optimizada con useMemo)
+  // 🕒 Debounce para la búsqueda - mejora el rendimiento
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300); // Espera 300ms después de que el usuario deja de escribir
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // 🔎 Función para filtrar usuarios (CORREGIDA - MANEJA TIPOS DE DATOS)
   const filteredUsers = useMemo(() => {
-    if (!searchTerm) return users;
-    const lower = searchTerm.toLowerCase();
-    return users.filter(
-      (u) =>
-        (u.nombreUsuario || '').toLowerCase().includes(lower) ||
-        (u.correoElectronico || '').toLowerCase().includes(lower) ||
-        (u.rol || '').toLowerCase().includes(lower) ||
-        (u.numeroDocumento || '').includes(lower) // Búsqueda por documento
-    );
-  }, [users, searchTerm]);
+    if (!debouncedSearchTerm) return users;
+    const lower = debouncedSearchTerm.toLowerCase().trim();
+    
+    return users.filter((u) => {
+      // Crear nombre completo para búsqueda
+      const nombreCompleto = `${u.nombreUsuario || ''} ${u.primerApellido || ''} ${u.segundoApellido || ''}`.toLowerCase();
+      const nombreUsuario = (u.nombreUsuario || '').toLowerCase();
+      const primerApellido = (u.primerApellido || '').toLowerCase();
+      const segundoApellido = (u.segundoApellido || '').toLowerCase();
+      const email = (u.correoElectronico || '').toLowerCase();
+      const rol = (u.rol || '').toLowerCase();
+      
+      // 🔧 CORRECCIÓN: Convertir a string antes de usar toLowerCase
+      const documento = String(u.numeroDocumento || '').toLowerCase();
+      const telefono = String(u.telefono || '').toLowerCase();
+      
+      // Buscar en múltiples campos
+      return (
+        nombreCompleto.includes(lower) ||
+        nombreUsuario.includes(lower) ||
+        primerApellido.includes(lower) ||
+        segundoApellido.includes(lower) ||
+        email.includes(lower) ||
+        rol.includes(lower) ||
+        documento.includes(lower) ||
+        telefono.includes(lower)
+      );
+    });
+  }, [users, debouncedSearchTerm]);
 
   // 💾 Actualiza la lista localmente después de crear/editar
   const handleSaveUser = (newUser) => {
@@ -142,7 +171,12 @@ const AdminUserManagement = () => {
       setUserToDelete(null); // Cerramos el modal
     }
   };
-  // --------------------------------------------------------------------
+
+  // Función para limpiar la búsqueda
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    setDebouncedSearchTerm("");
+  };
 
   return (
     <div className={styles.adminTheme}>
@@ -153,6 +187,14 @@ const AdminUserManagement = () => {
         <div className={styles.adminContainer}>
           <div className={styles.adminHeader}>
             <h2>Panel de Gestión de Usuarios</h2>
+            {debouncedSearchTerm && (
+              <div className={styles.searchInfo}>
+                Mostrando resultados para: <strong>"{debouncedSearchTerm}"</strong>
+                <button onClick={handleClearSearch} className={styles.clearSearch}>
+                  ✕
+                </button>
+              </div>
+            )}
           </div>
 
           <div className={styles.adminActions}>
@@ -170,7 +212,7 @@ const AdminUserManagement = () => {
               <Search className={styles.iconSearch} size={18} />
               <input
                 type="text"
-                placeholder="Buscar usuario..."
+                placeholder="Buscar por nombre, email, rol, documento o teléfono..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -182,7 +224,7 @@ const AdminUserManagement = () => {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Nombre</th>
+                  <th>Nombre Completo</th>
                   <th>Email</th>
                   <th>Rol</th>
                   <th>Estado</th>
@@ -208,7 +250,8 @@ const AdminUserManagement = () => {
                     <tr key={user.id}>
                       <td>{user.id}</td>
                       <td>
-                        {user.nombreUsuario} {user.primerApellido}
+                        <strong>{user.nombreUsuario} {user.primerApellido}</strong>
+                        {user.segundoApellido && ` ${user.segundoApellido}`}
                       </td>
                       <td>{user.correoElectronico}</td>
                       <td>{user.rol}</td>
@@ -244,7 +287,9 @@ const AdminUserManagement = () => {
                 ) : (
                   <tr>
                     <td colSpan="6" className={styles.noUsers}>
-                      No se encontraron usuarios.
+                      {debouncedSearchTerm 
+                        ? `No se encontraron resultados para "${debouncedSearchTerm}"` 
+                        : "No hay usuarios registrados."}
                     </td>
                   </tr>
                 )}
