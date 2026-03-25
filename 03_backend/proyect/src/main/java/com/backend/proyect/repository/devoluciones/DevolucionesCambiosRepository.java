@@ -11,6 +11,9 @@ import java.util.Optional;
 
 @Repository
 public interface  DevolucionesCambiosRepository extends JpaRepository<DevolucionesCambios, Integer> {
+
+    boolean existsByUsuario(Usuario usuario);
+
     List<DevolucionResumen> findByUsuario(Usuario usuario);
 
     List<DevolucionResumen> findAllProjectedBy();

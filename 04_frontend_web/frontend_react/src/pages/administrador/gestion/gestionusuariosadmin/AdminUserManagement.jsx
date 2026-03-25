@@ -1,15 +1,17 @@
 import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import { PencilIcon, TrashIcon, UserPlusIcon, Search } from "lucide-react";
+import { useAuth } from "../../../../context/AuthContext";
 import "../../../../styles/gestionusuarios/adminUsuarios.css";
 
 // 🔑 Importamos los subcomponentes y las constantes
 import MenuAdmin from "../../../../layouts/administrador/menuAdmin";
 import UserFormModal from "../../../../components/gestionusuarios/modals/UserFormModal";
-import '../../../../styles/administrador/inventario.css';
 import DeleteConfirmModal from "../../../../components/gestionusuarios/modals/DeleteConfirmModal";
+import '../../../../styles/administrador/inventario.css';
 
 const AdminUserManagement = () => {
+  const { user: currentAdmin } = useAuth();
   const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userToEdit, setUserToEdit] = useState(null);
@@ -115,6 +117,13 @@ const AdminUserManagement = () => {
     const userId = userToDelete.id;
     const userName = userToDelete.nombreUsuario;
 
+    // 🛡️ VALIDACIÓN
+    if (currentAdmin && userId === currentAdmin.idUsuario) {
+      alert("❌ Acción denegada: No puedes eliminar tu propia cuenta de administrador.");
+      setUserToDelete(null);
+      return;
+    }
+
     try {
       const token = localStorage.getItem("authToken")?.replace(/"/g, "");
 
@@ -124,15 +133,17 @@ const AdminUserManagement = () => {
       }
 
       // Esta línea funciona porque userToDelete.id ya está NORMALIZADO
-      await axios.delete(`http://localhost:8080/api/usuarios/${userId}`, {
+      const response = await axios.delete(`http://localhost:8080/api/usuarios/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      // Éxito: Actualizamos el estado de la tabla localmente
-      setUsers(users.filter((u) => u.id !== userId));
-      console.log(`Usuario ${userName} (ID ${userId}) eliminado correctamente en la DB.`);
+      if (response.data.deleted) {
+        // Éxito: Actualizamos el estado de la tabla localmente
+        setUsers(prevUsers => prevUsers.filter((u) => u.id !== userId));
+        console.log(`Usuario ${userName} (ID ${userId}) eliminado correctamente en la DB.`);
+      }
 
     } catch (err) {
       console.error("❌ Error al eliminar usuario:", err.response || err);
@@ -236,6 +247,10 @@ const AdminUserManagement = () => {
                         <button
                           className="btn-eliminar"
                           onClick={() => setUserToDelete(user)}
+
+                          style={user.id === currentAdmin?.idUsuario ? { opacity: 0.3, cursor: 'not-allowed' } : {}}
+                          title={user.id === currentAdmin?.idUsuario ? "No puedes eliminarte a ti mismo" : "Eliminar usuario"}
+                          disabled={user.id === currentAdmin?.idUsuario} // Bloquea el clic
                         >
                           <TrashIcon size={16} />
                         </button>
