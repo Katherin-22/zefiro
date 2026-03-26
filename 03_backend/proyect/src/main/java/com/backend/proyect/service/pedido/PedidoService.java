@@ -35,21 +35,21 @@ public class PedidoService {
                 dto.setFechaPedido(sqlDate.toLocalDate());
             }
 
-        // NUEVO: Mapear el estado (ahora está en la posición 2)
-        dto.setEstado(fila[2] != null ? (String) fila[2] : null);
+            // NUEVO: Mapear el estado (ahora está en la posición 2)
+            dto.setEstado(fila[2] != null ? (String) fila[2] : null);
 
-        // Los índices se corren por la nueva columna
-        dto.setNombreUsuario(fila[3] != null ? (String) fila[3] : null);
-        dto.setCodigoReferencia(fila[4] != null ? (String) fila[4] : null);
-        dto.setNombreProducto(fila[5] != null ? (String) fila[5] : null);
-        dto.setNombreColor(fila[6] != null ? (String) fila[6] : null);
-        dto.setNombre(fila[7] != null ? (String) fila[7] : null);
-        dto.setCantidad(fila[8] != null ? ((Number) fila[8]).intValue() : null);
-        dto.setPrecioUnitario(fila[9] != null ? BigDecimal.valueOf(((Number) fila[9]).doubleValue()) : null);
-        dto.setNombrePromocion(fila[10] != null ? (String) fila[10] : null);
-        dto.setDescuento(fila[11] != null ? BigDecimal.valueOf(((Number) fila[11]).doubleValue()) : null);
+            // Los índices se corren por la nueva columna
+            dto.setNombreUsuario(fila[3] != null ? (String) fila[3] : null);
+            dto.setCodigoReferencia(fila[4] != null ? (String) fila[4] : null);
+            dto.setNombreProducto(fila[5] != null ? (String) fila[5] : null);
+            dto.setNombreColor(fila[6] != null ? (String) fila[6] : null);
+            dto.setNombre(fila[7] != null ? (String) fila[7] : null);
+            dto.setCantidad(fila[8] != null ? ((Number) fila[8]).intValue() : null);
+            dto.setPrecioUnitario(fila[9] != null ? BigDecimal.valueOf(((Number) fila[9]).doubleValue()) : null);
+            dto.setNombrePromocion(fila[10] != null ? (String) fila[10] : null);
+            dto.setDescuento(fila[11] != null ? BigDecimal.valueOf(((Number) fila[11]).doubleValue()) : null);
 
-        pedidosDTO.add(dto);
+            pedidosDTO.add(dto);
 
         }
 
@@ -85,7 +85,7 @@ public class PedidoService {
         // 1. Buscar el pedido
         Pedido pedido = obtenerPedidoPorId(idPedido);
 
-        System.out.println("🔍 Pedido encontrado - ID: " + idPedido + ", Estado actual: " + pedido.getEstado());
+        System.out.println("🔍 Pedido encontrado - ID: " + idPedido + ", Estado actual: " + pedido.getEstadoPedido());
         System.out.println("📥 Nuevo estado recibido: '" + nuevoEstadoStr + "'");
 
         // 2. MAPEAR String del frontend al Enum
@@ -108,12 +108,12 @@ public class PedidoService {
         }
 
         // 3. Asignar el nuevo estado
-        pedido.setEstado(nuevoEstado);
+        pedido.setEstadoPedido(nuevoEstado);
 
         // 4. Guardar en base de datos
         Pedido pedidoActualizado = pedidoRepository.save(pedido);
 
-        System.out.println("✅ Estado actualizado a: " + pedidoActualizado.getEstado());
+        System.out.println("✅ Estado actualizado a: " + pedidoActualizado.getEstadoPedido());
 
         return pedidoActualizado;
     }

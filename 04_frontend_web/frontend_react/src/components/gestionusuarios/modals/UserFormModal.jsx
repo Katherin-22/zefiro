@@ -69,8 +69,28 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
     setIsError("");
     setMessage("");
 
+    // Validación de contraseña
+    const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).*$/;
+    
+    if (!userToEdit || formData.password) {
+      if (formData.password.length < 8 || formData.password.length > 20) {
+        setIsError("La contraseña debe tener entre 8 y 20 caracteres.");
+        return;
+      }
+      if (!passwordRegex.test(formData.password)) {
+        setIsError("La contraseña debe incluir mayúsculas, minúsculas, números y un símbolo (@#$%^&+=!).");
+        return;
+      }
+    }
+
     if (formData.password !== formData.confirmPassword) {
-      setIsError("Las contraseñas no coinciden.");
+      setIsError("Error: Las contraseñas no coinciden.");
+      return;
+    }
+
+    const telefonoRegex = /^[0-9]{10}$/;
+    if (!telefonoRegex.test(formData.telefono)) {
+      setIsError("El teléfono debe tener exactamente 10 dígitos numéricos.");
       return;
     }
 

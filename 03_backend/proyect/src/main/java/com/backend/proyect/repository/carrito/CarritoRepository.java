@@ -13,6 +13,9 @@ public interface CarritoRepository extends JpaRepository<Carrito, Integer> {
     // Busca el carrito activo de un usuario específico (Método original)
     Optional<Carrito> findByUsuarioAndEstadoCarrito(Usuario usuario, EstadoCarritoEnum estadoCarrito);
 
+    // Devuelve true si el usuario tiene al menos un carrito (activo o histórico)
+    boolean existsByUsuario(Usuario usuario);
+
     // ===================================================================
     // 🌟 NUEVO MÉTODO CRÍTICO: Carga el Carrito con todos los detalles necesarios
     //    para la vista (Detalles, Stock y Producto) en una sola consulta.
