@@ -40,13 +40,13 @@ function RegistrarUsuarios() {
       return;
     }
 
-    const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).*$/;
+    const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!.]).*$/;
     if (password.length < 8 || password.length > 20) {
       setIsError("La contraseña debe tener entre 8 y 20 caracteres.");
       return;
     }
     if (!passwordRegex.test(password)) {
-      setIsError("La contraseña debe incluir mayúsculas, minúsculas, números y un símbolo (@#$%^&+=!).");
+      setIsError("La contraseña debe incluir mayúsculas, minúsculas, números y un símbolo (@#$%^&+=!.).");
       return;
     }
 
@@ -67,9 +67,9 @@ function RegistrarUsuarios() {
 
       if (response.status === 200 && response.data.success === true) {
         setMessage(response.data.message || "¡Registro exitoso! Por favor, verifica tu correo.");
-        setTimeout(() => { 
-          navigate("/email-verify", { 
-            state: { email: correoElectronico, tipo: "verify" } 
+        setTimeout(() => {
+          navigate("/email-verify", {
+            state: { email: correoElectronico, tipo: "verify" }
           });
         }, 2000);
 
@@ -77,13 +77,13 @@ function RegistrarUsuarios() {
         setIsError(response.data.message || "No se pudo completar el registro.");
       }
     } catch (err) {
-      if (err.response?.data?.message) { 
-        setIsError(err.response.data.message); 
+      if (err.response?.data?.message) {
+        setIsError(err.response.data.message);
       } else if (err.response?.status === 400) {
         setIsError("Solicitud inválida. Verifique los datos.");
       } else if (err.response?.status === 500) {
         setIsError("Error del servidor. Intente más tarde.");
-      } else { setIsError("No se pudo crear el usuario. Por favor, intente más tarde.")} ;
+      } else { setIsError("No se pudo crear el usuario. Por favor, intente más tarde.") };
 
       console.error("error detallado:", err);
     }
@@ -93,11 +93,11 @@ function RegistrarUsuarios() {
   return (
     <div className={styles["contenedor-principal"]}>
       <div className={styles.container}>
-        
+
         {/* Columna izquierda: Formulario */}
         <div className={styles.formContainer}>
           <div className={styles.formContent}>
-            
+
             <form onSubmit={save} className={styles.form}>
               <h2 className={styles.title}>Crear una cuenta</h2>
               <p className={styles.description}>

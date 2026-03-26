@@ -19,7 +19,7 @@ public class ResetPasswordRequest {
 
     @NotBlank(message = "La nueva contraseña es obligatoria")
     @Size(min = 8, max = 20, message = "La contraseña debe tener entre 8 y 20 caracteres")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).*$",
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!.]).*$",
             message = "Debe incluir mayúsculas, minúsculas, números y símbolos")
     private String newPassword;
 

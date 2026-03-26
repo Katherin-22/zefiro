@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import { ROLES } from "../constants/roles";
 import "../../../styles/gestionusuarios/adminUsuarios.css";
 
-const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {  
+const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
   const [formData, setFormData] = useState({
     nombreUsuario: "",
     primerApellido: "",
@@ -77,13 +77,13 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
     setMessage("");
 
     // Validación básica de campos
-    const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).*$/;
+    const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!.]).*$/;
     if (formData.password.length < 8 || formData.password.length > 20) {
       setIsError("La contraseña debe tener entre 8 y 20 caracteres.");
       return;
     }
     if (!passwordRegex.test(formData.password)) {
-      setIsError("La contraseña debe incluir mayúsculas, minúsculas, números y un símbolo (@#$%^&+=!).");
+      setIsError("La contraseña debe incluir mayúsculas, minúsculas, números y un símbolo (@#$%^&+=!.).");
       return;
     }
 
@@ -222,193 +222,193 @@ const UserFormModal = ({ isOpen, onClose, onSave, userToEdit }) => {
 
   // ... Resto del render del modal ...
   return (
-  <div className="admin-theme">
-    <div className="modal-overlay">
-      <div className="modal-container">
-        <div className="modal-header">
-          <h3>{userToEdit ? "Editar Usuario" : "Registrar Nuevo Usuario"}</h3>
-          <button onClick={onClose} className="close-btn">
-            <X size={20} />
-          </button>
-        </div>
+    <div className="admin-theme">
+      <div className="modal-overlay">
+        <div className="modal-container">
+          <div className="modal-header">
+            <h3>{userToEdit ? "Editar Usuario" : "Registrar Nuevo Usuario"}</h3>
+            <button onClick={onClose} className="close-btn">
+              <X size={20} />
+            </button>
+          </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
-          <div className="row">
-            {/* Fila 1: Nombre y Primer Apellido */}
-            <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
-                <label>Nombres *</label>
-                <input
-                  type="text"
-                  name="nombreUsuario"
-                  value={formData.nombreUsuario}
-                  onChange={handleChange}
-                  required
-                  className="form-control"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
-                <label>Primer Apellido *</label>
-                <input
-                  type="text"
-                  name="primerApellido"
-                  value={formData.primerApellido}
-                  onChange={handleChange}
-                  required
-                  className="form-control"
-                />
-              </div>
-            </div>
-
-            {/* Fila 2: Segundo Apellido y Cédula */}
-            <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
-                <label>Segundo Apellido *</label>
-                <input
-                  type="text"
-                  name="segundoApellido"
-                  value={formData.segundoApellido}
-                  onChange={handleChange}
-                  required
-                  className="form-control"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
-                <label>Cédula *</label>
-                <input
-                  type="text"
-                  name="numeroDocumento"
-                  value={formData.numeroDocumento}
-                  onChange={handleChange}
-                  required
-                  className="form-control"
-                />
-              </div>
-            </div>
-
-            {/* Fila 3: Teléfono y Correo */}
-            <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
-                <label>Teléfono *</label>
-                <input
-                  type="text"
-                  name="telefono"
-                  value={formData.telefono}
-                  onChange={handleChange}
-                  required
-                  className="form-control"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
-                <label>Correo Electrónico *</label>
-                <input
-                  type="email"
-                  name="correoElectronico"
-                  value={formData.correoElectronico}
-                  onChange={handleChange}
-                  required
-                  className="form-control"
-                />
-              </div>
-            </div>
-
-            {/* Fila 4: Contraseña y Confirmación */}
-            <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
-                <label>Contraseña {userToEdit ? "" : "*"}</label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required={!userToEdit}
-                  className="form-control"
-                />
-              </div>
-            </div>
-            <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
-                <label>Confirmar Contraseña {userToEdit ? "" : "*"}</label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required={!userToEdit}
-                  className="form-control"
-                />
-              </div>
-            </div>
-
-            {/* Fila 5: Rol y Estado */}
-            <div className="col-12 col-lg-6 mb-3">
-              <div className="field">
-                <label>Rol</label>
-                <select 
-                  name="idRol" 
-                  value={formData.idRol} 
-                  onChange={handleChange}
-                  className="form-control"
-                >
-                  {ROLES.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.nombre.charAt(0).toUpperCase() + r.nombre.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="col-12 col-lg-6 mb-3 d-flex align-items-end">
-              <div className="field checkbox-group w-100">
-                <div className="form-check">
+          <form onSubmit={handleSubmit} className="modal-form">
+            <div className="row">
+              {/* Fila 1: Nombre y Primer Apellido */}
+              <div className="col-12 col-lg-6 mb-3">
+                <div className="field">
+                  <label>Nombres *</label>
                   <input
-                    className="form-check-input"
-                    type="checkbox"
-                    name="activo"
-                    id="activoCheckbox"
-                    checked={formData.activo}
+                    type="text"
+                    name="nombreUsuario"
+                    value={formData.nombreUsuario}
                     onChange={handleChange}
+                    required
+                    className="form-control"
                   />
-                  <label className="form-check-label" htmlFor="activoCheckbox">
-                    Usuario Activo
-                  </label>
+                </div>
+              </div>
+              <div className="col-12 col-lg-6 mb-3">
+                <div className="field">
+                  <label>Primer Apellido *</label>
+                  <input
+                    type="text"
+                    name="primerApellido"
+                    value={formData.primerApellido}
+                    onChange={handleChange}
+                    required
+                    className="form-control"
+                  />
+                </div>
+              </div>
+
+              {/* Fila 2: Segundo Apellido y Cédula */}
+              <div className="col-12 col-lg-6 mb-3">
+                <div className="field">
+                  <label>Segundo Apellido *</label>
+                  <input
+                    type="text"
+                    name="segundoApellido"
+                    value={formData.segundoApellido}
+                    onChange={handleChange}
+                    required
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-12 col-lg-6 mb-3">
+                <div className="field">
+                  <label>Cédula *</label>
+                  <input
+                    type="text"
+                    name="numeroDocumento"
+                    value={formData.numeroDocumento}
+                    onChange={handleChange}
+                    required
+                    className="form-control"
+                  />
+                </div>
+              </div>
+
+              {/* Fila 3: Teléfono y Correo */}
+              <div className="col-12 col-lg-6 mb-3">
+                <div className="field">
+                  <label>Teléfono *</label>
+                  <input
+                    type="text"
+                    name="telefono"
+                    value={formData.telefono}
+                    onChange={handleChange}
+                    required
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-12 col-lg-6 mb-3">
+                <div className="field">
+                  <label>Correo Electrónico *</label>
+                  <input
+                    type="email"
+                    name="correoElectronico"
+                    value={formData.correoElectronico}
+                    onChange={handleChange}
+                    required
+                    className="form-control"
+                  />
+                </div>
+              </div>
+
+              {/* Fila 4: Contraseña y Confirmación */}
+              <div className="col-12 col-lg-6 mb-3">
+                <div className="field">
+                  <label>Contraseña {userToEdit ? "" : "*"}</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required={!userToEdit}
+                    className="form-control"
+                  />
+                </div>
+              </div>
+              <div className="col-12 col-lg-6 mb-3">
+                <div className="field">
+                  <label>Confirmar Contraseña {userToEdit ? "" : "*"}</label>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required={!userToEdit}
+                    className="form-control"
+                  />
+                </div>
+              </div>
+
+              {/* Fila 5: Rol y Estado */}
+              <div className="col-12 col-lg-6 mb-3">
+                <div className="field">
+                  <label>Rol</label>
+                  <select
+                    name="idRol"
+                    value={formData.idRol}
+                    onChange={handleChange}
+                    className="form-control"
+                  >
+                    {ROLES.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.nombre.charAt(0).toUpperCase() + r.nombre.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="col-12 col-lg-6 mb-3 d-flex align-items-end">
+                <div className="field checkbox-group w-100">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name="activo"
+                      id="activoCheckbox"
+                      checked={formData.activo}
+                      onChange={handleChange}
+                    />
+                    <label className="form-check-label" htmlFor="activoCheckbox">
+                      Usuario Activo
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Mensajes de error/éxito */}
-          <div className="row">
-            <div className="col-12">
-              {isError && <p className="error-text">⚠️ {isError}</p>}
-              {message && <p className="success-text">{message}</p>}
-            </div>
-          </div>
-
-          {/* Botones */}
-          <div className="modal-footer mt-4">
-            <div className="row w-100">
-              <div className="col-12 d-flex justify-content-end gap-2">
-                <button type="button" onClick={onClose} className="btn-cancelar">
-                  Cancelar
-                </button>
-                <button type="submit" className="btn-guardar">
-                  {userToEdit ? "Guardar Cambios" : "Crear Usuario"}
-                </button>
+            {/* Mensajes de error/éxito */}
+            <div className="row">
+              <div className="col-12">
+                {isError && <p className="error-text">⚠️ {isError}</p>}
+                {message && <p className="success-text">{message}</p>}
               </div>
             </div>
-          </div>
-        </form>
+
+            {/* Botones */}
+            <div className="modal-footer mt-4">
+              <div className="row w-100">
+                <div className="col-12 d-flex justify-content-end gap-2">
+                  <button type="button" onClick={onClose} className="btn-cancelar">
+                    Cancelar
+                  </button>
+                  <button type="submit" className="btn-guardar">
+                    {userToEdit ? "Guardar Cambios" : "Crear Usuario"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default UserFormModal;

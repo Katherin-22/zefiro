@@ -30,7 +30,7 @@ public class UsuarioRequest {
 
     @NotBlank(groups = ValidationGroups.OnCreate.class, message = "La contraseña es obligatoria al registrarse")
     @Size(min = 8, max = 20, message = "La contraseña debe tener entre 8 y 20 caracteres")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).*$",
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!.]).*$",
             message = "Debe incluir mayúsculas, minúsculas, números y símbolos")
     private String password;
 
