@@ -1,12 +1,10 @@
 import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
-import { PencilIcon, TrashIcon, UserPlusIcon, Search } from "lucide-react";
+import { TrashIcon, UserPlusIcon, Search } from "lucide-react";
 // Importa el CSS Module
 import styles from "../../../../styles/gestionardevoluciones/adminDevoluciones.module.css";
 import DevolucionFormModal from "../../../../components/gestiondevoluciones/modals/DevolucionFormModal";
 import DeleteConfirmModal from "../../../../components/gestiondevoluciones/modals/DeleteConfirmModal";
-// Importar el nuevo modal para editar estado
-import EditarEstadoModal from "../../../../components/gestiondevoluciones/modals/EditarEstadoModal";
 import '../../../../styles/administrador/inventario.css';
 import MenuAdmin from "../../../../layouts/administrador/menuAdmin";
 import api_url from "../../../../services/administrador/api";
@@ -16,8 +14,6 @@ const AdminDevoluciones = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [devolucionToEdit, setDevolucionToEdit] = useState(null);
   const [devolucionToDelete, setDevolucionToDelete] = useState(null);
-  // Nuevo estado para el modal de editar estado
-  const [devolucionToEditEstado, setDevolucionToEditEstado] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
@@ -52,11 +48,11 @@ const AdminDevoluciones = () => {
     fetchDevoluciones(); 
   }, []);
   
-  // 🕒 Debounce para la búsqueda - mejora el rendimiento
+  // 🕒 Debounce para la búsqueda
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 300); // Espera 300ms después de que el usuario deja de escribir
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
@@ -87,28 +83,27 @@ const AdminDevoluciones = () => {
     }
   };
 
-  // 🔎 Función para filtrar devoluciones (CORREGIDA Y MEJORADA)
+  // 🔎 Función para filtrar devoluciones
   const filteredDevoluciones = useMemo(() => {
     if (!debouncedSearchTerm) return devoluciones;
     const lower = debouncedSearchTerm.toLowerCase().trim();
     
     return devoluciones.filter(d => {
-      // Convertir todo a string de forma segura
+      // Obtener nombre completo
+      const nombreCompleto = `${d.usuario?.nombre || ''} ${d.usuario?.primerApellido || ''}`.toLowerCase();
       const motivo = String(d.motivo || '').toLowerCase();
       const tipoSolicitud = String(d.tipoSolicitud || '').toLowerCase();
       const estadoSolicitud = String(d.estadoSolicitud || '').toLowerCase();
       const idDevolucion = String(d.id_devolucion || '').toLowerCase();
-      const usuarioId = String(d.usuario?.idUsuario || '').toLowerCase();
-      const fechaSolicitud = String(d.fechaSolicitud || '').toLowerCase();
+      const idPedido = String(d.idPedido || '').toLowerCase();
       
-      // Buscar en múltiples campos
       return (
+        nombreCompleto.includes(lower) ||
         motivo.includes(lower) ||
         tipoSolicitud.includes(lower) ||
         estadoSolicitud.includes(lower) ||
         idDevolucion.includes(lower) ||
-        usuarioId.includes(lower) ||
-        fechaSolicitud.includes(lower)
+        idPedido.includes(lower)
       );
     });
   }, [devoluciones, debouncedSearchTerm]);
@@ -166,7 +161,7 @@ const AdminDevoluciones = () => {
               <Search className={styles.iconSearch} size={18} />
               <input 
                 type="text" 
-                placeholder="Buscar por ID, motivo, tipo, estado, usuario o fecha..." 
+                placeholder="Buscar por nombre, motivo, tipo, estado, ID devolución o pedido..." 
                 value={searchTerm} 
                 onChange={(e) => setSearchTerm(e.target.value)} 
               />
@@ -178,7 +173,8 @@ const AdminDevoluciones = () => {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Usuario ID</th>
+                  <th>Usuario</th>
+                  <th>Pedido ID</th>
                   <th>Motivo</th>
                   <th>Tipo Solicitud</th>
                   <th>Estado</th>
@@ -190,8 +186,11 @@ const AdminDevoluciones = () => {
                 {filteredDevoluciones.length > 0 ? filteredDevoluciones.map(d => (
                   <tr key={d.id_devolucion}>
                     <td>{d.id_devolucion}</td>
-                    <td>{d.usuario?.idUsuario || 'N/A'}</td>
-                    <td title={d.motivo}>{d.motivo.substring(0, 50) + (d.motivo.length > 50 ? '...' : '')}</td>
+                    <td>
+                      {`${d.usuario?.nombre || ''} ${d.usuario?.primerApellido || ''}`.trim() || 'N/A'}
+                    </td>
+                    <td>#{d.idPedido || 'N/A'}</td>
+                    <td title={d.motivo}>{d.motivo?.substring(0, 50) + (d.motivo?.length > 50 ? '...' : '')}</td>
                     <td>
                       <span className={d.tipoSolicitud?.toLowerCase() === 'cambio' ? styles.tipoCambio : styles.tipoDevolucion}>
                         {d.tipoSolicitud}
@@ -208,17 +207,8 @@ const AdminDevoluciones = () => {
                         {d.estadoSolicitud}
                       </span>
                     </td>
-                    <td>{new Date(d.fechaSolicitud).toLocaleDateString()}</td>
+                    <td>{d.fechaSolicitud ? new Date(d.fechaSolicitud).toLocaleDateString() : 'N/A'}</td>
                     <td>
-                      {/* NUEVO BOTÓN PARA CAMBIAR ESTADO */}
-                      <button 
-                        className={styles.btnEstado} 
-                        onClick={() => setDevolucionToEditEstado(d)}
-                        title="Cambiar estado"
-                      >
-                        <span role="img" aria-label="cambiar estado">✏️</span>
-                      </button>
-                      
                       <button 
                         className={styles.btnEliminar} 
                         onClick={() => setDevolucionToDelete(d)}
@@ -230,7 +220,7 @@ const AdminDevoluciones = () => {
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan="7" className={styles.noUsers}>
+                    <td colSpan="8" className={styles.noUsers}>
                       {debouncedSearchTerm 
                         ? `No se encontraron resultados para "${debouncedSearchTerm}"` 
                         : "No hay devoluciones registradas."}
@@ -259,17 +249,6 @@ const AdminDevoluciones = () => {
             onClose={() => setDevolucionToDelete(null)} 
             devolucionName={devolucionToDelete?.id_devolucion || ""} 
             onConfirm={handleDeleteDevolucion} 
-          />
-
-          {/* NUEVO MODAL PARA EDITAR ESTADO */}
-          <EditarEstadoModal 
-            isOpen={!!devolucionToEditEstado}
-            onClose={() => setDevolucionToEditEstado(null)}
-            onSave={() => {
-              fetchDevoluciones();
-              setDevolucionToEditEstado(null);
-            }}
-            devolucion={devolucionToEditEstado}
           />
         </div>
       </div>

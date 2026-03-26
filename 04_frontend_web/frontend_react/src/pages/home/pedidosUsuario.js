@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import api_url from '../../services/administrador/api';
 import MenuHome from '../../layouts/home/menuHome';
 import useAuth from '../../hooks/token/useAuth';
-import DevolucionFormModal from "../../components/gestiondevoluciones/modals/DevolucionFormModal";
 import "../../styles/gestionusuarios/userDevoluciones.css";
 
 const PedidosUsuario = () => {
@@ -15,66 +14,56 @@ const PedidosUsuario = () => {
     const [error, setError] = useState(null);
     const [pedidosExpandidos, setPedidosExpandidos] = useState({});
     const [formData, setFormData] = useState(null);
-    
-    // Estados para el modal de devolución
-    const [isDevolucionModalOpen, setIsDevolucionModalOpen] = useState(false);
-    const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
-    const [productoSeleccionado, setProductoSeleccionado] = useState(null);
 
     const userId = userData?.id || userData?.idUsuario || null;
 
-    // Función para verificar si han pasado menos de 15 días
-    const puedeSolicitarDevolucion = (fechaPedido) => {
-        if (!fechaPedido) return false;
-        
-        const fechaPedidoDate = new Date(fechaPedido);
-        const fechaActual = new Date();
-        const diffTime = Math.abs(fechaActual - fechaPedidoDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        return diffDays <= 15;
-    };
-
     const formatearCOP = (precio) => {
         if (!precio && precio !== 0) return '$0';
+
+        // Convertir a número y redondear
         const valor = Math.round(Number(precio));
+
+        // Formato colombiano: puntos para miles
         return '$' + valor.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     };
-    
+
     // 📌 FUNCIÓN PARA AGRUPAR PEDIDOS (ADAPTADA A TU ESTRUCTURA)
     const agruparPedidos = (datos) => {
         console.log("📦 Datos a agrupar:", datos);
-        
+
         return datos.reduce((acc, item) => {
             const pedidoExistente = acc.find(p => p.idPedido === item.idPedido);
-            
+
             // Extraer productos del carrito.detalles
             const productos = item.carrito?.detalles?.map(detalle => {
                 const stock = detalle.stock || {};
                 const producto = stock.producto || {};
                 const color = stock.color || {};
                 const variacion = stock.variacion || {};
-                
+
                 return {
+                    idDetallePedido: detalle.idDetallePedido, // ID de la línea de venta
                     idProducto: producto.idProducto,
                     nombreProducto: producto.nombreProducto || 'Producto',
                     nombreColor: color.nombreColor || 'N/A',
                     nombreVariacion: variacion.nombre || 'N/A',
                     cantidad: detalle.cantidad || 0,
                     precioUnitario: detalle.precioUnitario || 0,
-                    codigoReferencia: producto.codigoReferencia || 'N/A',
-                    idStock: stock.idStock
+                    codigoReferencia: producto.codigoReferencia || 'N/A'
                 };
             }) || [];
-            
+
             console.log("📦 Productos extraídos:", productos);
-            
+
             if (pedidoExistente) {
+                // Si ya existe, agregamos los productos
                 pedidoExistente.productos = [...pedidoExistente.productos, ...productos];
+                // Recalculamos total
                 pedidoExistente.totalFinal = pedidoExistente.productos.reduce(
                     (total, prod) => total + (prod.cantidad * prod.precioUnitario), 0
                 );
             } else {
+                // Nuevo pedido
                 acc.push({
                     idPedido: item.idPedido,
                     fechaPedido: item.fechaPedido,
@@ -83,8 +72,7 @@ const PedidosUsuario = () => {
                     totalFinal: productos.reduce(
                         (total, prod) => total + (prod.cantidad * prod.precioUnitario), 0
                     ),
-                    productos: productos,
-                    puedeDevolver: puedeSolicitarDevolucion(item.fechaPedido)
+                    productos: productos
                 });
             }
             return acc;
@@ -133,28 +121,28 @@ const PedidosUsuario = () => {
             try {
                 setLoading(true);
                 console.log("🔄 Cargando pedidos para usuario:", userId);
-                
+
                 const response = await obtenerPedidosPorUsuario(userId);
-                
+
                 console.log("📦 Respuesta completa:", response);
-                
+
                 if (response?.data) {
                     const datosArray = Array.isArray(response.data) ? response.data : [response.data];
-                    
+
                     // Mostrar estructura del primer pedido
                     if (datosArray.length > 0) {
                         console.log("🔍 PRIMER PEDIDO:", datosArray[0]);
                         console.log("🔍 DETALLES:", datosArray[0].carrito?.detalles);
                     }
-                    
+
                     const pedidosAgrupados = agruparPedidos(datosArray);
-                    
+
                     console.log("✅ Pedidos agrupados:", pedidosAgrupados);
                     setPedidos(pedidosAgrupados);
                 } else {
                     setPedidos([]);
                 }
-                
+
             } catch (error) {
                 console.error("❌ Error al cargar pedidos:", error);
                 if (error.response?.status === 404) {
@@ -170,24 +158,6 @@ const PedidosUsuario = () => {
 
         fetchPedidos();
     }, [userId]);
-
-    // Función para abrir el modal de devolución con el producto seleccionado
-    const handleSolicitarDevolucion = (pedido, producto) => {
-        // Prevenir scroll en el body cuando el modal está abierto
-        document.body.style.overflow = 'hidden';
-        setPedidoSeleccionado(pedido);
-        setProductoSeleccionado(producto);
-        setIsDevolucionModalOpen(true);
-    };
-
-    // Función para cerrar el modal
-    const handleCloseModal = () => {
-        // Restaurar scroll en el body
-        document.body.style.overflow = 'auto';
-        setIsDevolucionModalOpen(false);
-        setPedidoSeleccionado(null);
-        setProductoSeleccionado(null);
-    };
 
     const toggleExpandir = (idPedido) => {
         setPedidosExpandidos(prev => ({
@@ -274,6 +244,7 @@ const PedidosUsuario = () => {
                                                 <th>Estado</th>
                                                 <th>Fecha</th>
                                                 <th>Total</th>
+                                                <th>Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -281,7 +252,7 @@ const PedidosUsuario = () => {
                                                 <React.Fragment key={pedido.idPedido}>
                                                     <tr className="table-primary fw-bold">
                                                         <td>
-                                                            <button 
+                                                            <button
                                                                 className="btn btn-sm btn-outline-secondary"
                                                                 onClick={() => toggleExpandir(pedido.idPedido)}
                                                             >
@@ -290,20 +261,24 @@ const PedidosUsuario = () => {
                                                         </td>
                                                         <td>{pedido.idPedido}</td>
                                                         <td>
-                                                            <span className={`badge ${
-                                                                pedido.estado === 'Entregado' ? 'bg-success' :
+                                                            <span className={`badge ${pedido.estado === 'Entregado' ? 'bg-success' :
                                                                 pedido.estado === 'Cancelado' ? 'bg-danger' :
-                                                                pedido.estado === 'Enviado' ? 'bg-info' :
-                                                                pedido.estado === 'Pagado' ? 'bg-primary' :
-                                                                'bg-warning'
-                                                            }`}>
+                                                                    pedido.estado === 'Enviado' ? 'bg-info' :
+                                                                        pedido.estado === 'Pagado' ? 'bg-primary' : 'bg-warning'}`}>
                                                                 {pedido.estado}
                                                             </span>
                                                         </td>
                                                         <td>{formatearFecha(pedido.fechaPedido)}</td>
                                                         <td>{formatearCOP(pedido.totalFinal)}</td>
+                                                        <td>
+                                                            <button
+                                                                className="btn btn-sm btn-primary"
+                                                                onClick={() => navigate(`/pedido-detalle/${pedido.idPedido}`)}
+                                                            >
+                                                                Ver detalles
+                                                            </button>
+                                                        </td>
                                                     </tr>
-                                                    
                                                     {pedidosExpandidos[pedido.idPedido] && (
                                                         <tr>
                                                             <td colSpan="6" className="p-0">
@@ -318,7 +293,6 @@ const PedidosUsuario = () => {
                                                                                 <th className="text-center">Cantidad</th>
                                                                                 <th className="text-end">Precio Unit.</th>
                                                                                 <th className="text-end">Subtotal</th>
-                                                                                <th className="text-center">Devolución</th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
@@ -326,7 +300,7 @@ const PedidosUsuario = () => {
                                                                                 const cantidad = Number(producto.cantidad) || 0;
                                                                                 const precio = Number(producto.precioUnitario) || 0;
                                                                                 const subtotal = cantidad * precio;
-                                                                                
+
                                                                                 return (
                                                                                     <tr key={idx}>
                                                                                         <td>
@@ -342,24 +316,6 @@ const PedidosUsuario = () => {
                                                                                         <td className="text-center">{cantidad}</td>
                                                                                         <td className="text-end">{formatearCOP(producto.precioUnitario)}</td>
                                                                                         <td className="text-end fw-bold">{formatearCOP(subtotal)}</td>
-                                                                                        <td className="text-center">
-                                                                                            {pedido.puedeDevolver && pedido.estado === 'Entregado' ? (
-                                                                                                <button
-                                                                                                    className="btn btn-sm btn-warning"
-                                                                                                    onClick={() => handleSolicitarDevolucion(pedido, producto)}
-                                                                                                    title="Solicitar devolución o cambio"
-                                                                                                >
-                                                                                                    🔄 Devolver
-                                                                                                </button>
-                                                                                            ) : (
-                                                                                                <span className="text-muted small">
-                                                                                                    {!pedido.puedeDevolver ? 
-                                                                                                        '⏰ +15 días' : 
-                                                                                                        pedido.estado !== 'Entregado' ? 
-                                                                                                        '⏳ Pendiente' : ''}
-                                                                                                </span>
-                                                                                            )}
-                                                                                        </td>
                                                                                     </tr>
                                                                                 );
                                                                             })}
@@ -370,7 +326,6 @@ const PedidosUsuario = () => {
                                                                                 <td className="text-end fw-bold text-success">
                                                                                     {formatearCOP(pedido.totalFinal)}
                                                                                 </td>
-                                                                                <td></td>
                                                                             </tr>
                                                                         </tfoot>
                                                                     </table>
@@ -393,23 +348,6 @@ const PedidosUsuario = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {/* Modal de Devolución - CON Z-INDEX ALTO */}
-            <div 
-
-            >
-                <DevolucionFormModal
-                    isOpen={isDevolucionModalOpen}
-                    onClose={handleCloseModal}
-                    onSave={() => {
-                        handleCloseModal();
-                        // Aquí puedes actualizar la lista si es necesario
-                    }}
-                    userRole="cliente"
-                    pedido={pedidoSeleccionado}
-                    producto={productoSeleccionado}
-                />
             </div>
         </div>
     );

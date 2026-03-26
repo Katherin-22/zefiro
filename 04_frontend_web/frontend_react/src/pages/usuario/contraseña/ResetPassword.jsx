@@ -214,9 +214,10 @@ const ResetPassword = () => {
               />
             </div>
 
-            <button type='submit' className='btn-auth' disabled={loading}>
+            <button type='submit' className='btn-auth' onClick={() => navigate("/loginpage")} disabled={loading}>
               {loading ? "Updating..." : "Change Password"}
             </button>
+
           </form>
 
         </div>
