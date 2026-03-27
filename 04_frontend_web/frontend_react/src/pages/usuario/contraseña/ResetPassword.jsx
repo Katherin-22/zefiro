@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import logo from "../../../assets/logo.png";
 import axios from 'axios';
 import { toast } from "react-toastify";
-import "../../../styles/gestionusuarios/ResetPassword.css"; 
+import "../../../styles/gestionusuarios/ResetPassword.css";
 
 const ResetPassword = () => {
 
@@ -16,7 +16,7 @@ const ResetPassword = () => {
   const [isCorreoElectronicoSent, setIsCorreoElectronicoSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [isOtpSubmitted, setIsOtpSubmitted] = useState(false);
-  const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).*$/;
+  const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!.]).*$/;
 
   const handleChange = (e, index) => {
     const value = e.target.value.replace(/\D/, "");
@@ -51,10 +51,10 @@ const ResetPassword = () => {
       const response = await axios.post(`http://35.171.131.177:8080/api/auth/forgot-password?correoElectronico=${correoElectronico}`);
 
       if (response.status === 200) {
-        toast.success("Password reset OTP sent successfully!");
+        toast.success("¡Código OTP enviado con éxito a tu correo!");
         setIsCorreoElectronicoSent(true);
       } else {
-        toast.error("Something went wrong, please try again.");
+        toast.error("Algo salió mal, por favor intenta de nuevo.");
       }
     } catch (error) {
       toast.error(error.message)
@@ -67,7 +67,7 @@ const ResetPassword = () => {
     const otpValue = inputRef.current.filter(input => input !== null).map((input) => input.value).join("");
 
     if (otpValue.length !== 6) {
-      toast.error("Please enter all 6 digits of the OTP.");
+      toast.error("Por favor ingresa los 6 dígitos del código OTP.");
       return;
     }
 
@@ -77,9 +77,10 @@ const ResetPassword = () => {
 
   const onSubmitNewPassword = async (e) => {
     e.preventDefault();
+    console.log("Valores actuales:", { newPassword, confirmPassword });
 
     if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match!");
+      toast.error("Error: Las contraseñas no coinciden.");
       return;
     }
 
@@ -89,26 +90,30 @@ const ResetPassword = () => {
     }
 
     if (!passwordRegex.test(newPassword)) {
-      toast.error("Debe incluir mayúsculas, minúsculas, números y símbolos (@#$%^&+=!).");
+      toast.error("La contraseña debe incluir mayúsculas, minúsculas, números y un símbolo (@#$%^&+=!.).");
       return;
     }
 
     setLoading(true);
     try {
-      const response = await axios.post('http://35.171.131.177:8080/api/auth/reset-password', {
+      const response = await axios.post('http://localhost:8080/api/auth/reset-password', {
         correoElectronico,
         otp,
         newPassword
       });
 
       if (response.status === 200) {
-        toast.success("Password reset successfully.");
-        navigate("/loginpage")
+        toast.success("¡Contraseña actualizada con éxito!");
+        setTimeout(() => {
+          navigate("/loginpage");
+        }, 1500);
       } else {
-        toast.error("Something  went wrong, please try again.");
+        toast.error("Algo salió mal, por favor intenta de nuevo.");
       }
     } catch (error) {
-      toast.error(error.message)
+      const errorMsg = error.response?.data?.message || error.message;
+      toast.error(errorMsg);
+
     } finally {
       setLoading(false);
     }
@@ -125,8 +130,8 @@ const ResetPassword = () => {
       {/* Reset password card*/}
       {!isCorreoElectronicoSent && (
         <div className="auth-card">
-          <h4>Reset Password</h4>
-          <p>Enter your registered email address</p>
+          <h4>Restablecer Contraseña</h4>
+          <p>Ingresa tu correo electrónico registrado</p>
           <form onSubmit={onSubmitEmail}>
             <div className="input-pill-wrapper">
               <span className="input-pill-icon">
@@ -135,14 +140,15 @@ const ResetPassword = () => {
 
               <input type="email"
                 className="input-pill-field"
-                placeholder='Enter your email adress'
+                placeholder='Ingresa tu correo electrónico'
                 onChange={(e) => setCorreoElectronico(e.target.value)}
                 value={correoElectronico}
                 required
               />
             </div>
             <button className="btn-auth" type='submit'>
-              Submit
+              {loading ? "Verificando..." : "Verificar correo"}
+
             </button>
           </form>
         </div>
@@ -151,8 +157,8 @@ const ResetPassword = () => {
       {!isOtpSubmitted && isCorreoElectronicoSent && (
 
         <div className="auth-card" >
-          <h4>Email Verify OTP </h4>
-          <p> Enter the 6-digit code sent to your email. </p>
+          <h4>Verificar Código OTP </h4>
+          <p> Ingresa el código de 6 dígitos enviado a tu correo. </p>
 
           <div className="otp-inputs-container">
             {[...Array(6)].map((_, i) => (
@@ -171,7 +177,7 @@ const ResetPassword = () => {
           </div>
 
           <button className="btn-auth" disabled={loading} onClick={handleVerify}>
-            {loading ? "Verifying..." : "Verify email"}
+            {loading ? "Verificando..." : "Verificar código"}
           </button>
 
         </div>
@@ -180,8 +186,8 @@ const ResetPassword = () => {
       {/* New password form */}
       {isOtpSubmitted && isCorreoElectronicoSent && (
         <div className="auth-card">
-          <h4>New Password</h4>
-          <p>Enter the new password below</p>
+          <h4>Nueva Contraseña</h4>
+          <p>Ingresa tu nueva contraseña a continuación</p>
           <form onSubmit={onSubmitNewPassword} >
             <div className="input-pill-wrapper">
               <span className="input-pill-icon">
@@ -206,7 +212,7 @@ const ResetPassword = () => {
               <input
                 type="password"
                 className="input-pill-field"
-                placeholder='Confirm Password'
+                placeholder='Confirmar Contraseña'
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 value={confirmPassword}
                 maxLength={20}
@@ -214,8 +220,8 @@ const ResetPassword = () => {
               />
             </div>
 
-            <button type='submit' className='btn-auth' onClick={() => navigate("/loginpage")} disabled={loading}>
-              {loading ? "Updating..." : "Change Password"}
+            <button type='submit' className='btn-auth' disabled={loading}>
+              {loading ? "Actualizando..." : "Cambiar Contraseña"}
             </button>
 
           </form>
