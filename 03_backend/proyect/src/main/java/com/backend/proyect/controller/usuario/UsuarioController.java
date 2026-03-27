@@ -3,7 +3,10 @@ package com.backend.proyect.controller.usuario;
 import com.backend.proyect.dto.usuario.UsuarioRequest;
 import com.backend.proyect.dto.usuario.ValidationGroups;
 import com.backend.proyect.exception.usuario.ResourceNotFoundException;
+import com.backend.proyect.model.usuario.EstadoUsuario;
 import com.backend.proyect.model.usuario.Usuario;
+import com.backend.proyect.repository.carrito.CarritoRepository;
+import com.backend.proyect.repository.devoluciones.DevolucionesCambiosRepository;
 import com.backend.proyect.repository.usuario.EstadoUsuarioRepository;
 import com.backend.proyect.repository.usuario.RolRepository;
 import com.backend.proyect.repository.usuario.TipoDocumentoRepository;
@@ -19,7 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.backend.proyect.security.usuario.UsuarioPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import java.util.HashMap;
+        import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,6 +45,12 @@ public class UsuarioController {
 
     @Autowired
     private EstadoUsuarioRepository estadoUsuarioRepository;
+
+    @Autowired
+    private CarritoRepository carritoRepository;
+
+    @Autowired
+    private DevolucionesCambiosRepository devolucionesCambiosRepository;
 
     // ----------------------------------------------------------------------
     // 1. GESTIÓN DE PERFIL PROPIO DEL USUARIO
@@ -200,14 +209,57 @@ public class UsuarioController {
     // Solo el administrador puede eliminar usuarios
     @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String,Boolean>> eliminarUsuario(@PathVariable Integer id) {
+    public ResponseEntity<Map<String, Object>> eliminarUsuario(@PathVariable Integer id) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UsuarioPrincipal principal = (UsuarioPrincipal) authentication.getPrincipal();
+        Integer idUsuarioLogeado = principal.getUsuario().getIdUsuario();
+
+        if (id.equals(idUsuarioLogeado)) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("deleted", false);
+            errorResponse.put("message", "No puedes eliminar tu propia cuenta de administrador mientras estás en sesión.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("El usuario con ese ID no existe: " + id));
 
-        usuarioRepository.delete(usuario);
-        Map<String,Boolean> response = new HashMap<>();
-        response.put("deleted",Boolean.TRUE);
+        Map<String, Object> response = new HashMap<>();
+
+        // 2. Verificar si tiene carritos asociados
+        boolean tieneCarrito = carritoRepository.existsByUsuario(usuario);
+        boolean tieneDevoluciones = devolucionesCambiosRepository.existsByUsuario(usuario);
+        boolean estaVerificado = Boolean.TRUE.equals(usuario.getIsAccountVerified());
+
+        if (tieneCarrito || tieneDevoluciones || estaVerificado) {
+            // Buscamos el objeto de estado "Inactivo"
+            EstadoUsuario estadoInactivo = estadoUsuarioRepository.findById(2)
+                    .orElseThrow(() -> new ResourceNotFoundException("Estado 'Inactivo' no encontrado en DB"));
+
+            usuario.setEstado_usuario(estadoInactivo);
+            usuarioRepository.save(usuario);
+
+            response.put("deleted", true);
+            response.put("action", "LOGICAL_DELETE");
+            response.put("message", "Usuario inactivado (conservando historial de carrito)");
+        } else {
+
+            try {
+                usuarioRepository.delete(usuario);
+                response.put("deleted", true);
+                response.put("action", "PHYSICAL_DELETE");
+                response.put("message", "Usuario eliminado permanentemente.");
+
+            } catch (Exception e) {
+
+                EstadoUsuario estadoInactivo = estadoUsuarioRepository.findById(2).get();
+                usuario.setEstado_usuario(estadoInactivo);
+                usuarioRepository.save(usuario);
+                response.put("deleted", true);
+            }
+        }
+
         return ResponseEntity.ok(response);
     }
-
 }

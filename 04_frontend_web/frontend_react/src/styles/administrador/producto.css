@@ -170,7 +170,7 @@ h1 {
     font-size: 0.95rem;
     white-space: nowrap;
     word-wrap: break-word !important;
-    overflow: hidden    ;
+    overflow: auto;
 }
 
 /* Efecto hover en filas */

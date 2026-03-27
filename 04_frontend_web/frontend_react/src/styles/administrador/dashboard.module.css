@@ -1,0 +1,525 @@
+/* dashboard.module.css */
+
+:root {
+  /* Colores originales en HEX */
+  --primary-color: #E0B253;
+  --secondary-color: #000000;
+  --bg-body-dark: #000000;
+  --bg-body-light: #ffffff;
+  --text-light: #e4e9f7;
+  --text-dark: #000000;
+  --hover-color: #c89c3f;
+  
+  /* Colores en RGBA */
+  --primary-color-rgba: rgba(224, 178, 83, 1);
+  --secondary-color-rgba: rgba(0, 0, 0, 1);
+  --bg-body-dark-rgba: rgba(0, 0, 0, 1);
+  --bg-body-light-rgba: rgba(255, 255, 255, 1);
+  --text-light-rgba: rgba(228, 233, 247, 1);
+  --text-dark-rgba: rgba(0, 0, 0, 1);
+  --hover-color-rgba: rgba(200, 156, 63, 1);
+  
+  /* También versión semitransparente */
+  --primary-color-transparent: rgba(224, 178, 83, 0.8);
+  --secondary-color-transparent: rgba(0, 0, 0, 0.8);
+  --hover-color-transparent: rgba(200, 156, 63, 0.8);
+  
+  /* Transiciones */
+  --tran-03: all 0.3s ease;
+  --tran-04: all 0.4s ease;
+  --tran-05: all 0.5s ease;
+}
+
+/* Contenedor principal */
+.all {
+  min-height: 100vh;
+  background: var(--bg-body-light) !important;
+}
+
+/* Contenido principal del dashboard */
+.mainContentDash {
+  width: 80% !important;
+  margin-left: 20% !important;
+  transition: var(--tran-03);
+}
+
+/* Tarjeta superior (island) */
+.islandDash {
+  display: flex;
+  justify-content: center;
+  background: var(--primary-color);
+  color: var(--text-light) !important;
+  font-weight: bold;
+  padding: 5px;
+  align-items: center !important;
+  border-radius: 25px 25px 0 0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+  transition: var(--tran-03);
+}
+
+/* Título principal */
+.tit {
+  margin-top: 5px !important;
+  padding-top: 5px !important;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+/* Texto de pedidos */
+.ped {
+  color: var(--text-light) !important;
+  font-weight: bold !important;
+  font-size: 1rem;
+}
+
+/* Botón de descarga PDF */
+.btnDown {
+  display: flex;
+  justify-content: center;
+  margin: 16px;
+  font-weight: bold;
+}
+
+.btnDown button,
+.btnDown a {
+  transition: var(--tran-03);
+}
+
+.btnDown button:hover,
+.btnDown a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Cabecera de tarjetas */
+.cardHeader {
+  background: var(--primary-color) !important;
+  color: var(--text-light) !important;
+  font-weight: bold !important;
+  border-bottom: 2px solid var(--hover-color);
+}
+
+.cardHeader h5 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Tarjetas de métricas */
+.metricCard {
+  transition: var(--tran-03);
+  cursor: pointer;
+}
+
+.metricCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Tablas */
+.tableContainer {
+  overflow-x: auto;
+  position: relative;
+}
+
+.tableCustom {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableCustom th {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  padding: 12px;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tableCustom td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-dark);
+}
+
+.tableCustom tr:hover {
+  background-color: rgba(224, 178, 83, 0.1);
+}
+
+/* Badges de estado */
+.badgePendiente {
+  background-color: #ffc107;
+  color: #000;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.badgeProcesando {
+  background-color: #17a2b8;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.badgeEntregado {
+  background-color: #28a745;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+/* Filtros */
+.filterSection {
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.filterLabel {
+  color: var(--text-light);
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.filterInput {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 8px 12px;
+  width: 100%;
+  transition: var(--tran-03);
+}
+
+.filterInput:focus {
+  outline: none;
+  border-color: var(--hover-color);
+  box-shadow: 0 0 5px var(--primary-color);
+}
+
+.filterSelect {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 8px 12px;
+  width: 100%;
+  cursor: pointer;
+  transition: var(--tran-03);
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: var(--hover-color);
+  box-shadow: 0 0 5px var(--primary-color);
+}
+
+/* Alerta de producto seleccionado */
+.productAlert {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 15px;
+  color: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Loading spinner */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(224, 178, 83, 0.2);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Scroll personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--hover-color);
+}
+
+/* ============================================
+   MEDIA QUERIES RESPONSIVE
+   ============================================ */
+
+/* Tablets (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .mainContentDash {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .islandDash {
+    border-radius: 20px 20px 0 0;
+    padding: 8px;
+  }
+  
+  .tit {
+    font-size: 1.4rem;
+  }
+  
+  .ped {
+    font-size: 0.9rem;
+  }
+  
+  .btnDown {
+    margin: 12px;
+  }
+  
+  .cardHeader h5 {
+    font-size: 1rem;
+  }
+  
+  .tableCustom th,
+  .tableCustom td {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+  
+  .filterSection {
+    padding: 15px;
+  }
+  
+  .filterLabel {
+    font-size: 0.9rem;
+  }
+}
+
+/* Móviles pequeños (hasta 480px) */
+@media (max-width: 480px) {
+  .mainContentDash {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .islandDash {
+    border-radius: 15px 15px 0 0;
+    padding: 10px;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .tit {
+    font-size: 1.2rem;
+    margin-top: 0 !important;
+  }
+  
+  .ped {
+    font-size: 0.75rem;
+  }
+  
+  .btnDown {
+    margin: 10px;
+  }
+  
+  .btnDown a,
+  .btnDown button {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+  
+  .cardHeader h5 {
+    font-size: 0.9rem;
+  }
+  
+  .tableCustom {
+    font-size: 0.75rem;
+  }
+  
+  .tableCustom th,
+  .tableCustom td {
+    padding: 6px;
+  }
+  
+  .badgePendiente,
+  .badgeProcesando,
+  .badgeEntregado {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+  }
+  
+  .filterSection {
+    padding: 12px;
+  }
+  
+  .filterLabel {
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+  }
+  
+  .filterInput,
+  .filterSelect {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .productAlert {
+    padding: 12px;
+    font-size: 0.85rem;
+  }
+  
+  .productAlert h5 {
+    font-size: 1rem;
+  }
+  
+  .metricCard h3 {
+    font-size: 1.2rem;
+  }
+  
+  .metricCard h6 {
+    font-size: 0.8rem;
+  }
+  
+  .metricCard small {
+    font-size: 0.7rem;
+  }
+}
+
+/* Tablets grandes (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .mainContentDash {
+    width: 78% !important;
+    margin-left: 22% !important;
+  }
+  
+  .tit {
+    font-size: 1.6rem;
+  }
+  
+  .ped {
+    font-size: 0.95rem;
+  }
+  
+  .tableCustom th,
+  .tableCustom td {
+    padding: 10px;
+  }
+}
+
+/* Pantallas grandes (más de 1400px) */
+@media (min-width: 1400px) {
+  .mainContentDash {
+    width: 80% !important;
+    margin-left:18% !important;
+  }
+  
+  .tit {
+    font-size: 2rem;
+  }
+  
+  .ped {
+    font-size: 1.1rem;
+  }
+  
+  .cardHeader h5 {
+    font-size: 1.2rem;
+  }
+  
+  .tableCustom th,
+  .tableCustom td {
+    padding: 14px;
+    font-size: 1rem;
+  }
+}
+
+/* Modo oscuro mejorado */
+@media (prefers-color-scheme: dark) {
+  .all {
+    background-color: var(--bg-body-dark);
+  }
+  
+  .tableCustom td {
+    color: var(--text-light);
+  }
+  
+  .filterInput,
+  .filterSelect {
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--text-light);
+  }
+}
+
+/* Animaciones adicionales */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fadeIn {
+  animation: fadeIn 0.5s ease;
+}
+
+/* Estilos para impresión */
+@media print {
+  .btnDown,
+  .filterSection {
+    display: none;
+  }
+  
+  .mainContentDash {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .cardHeader {
+    background: #000 !important;
+    color: #fff !important;
+  }
+  
+  .islandDash {
+    background: #000 !important;
+    color: #fff !important;
+  }
+}

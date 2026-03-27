@@ -13,37 +13,51 @@ const GestionPedido = () => {
     const [actualizandoEstado, setActualizandoEstado] = useState(null);
     const [mensajeError, setMensajeError] = useState('');
 
-    // 📌 FUNCIÓN PARA AGRUPAR PEDIDOS
+    // 📌 FUNCIÓN PARA AGRUPAR PEDIDOS - VERSIÓN CORREGIDA
     const agruparPedidos = (datos) => {
+        console.log("🔄 [GestionPedido] Agrupando pedidos...");
+        
         return datos.reduce((acc, item) => {
+            console.log("📦 [GestionPedido] Procesando pedido ID:", item.idPedido);
+            
+            // ✅ Extraer productos del carrito
+            const productos = [];
+            
+            // Verificar si el carrito tiene detalles
+            if (item.carrito && item.carrito.detalles && Array.isArray(item.carrito.detalles)) {
+                console.log("📦 [GestionPedido] Detalles del carrito:", item.carrito.detalles);
+                
+                item.carrito.detalles.forEach(detalle => {
+                    if (detalle.stock && detalle.stock.producto) {
+                        productos.push({
+                            nombreProducto: detalle.stock.producto.nombreProducto,
+                            nombreColor: detalle.stock.color?.nombreColor || 'N/A',
+                            nombre: detalle.stock.variacion?.nombre || 'N/A',
+                            cantidad: detalle.cantidad,
+                            precioUnitario: detalle.precioUnitario,
+                            codigoReferencia: detalle.stock.producto.codigoReferencia,
+                            idProducto: detalle.stock.producto.idProducto
+                        });
+                    }
+                });
+            }
+            
+            console.log("📦 [GestionPedido] Productos extraídos:", productos.length);
+            
             const pedidoExistente = acc.find(p => p.idPedido === item.idPedido);
             
             if (pedidoExistente) {
-                pedidoExistente.productos.push({
-                    nombreProducto: item.nombreProducto,
-                    nombreColor: item.nombreColor,
-                    nombre: item.nombre,
-                    cantidad: item.cantidad,
-                    precioUnitario: item.precioUnitario,
-                    codigoReferencia: item.codigoReferencia
-                });
+                pedidoExistente.productos.push(...productos);
                 pedidoExistente.totalFinal = (pedidoExistente.totalFinal || 0) + 
-                    (item.cantidad * item.precioUnitario);
+                    productos.reduce((sum, p) => sum + (p.cantidad * p.precioUnitario), 0);
             } else {
                 acc.push({
                     idPedido: item.idPedido,
                     fechaPedido: item.fechaPedido,
-                    nombreUsuario: item.nombreUsuario,
-                    estado: item.estado || 'Pendiente',
-                    totalFinal: item.cantidad * item.precioUnitario,
-                    productos: [{
-                        nombreProducto: item.nombreProducto,
-                        nombreColor: item.nombreColor,
-                        nombre: item.nombre,
-                        cantidad: item.cantidad,
-                        precioUnitario: item.precioUnitario,
-                        codigoReferencia: item.codigoReferencia
-                    }]
+                    nombreUsuario: item.usuario?.nombreUsuario || 'Usuario',
+                    estado: item.estadoPedido || 'Pendiente',
+                    totalFinal: productos.reduce((sum, p) => sum + (p.cantidad * p.precioUnitario), 0),
+                    productos: productos
                 });
             }
             return acc;
@@ -57,9 +71,17 @@ const GestionPedido = () => {
                 console.log("🔄 Cargando pedidos...");
                 const response = await getPedido();
                 
+                console.log("📦 [GestionPedido] Respuesta completa:", response);
+                console.log("📦 [GestionPedido] Datos:", response?.data);
+                
                 if (response?.data) {
                     const datosArray = Array.isArray(response.data) ? response.data : [response.data];
+                    console.log("📦 [GestionPedido] Primer pedido:", datosArray[0]);
+                    console.log("📦 [GestionPedido] Carrito del primer pedido:", datosArray[0]?.carrito);
+                    console.log("📦 [GestionPedido] Detalles del carrito:", datosArray[0]?.carrito?.detalles);
+                    
                     const pedidosAgrupados = agruparPedidos(datosArray);
+                    console.log("📦 [GestionPedido] Pedidos agrupados:", pedidosAgrupados.length);
                     setPedidos(pedidosAgrupados);
                 } else {
                     setPedidos([]);

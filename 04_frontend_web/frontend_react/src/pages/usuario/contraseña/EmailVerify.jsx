@@ -67,7 +67,7 @@ const EmailVerify = () => {
                 if (response.status === 200) {
                     toast.success("OTP verified successfully!");
                     await getUserData();
-                    navigate("/login");
+                    navigate("/loginpage");
                 } else {
                     toast.error("Invalid OTP");
                 }
@@ -81,7 +81,7 @@ const EmailVerify = () => {
 
     useEffect(() => {
         if (!email && !user?.correoElectronico) {
-            navigate("/login");
+            navigate("/loginpage");
         }
         isAuthenticated && user && user.isAccountVerified && tipo !== "reset" && navigate("/");
     }, [isAuthenticated, user, navigate, email, tipo]);
@@ -114,7 +114,7 @@ const EmailVerify = () => {
                     ))}
                 </div>
 
-                <button className="btn-auth" disabled={loading} onClick={handleVerify} to="/loginpage">
+                <button className="btn-auth" disabled={loading} onClick={handleVerify}>
                     {loading ? "Verifying..." : "Verify email"}
                 </button>
 
