@@ -4,20 +4,18 @@ import MenuAdmin from "../../../layouts/administrador/menuAdmin";
 
 import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
+import "../../../styles/administrador/tablas-admin.css"; // 👈 CSS ÚNICO para todas las tablas
 import { Link } from "react-router-dom";
 
-
 export default function GetCategoria() {
-  // Usamos el hook
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Traer los productos al cargar la página
   useEffect(() => {
     const fetchcategorias = async () => {
       try {
-        const response = await getCategorias(); // llama tu endpoint
-        setCategorias(response.data); // guarda productos en el estado
+        const response = await getCategorias();
+        setCategorias(response.data);
       } catch (error) {
         console.error("Error al cargar la Categoria", error);
       } finally {
@@ -28,7 +26,6 @@ export default function GetCategoria() {
     fetchcategorias();
   }, []);
 
-  // Eliminar producto directamente desde el service
   const handleDeleteCategoria = async (idCategoria) => {
     try {
         await deleteCategoria(idCategoria);
@@ -36,7 +33,7 @@ export default function GetCategoria() {
         alert("Categoria eliminada");
     } catch (error) {
         if (error.response?.status === 409) {
-            alert(error.response.data); // "No se puede eliminar el producto porque tiene stocks asociados"
+            alert(error.response.data);
         } else {
             alert("No se pudo eliminar la categoria");
         }
@@ -44,61 +41,66 @@ export default function GetCategoria() {
   };
 
   if (loading) return <p>Cargando categorias...</p>;
+
   return (
-
-<div className="main-content">
-    <nav>
+    <div className="main-content">
+      <nav>
         <MenuAdmin />
-    </nav>
-    <div className="container-fluid" id='container-admin'>
-    <div className="header">    
-        <div className="row custom-header">
+      </nav>
+      <div className="container-fluid" id="container-admin-categoria">
+        <div className="header">    
+          <div className="row custom-header">
             <div className="col-3 d-flex align-items-center justify-content-between">
-                <h1 className="mb-0">CATEGORIAS</h1>
+              <h1 className="mb-0">CATEGORIAS</h1>
             </div>
-            <div className="col-9 d-flex align-items-end px-1 gap-2 w-50">
-                <Link to="/categoria" className="btn custom-btn btn-light">Registrar Categoria</Link>
+          </div>
+          <div className="row">
+            <div className="col-9 d-flex align-items-end px-1 gap-2 w-50 isla-admin">
+              <Link to="/categoria" className="btn custom-btn-admin btn-light">
+                Registrar Categoria
+              </Link>
             </div>
-        </div>
-    </div>      
+          </div>
+        </div>      
         <div className="row">
-            <div className="col">
-                <table>
-                    <thead>
-                        <tr>
-                        <th>Nombre</th>
-                        <th>Tipo de Producto</th>
-                        <th>id Tipo de Producto</th>
-                        <th>Acciones</th>
-                        </tr>
-                    </thead>
-                        <tbody>
-                        {categorias.map((categoria) => (
-                            <tr key={categoria.idCategoria}>
-                            <td>{categoria.nombreCategoria}</td>
-                            <td>{categoria.nombreTipoProducto}</td>
-                            <td>{categoria.idTipoProducto}</td>
-                            <td><Link to={`/categoria/${categoria.idCategoria}`} id="boton_agregar" className="btn btn-light">Editar</Link>
-                            
-                            <button
-                            className="btn btn-light"
-                            onClick={() => {
-                                if (window.confirm("¿Estás seguro de eliminar esta categoria?")) {
-                                handleDeleteCategoria(categoria.idCategoria);
-                                }
-                            }}
-                            >
-                            Eliminar
-                            </button>
-                            </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                </table>
+          <div className="col">
+            <div className="table-responsive-admin">
+              <table className="table-admin">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Tipo de Producto</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {categorias.map((categoria) => (
+                    <tr key={categoria.idCategoria}>
+                      <td>{categoria.nombreCategoria}</td>
+                      <td>{categoria.nombreTipoProducto}</td>
+                      <td>
+                        <Link to={`/categoria/${categoria.idCategoria}`} className="btn-admin-editar">
+                          Editar
+                        </Link>
+                        <button
+                          className="btn-admin-eliminar"
+                          onClick={() => {
+                            if (window.confirm("¿Estás seguro de eliminar esta categoria?")) {
+                              handleDeleteCategoria(categoria.idCategoria);
+                            }
+                          }}
+                        >
+                          Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
+          </div>
         </div>
-</div>
-</div>
-  )
+      </div>
+    </div>
+  );
 }
-

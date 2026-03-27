@@ -10,7 +10,7 @@ export default function UpdateColor() {
     const { idColor } = useParams(); // esto se usa cuando se va a editar
 
     const [loading, setLoading] = useState(true);
-    const [setSuccess] = useState(false);
+    const [success,setSuccess] = useState(false);
 
     let navigate=useNavigate();
 
@@ -69,6 +69,10 @@ export default function UpdateColor() {
   // Mostrar loading mientras trae el producto
   if (loading) return <p>Cargando color...</p>;
 
+    {success && (
+        console.log("color editado con éxito.")
+    )}
+
   return (
 
 <div className="main-content">
@@ -91,11 +95,12 @@ export default function UpdateColor() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
             <div className="col">
-                <label className="form-label">Nombre Color</label>
+                <label className="form-label required">Nombre Color</label>
                 <input type="text" 
                 name="nombreColor" 
                 placeholder="Ingresa el nombre del color"
                 className="form-control" 
+                required
                 value={nombreColor} 
                 onChange={(e)=>onInputChange(e)}
                 />

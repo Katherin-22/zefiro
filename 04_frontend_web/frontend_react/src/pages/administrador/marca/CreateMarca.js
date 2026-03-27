@@ -5,6 +5,7 @@ import { createMarca } from "../../../services/administrador/MarcaService";
 import MenuAdmin from "../../../layouts/administrador/menuAdmin";
 import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
+import "../../../styles/administrador/formularios-admin.css"
 
 export default function CreateMarca() {
 // navigate=useNavigate():Sirve para moverte entre páginas desde el código 
@@ -13,7 +14,7 @@ export default function CreateMarca() {
     let navigate=useNavigate();
 
     const [loading, setLoad] = useState(false);
-    const [ setSuccess] = useState(false);
+    const [success,setSuccess] = useState(false);
 
     const [marcas, setMarcas]=useState({ 
         nombreMarca:""
@@ -51,6 +52,10 @@ export default function CreateMarca() {
         await handleCreateMarca(marcas); // manda datos al backend
     }
 
+    {success && (
+        console.log("marca creada con éxito.")
+    )}    
+
   return (
 
 <div className="main-content">
@@ -73,11 +78,12 @@ export default function CreateMarca() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
             <div className="col">
-                <label className="form-label">Nombre de marca</label>
+                <label className="form-label required">Nombre de marca</label>
                 <input type="text" 
                 name="nombreMarca" 
                 placeholder="Ingresa nombre de la marca"
                 className="form-control" 
+                required
                 value={nombreMarca} 
                 onChange={(e)=>onInputChange(e)}
                 />
@@ -88,7 +94,7 @@ export default function CreateMarca() {
 <div className="row row-cols-1">
 {/* esto es para enviar el formulario*/} 
             <button type="submit" className="btn btn-outline-primary" disabled={loading}>
-            {loading ? "Guardando..." : "Submit"}
+            {loading ? "Guardando..." : "Guardar"}
             </button>
 
 

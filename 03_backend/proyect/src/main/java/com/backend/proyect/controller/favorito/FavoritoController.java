@@ -20,76 +20,78 @@ import java.util.List;
 public class FavoritoController {
     
     private final FavoritoService favoritoService;
+
     
     @PostMapping("/usuario/{idUsuario}/agregar")
-    @PreAuthorize("hasRole('CLIENTE')")
+    @PreAuthorize("#idUsuario.equals(authentication.principal.getUsuario().idUsuario)")
     @Operation(summary = "Agregar producto a favoritos")
     public ResponseEntity<FavoritoDTO> agregarAFavoritos(
             @PathVariable Integer idUsuario,
             @RequestBody AgregarFavoritoRequest request) {
-        
+
+
         FavoritoDTO favoritoDTO = favoritoService.agregarFavorito(idUsuario, request);
         return new ResponseEntity<>(favoritoDTO, HttpStatus.CREATED);
     }
     
     @DeleteMapping("/usuario/{idUsuario}/producto/{idProducto}")
-    @PreAuthorize("hasRole('CLIENTE')")
+    @PreAuthorize("#idUsuario.equals(authentication.principal.getUsuario().idUsuario)")
     @Operation(summary = "Eliminar producto de favoritos")
     public ResponseEntity<Void> eliminarDeFavoritos(
             @PathVariable Integer idUsuario,
             @PathVariable Integer idProducto) {
-        
+
         favoritoService.eliminarFavorito(idUsuario, idProducto);
         return ResponseEntity.noContent().build();
     }
     
     @GetMapping("/usuario/{idUsuario}")
-    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') or #idUsuario.equals(authentication.principal.getUsuario().idUsuario)")
     @Operation(summary = "Obtener todos los favoritos de un usuario")
     public ResponseEntity<List<FavoritoDTO>> obtenerFavoritosUsuario(
-            @PathVariable Integer idUsuario) {
-        
+            @PathVariable Integer idUsuario){
+
         List<FavoritoDTO> favoritos = favoritoService.obtenerFavoritosPorUsuario(idUsuario);
         return ResponseEntity.ok(favoritos);
     }
     
     @GetMapping("/usuario/{idUsuario}/productos")
-    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') or #idUsuario.equals(authentication.principal.getUsuario().idUsuario)")
     @Operation(summary = "Obtener productos favoritos con detalles")
     public ResponseEntity<List<ProductoFavoritoDTO>> obtenerProductosFavoritos(
             @PathVariable Integer idUsuario) {
-        
+
         List<ProductoFavoritoDTO> productos = favoritoService.obtenerProductosFavoritos(idUsuario);
         return ResponseEntity.ok(productos);
     }
     
     @GetMapping("/usuario/{idUsuario}/verificar/{idProducto}")
-    @PreAuthorize("hasRole('CLIENTE')")
+    @PreAuthorize("#idUsuario.equals(authentication.principal.getUsuario().idUsuario)")
     @Operation(summary = "Verificar si un producto está en favoritos")
     public ResponseEntity<Boolean> verificarProductoEnFavoritos(
             @PathVariable Integer idUsuario,
             @PathVariable Integer idProducto) {
-        
+
         Boolean estaEnFavoritos = favoritoService.verificarProductoEnFavoritos(idUsuario, idProducto);
         return ResponseEntity.ok(estaEnFavoritos);
     }
     
     @GetMapping("/usuario/{idUsuario}/contar")
-    @PreAuthorize("hasRole('CLIENTE') or hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR') or #idUsuario.equals(authentication.principal.getUsuario().idUsuario)")
     @Operation(summary = "Contar favoritos de un usuario")
     public ResponseEntity<Long> contarFavoritosUsuario(
             @PathVariable Integer idUsuario) {
-        
+
         Long cantidad = favoritoService.contarFavoritosPorUsuario(idUsuario);
         return ResponseEntity.ok(cantidad);
     }
     
     @DeleteMapping("/usuario/{idUsuario}/todos")
-    @PreAuthorize("hasRole('CLIENTE')")
+    @PreAuthorize("#idUsuario.equals(authentication.principal.getUsuario().idUsuario)")
     @Operation(summary = "Eliminar todos los favoritos de un usuario")
     public ResponseEntity<Void> eliminarTodosFavoritos(
             @PathVariable Integer idUsuario) {
-        
+
         favoritoService.eliminarTodosFavoritos(idUsuario);
         return ResponseEntity.noContent().build();
     }

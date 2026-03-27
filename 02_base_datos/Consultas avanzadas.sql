@@ -16,34 +16,28 @@ END$$
 DELIMITER ;
 
 -- consulta para agrupar el stok segun el idProducto
-
-SELECT 
+SELECT
     p.idProducto,
-    ANY_VALUE(p.codigoReferencia) AS codigoReferencia,
-    ANY_VALUE(p.nombreProducto) AS nombreProducto,
-    ANY_VALUE(p.descripcion) AS descripcion,
-    ANY_VALUE(tp.nombreTipoProducto) AS nombreTipoProducto, 
-	ANY_VALUE(tpb.nombrePublico) AS nombrePublico, 
-    ANY_VALUE(cat.nombreCategoria) AS nombreCategoria, 
-    ANY_VALUE(mat.nombreMaterial) AS nombreMaterial, 
-    ANY_VALUE(p.precio) AS precio,
-    GROUP_CONCAT(DISTINCT v.nombre SEPARATOR ', ') AS nombre,
-    GROUP_CONCAT(DISTINCT c.nombreColor SEPARATOR ', ') AS nombreColor,
+    p.codigoReferencia,
+    p.nombreProducto,
+    p.descripcion,
+    tp.nombreTipoProducto,
+    tpub.nombrePublico,
+    c.nombreCategoria,
+    m.nombreMaterial,
+    p.estadoProducto AS activo,
+    GROUP_CONCAT(DISTINCT v.nombre SEPARATOR ', ') AS variaciones,
     SUM(s.stockActual) AS stockActual,
-    ANY_VALUE(p.estadoProducto) AS estadoProducto
-FROM Stock s
-JOIN Producto p ON s.idProducto = p.idProducto
-JOIN Categoria cat ON p.idCategoria = cat.idCategoria
-JOIN TipoProducto tp ON cat.idTipoProducto = tp.idTipoProducto
-JOIN Material mat ON p.idMaterial = mat.idMaterial
-JOIN TipoPublico tpb ON p.idPublico = tpb.idPublico
+    p.precio
+FROM Producto p
+LEFT JOIN TipoProducto tp ON tp.idTipoProducto = p.idCategoria
+LEFT JOIN Categoria c ON c.idCategoria = p.idCategoria
+LEFT JOIN Material m ON m.idMaterial = p.idMaterial
+LEFT JOIN TipoPublico tpub ON tpub.idPublico = p.idPublico
+LEFT JOIN Stock s ON s.idProducto = p.idProducto
 LEFT JOIN Variacion v ON v.idVariacion = s.idVariacion
-LEFT JOIN Color c ON c.idColor = s.idColor
-GROUP BY p.idProducto
+LEFT JOIN Color col ON col.idColor = s.idColor
+GROUP BY p.idProducto, p.codigoReferencia, p.nombreProducto, p.descripcion, 
+         tp.nombreTipoProducto, tpub.nombrePublico, c.nombreCategoria, 
+         m.nombreMaterial, p.estadoProducto, p.precio
 ORDER BY p.nombreProducto ASC;
-
-select * from usuario;
-select * from rol;
-
-
-

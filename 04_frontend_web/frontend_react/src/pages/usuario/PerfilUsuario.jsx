@@ -1,17 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import "../../styles/gestionusuarios/perfilusuario.css";
-
-
+import { Container, Row, Col, Form, Button, Alert, Spinner } from 'react-bootstrap';
+import BotonAtras from '../../hooks/boton/BotonAtras';
+import api_url from '../../services/administrador/api';
 
 function PerfilUsuario() {
-
     const [formData, setFormData] = useState(null);
-
-    // 2. Estado separado para la nueva contraseña (siempre inicia vacío).
     const [newPassword, setNewPassword] = useState('');
-
-    // 3. Estado para manejar la UI
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
@@ -20,7 +16,6 @@ function PerfilUsuario() {
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
-                // 1. Obtener el token de autenticación (Eliminamos comillas si existen)
                 const token = localStorage.getItem("authToken")?.replace(/"/g, "");
 
                 if (!token) {
@@ -28,17 +23,14 @@ function PerfilUsuario() {
                     setLoading(false);
                     return;
                 }
-                
-                // Endpoint: GET /api/usuarios/perfil
-                const response = await axios.get('http://localhost:8080/api/usuarios/perfil', {
+
+                const response = await api_url.get('/api/usuarios/perfil', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     }
                 });
 
-                // Usamos esta data para pre-llenar los campos.
                 setFormData(response.data);
-
             } catch (err) {
                 console.error("Error al cargar el perfil:", err);
                 setError("No se pudo cargar el perfil del usuario. Intente más tarde.");
@@ -54,16 +46,13 @@ function PerfilUsuario() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === 'password') {
-            // Maneja el campo de password en su estado separado
             setNewPassword(value);
         } else {
-            // Maneja los demás campos en el estado principal
             setFormData(prevData => ({
                 ...prevData,
                 [name]: value
             }));
         }
-        // Limpiar mensajes al empezar a editar
         setSuccessMessage('');
         setError(null);
     };
@@ -76,7 +65,7 @@ function PerfilUsuario() {
         setError(null);
 
         const token = localStorage.getItem("authToken")?.replace(/"/g, "");
-        
+
         if (!token) {
             setError("No se encontró el token de autenticación para actualizar. Inicie sesión.");
             setLoading(false);
@@ -84,30 +73,24 @@ function PerfilUsuario() {
         }
 
         try {
-            // 1. Crear el DTO a enviar al backend
             const requestData = {
                 ...formData,
-                // Incluimos la nueva contraseña solo si se ha escrito algo.
                 password: newPassword || null,
-
-                // Eliminamos los objetos de relación anidados para el DTO.
                 rol: undefined,
                 tipo_de_documento: undefined,
                 estado_usuario: undefined,
             };
 
-            // Endpoint: PUT /api/usuarios/perfil
-            await axios.put('http://localhost:8080/api/usuarios/perfil', requestData, { 
+            await api_url.put('/api/usuarios/perfil', requestData, {
                 headers: {
-                    Authorization: `Bearer ${token}`, 
+                    Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 }
             });
 
-            // Éxito
             setSuccessMessage("¡Perfil actualizado con éxito!");
             setLoading(false);
-            setNewPassword(''); // Limpiar el campo de contraseña tras el éxito
+            setNewPassword('');
 
         } catch (err) {
             console.error("Error al actualizar:", err);
@@ -118,78 +101,168 @@ function PerfilUsuario() {
 
     // --- D. Lógica de Renderizado ---
     if (loading && !formData) {
-        return <div className="loading-state">Cargando perfil... 🔄</div>;
+        return (
+            <div className="allHome" id="home-container">
+                <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
+                    <Spinner animation="border" variant="primary" />
+                    <span className="ms-3">Cargando perfil... 🔄</span>
+                </Container>
+            </div>
+        );
     }
 
     if (error && !formData) {
-        return <div className="error-state">Error: {error}</div>;
+        return (
+            <div className="allHome" id="home-container">
+                <Container className="py-5">
+                    <Alert variant="danger">Error: {error}</Alert>
+                </Container>
+            </div>
+        );
     }
 
     if (!formData) return null;
 
     return (
-        <div className="user-profile-container">
-            <h1>Editar Mi Perfil</h1>
+        <div className="allHome" id="home-container">
+            <Container className="py-4 py-md-5">
+                <BotonAtras />
 
-            {successMessage && <div className="success-message">{successMessage}</div>}
-            {error && <div className="error-message">{error}</div>}
+                <Row className="justify-content-center">
+                    <Col xs={12} md={10} lg={8}>
+                        {/* Tus classnames originales se mantienen */}
+                        <div className="user-profile-container">
+                            <h1>Editar Mi Perfil</h1>
 
-            <form onSubmit={handleSubmit} className="profile-form">
+                            {successMessage && <div className="success-message">{successMessage}</div>}
+                            {error && <div className="error-message">{error}</div>}
 
-                {/* Campos de texto y email */}
-                <div className="form-group">
-                    <label htmlFor="nombreUsuario">Nombre:</label>
-                    <input type="text" name="nombreUsuario" value={formData.nombreUsuario || ''} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="primerApellido">Primer Apellido:</label>
-                    <input type="text" name="primerApellido" value={formData.primerApellido || ''} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="segundoApellido">Segundo Apellido:</label>
-                    <input type="text" name="segundoApellido" value={formData.segundoApellido || ''} onChange={handleChange} />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="correoElectronico">Correo Electrónico:</label>
-                    <input type="email" name="correoElectronico" value={formData.correoElectronico || ''} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="telefono">Teléfono:</label>
-                    <input type="text" name="telefono" value={formData.telefono || ''} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="direccion">Dirección:</label>
-                    <input type="text" name="direccion" value={formData.direccion || ''} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="numeroDocumento">Número de Documento:</label>
-                    <input type="number" name="numeroDocumento" value={formData.numeroDocumento || ''} onChange={handleChange} required />
-                </div>
+                            <form onSubmit={handleSubmit} className="profile-form">
+                                <Row>
+                                    <Col xs={12} md={6}>
+                                        <div className="form-group">
+                                            <label htmlFor="nombreUsuario">Nombre:</label>
+                                            <input
+                                                type="text"
+                                                name="nombreUsuario"
+                                                value={formData.nombreUsuario || ''}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+                                    </Col>
 
-                {/* Campo de Contraseña (Manejado por separado) */}
-                <div className="form-group password-group">
-                    <label htmlFor="password">Nueva Contraseña (Opcional):</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={newPassword}
-                        onChange={handleChange}
-                        placeholder="Dejar vacío para no cambiarla"
-                    />
-                </div>
+                                    <Col xs={12} md={6}>
+                                        <div className="form-group">
+                                            <label htmlFor="primerApellido">Primer Apellido:</label>
+                                            <input
+                                                type="text"
+                                                name="primerApellido"
+                                                value={formData.primerApellido || ''}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+                                    </Col>
 
-                <button type="submit" disabled={loading}>
-                    {loading ? 'Guardando...' : 'Actualizar Perfil'}
-                </button>
-            </form>
+                                    <Col xs={12} md={6}>
+                                        <div className="form-group">
+                                            <label htmlFor="segundoApellido">Segundo Apellido:</label>
+                                            <input
+                                                type="text"
+                                                name="segundoApellido"
+                                                value={formData.segundoApellido || ''}
+                                                onChange={handleChange}
+                                            />
+                                        </div>
+                                    </Col>
 
-            <div className="read-only-info">
-                {/* Muestra el Rol y Tipo de Documento actual (solo lectura) */}
-                <p><strong>Rol:</strong> {formData.rol?.nombreRol || 'N/A'}</p>
-                <p><strong>Tipo de Documento:</strong> {formData.tipo_de_documento?.nombreTipoDeDocumento || 'N/A'}</p>
-            </div>
+                                    <Col xs={12} md={6}>
+                                        <div className="form-group">
+                                            <label htmlFor="telefono">Teléfono:</label>
+                                            <input
+                                                type="text"
+                                                name="telefono"
+                                                value={formData.telefono || ''}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+                                    </Col>
+
+                                    <Col xs={12}>
+                                        <div className="form-group">
+                                            <label htmlFor="correoElectronico">Correo Electrónico:</label>
+                                            <input
+                                                type="email"
+                                                name="correoElectronico"
+                                                value={formData.correoElectronico || ''}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+                                    </Col>
+
+                                    <Col xs={12}>
+                                        <div className="form-group">
+                                            <label htmlFor="direccion">Dirección:</label>
+                                            <input
+                                                type="text"
+                                                name="direccion"
+                                                value={formData.direccion || ''}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+                                    </Col>
+
+                                    <Col xs={12} md={6}>
+                                        <div className="form-group">
+                                            <label htmlFor="numeroDocumento">Número de Documento:</label>
+                                            <input
+                                                type="number"
+                                                name="numeroDocumento"
+                                                value={formData.numeroDocumento || ''}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+                                    </Col>
+
+                                    <Col xs={12} md={6}>
+                                        <div className="form-group password-group">
+                                            <label htmlFor="password">Nueva Contraseña (Opcional):</label>
+                                            <input
+                                                type="password"
+                                                name="password"
+                                                value={newPassword}
+                                                onChange={handleChange}
+                                                placeholder="Dejar vacío para no cambiarla"
+                                            />
+                                        </div>
+                                    </Col>
+
+                                    <Col xs={12}>
+                                        <div className="read-only-info">
+                                            <p>
+                                                <strong>Tipo de Documento:</strong> {formData.tipo_de_documento?.nombreTipoDeDocumento || 'N/A'}
+                                            </p>
+                                        </div>
+                                    </Col>
+
+                                    <Col xs={12} className="text-center">
+                                        <button className="bton-actualizar" type="submit" disabled={loading}>
+                                            {loading ? 'Guardando...' : 'Actualizar Perfil'}
+                                        </button>
+                                    </Col>
+                                </Row>
+                            </form>
+                        </div>
+                    </Col>
+                </Row>
+            </Container>
         </div>
-    )
+    );
 }
 
 export default PerfilUsuario;

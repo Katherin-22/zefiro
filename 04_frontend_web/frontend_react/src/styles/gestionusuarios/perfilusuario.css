@@ -1,83 +1,257 @@
-/* perfilusuario.css */
-
-/* 1. Ajuste para el Contenedor Principal: .user-profile-container */
-/* Este selector toma los estilos de .perfil-container y .datos-card */
-.user-profile-container { 
-    /* Estilos de Contenedor */
-    max-width: 900px;
-    margin: 40px auto; /* Centra el contenedor y agrega margen superior */
-    font-family: Arial, sans-serif;
-
-    /* Estilos de la Tarjeta */
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 25px; 
-    margin-bottom: 25px;
+:root {
+    --primary-color: #E0B253;
+    --secondary-color: #000000;
+    --bg-body-dark: #000000;
+    --bg-body-light: #ffffff;
+    --text-light: #ffffff;
+    --text-dark: #000000;
+    --hover-color: #c89c3f;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
 }
 
-/* 2. Estilos para el título H1 */
-/* Esto asegura que el título "Editar Mi Perfil" se vea dentro del contenedor y formateado */
-.user-profile-container h1 {
-    color: #333;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
-    margin-top: 0;
-    margin-bottom: 20px;
-    text-align: center; /* Centrar el título */
-}
-
-/* 3. Ajuste para los Grupos de Campos: .form-group */
-/* Este selector toma los estilos de .datos-field */
-.form-group {
-    margin-bottom: 20px; 
-}
-
-.form-group label {
-    display: block; /* La etiqueta ocupa su propia línea */
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #555;
-}
-
-/* Estilos de los inputs dentro de los grupos */
-.form-group input {
+/*======================================== Perfil de usuario ======================================================*/
+.user-profile-container {
+    min-height: calc(100vh + 20%); /* 100vh + 20% del viewport */
+    height: auto;
     width: 100%;
-    padding: 10px;
-    border: 1px solid #E0B253;
-    border-radius: 4px;
-    box-sizing: border-box; /* Asegura que el padding no desborde el input */
+    box-shadow: 0 0 20px rgba(224, 178, 83, 0.5) !important;
+    border-radius: 25px !important;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    margin-top: -70px;
 }
 
-/* Estilos para el botón de Submit */
-/* Este selector aplica los estilos del .btn-guardar al botón de envío */
-.user-profile-container button[type="submit"] {
-    padding: 10px 20px;
-    margin-right: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    background-color: #E0B253; /* Verde (btn-guardar) */
-    color: white;
-    width: 100%; /* Para que ocupe todo el ancho de la tarjeta */
-    margin-top: 20px;
+    .user-profile-container h1 {
+        color: var(--text-dark);
+        font-size: 2rem;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 10px 10px 25px;
+        border-bottom: 1px solid var(--primary-color) !important;
+    }
+
+/* Mensajes de éxito y error */
+.success-message {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    padding: 15px 20px;
+    border-radius: 10px;
+    border-left: 5px solid #4CAF50;
+    margin-bottom: 20px;
+    font-weight: 500;
 }
 
-/* Estilos para la sección de lectura (Rol y Tipo de Documento) */
+.error-message {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #F44336;
+    padding: 15px 20px;
+    border-radius: 10px;
+    border-left: 5px solid #F44336;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+/* Formulario */
+.profile-form {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Grupos de formulario */
+.form-group {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 0.95rem;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid var(--primary-color) !important;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: var(--tran-03);
+        outline: none;
+        background-color: #f8f9fa;
+    }
+
+        .form-group input:hover {
+            border-color: var(--primary-color) !important;
+            box-shadow: 0 0 10px rgba(224, 178, 83, 0.8) !important;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color) !important;
+            box-shadow: 0 0 15px rgba(224, 178, 83, 0.8) !important;
+            background-color: color-mix(in srgb, var(--primary-color) 35%, transparent);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-dark) !important;
+        }
+
+/* Grupo de contraseña especial */
+.password-group {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px dashed var(--primary-color);
+}
+
+    .password-group label {
+        color: var(--primary-color);
+    }
+
+/* Información de solo lectura */
 .read-only-info {
-    padding-top: 20px;
-    border-top: 1px solid #ddd;
-    margin-top: 30px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 15px;
+    margin: 25px 0;
+    border: 1px solid rgba(224, 178, 83, 0.2);
 }
 
-.read-only-info p {
-    margin: 5px 0;
+    .read-only-info p {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--text-dark);
+    }
+
+    .read-only-info strong {
+        color: var(--primary-color);
+        font-weight: 700;
+        margin-right: 10px;
+    }
+
+.bton-actualizar {
+    padding: 10px 150px !important;
+    border: 2px solid var(--primary-color);
+    border-radius: 15px !important;
+    white-space: nowrap !important;
+    background: var(--primary-color);
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: var(--tran-04);
 }
 
-.read-only-info strong {
-    display: inline-block;
-    width: 150px;
-    color: #555;
+    /* Efecto hover */
+    .bton-actualizar:hover:not(:disabled) {
+        background-color: color-mix(in srgb, var(--primary-color) 35%, transparent) !important;
+        color: var(--text-dark) !important;
+        box-shadow: 0 0 20px rgba(224, 178, 83, 0.8) !important;
+        transform: translateY(-2px);
+    }
+
+    /* Efecto active (cuando se hace click) */
+    .bton-actualizar:active:not(:disabled) {
+        transform: translateY(0);
+        box-shadow: 0 0 10px rgba(224, 178, 83, 0.5) !important;
+    }
+
+    /* ESTILO PARA DISABLED */
+    .bton-actualizar:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #cccccc;
+        border-color: #999999;
+        color: #666666;
+        box-shadow: none;
+        transform: none;
+        pointer-events: none;
+    }
+
+    /* Efecto de onda en hover (solo cuando no está disabled) */
+    .bton-actualizar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .bton-actualizar:hover:not(:disabled)::before {
+        left: 100%;
+    }
+/*======================================== Responsive ==================================================*/
+@media (min-width: 480px) and (max-width: 768px) {
+    .user-profile-container {
+        min-height: calc(100vh + 20%); /* 100vh + 20% del viewport */
+        height: auto;
+        padding: 20px;
+        margin-top: -60px;
+    }
+
+    .container-form {
+        padding: 0 15px;
+    }
+
+    .bton-actualizar {
+        padding: 10px 50px !important;
+        font-size: 1rem;
+        width: 100%;
+        max-width: 300px;
+    }
+
+
+
+    .row-form {
+        margin-top: -10px;
+        margin-bottom: 20px;
+        background: var(--bg-body-light) !important;
+    }
+
+    .user-profile-container h1 {
+        font-size: 1.8rem;
+    }
+
+    .form-group input {
+        padding: 10px 12px;
+    }
 }
 
+
+/* Loading state */
+.loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+/* Scroll personalizado */
+.user-profile-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.user-profile-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.user-profile-container::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+
+    .user-profile-container::-webkit-scrollbar-thumb:hover {
+        background: var(--hover-color);
+    }

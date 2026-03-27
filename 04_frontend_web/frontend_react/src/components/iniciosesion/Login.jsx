@@ -1,10 +1,11 @@
 import styles from "../../styles/gestionusuarios/login.module.css"; // <-- CSS Module
-import axios from 'axios';
-import { useState } from 'react';
+import axios from "axios";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
-function Login() {
-
+function Login({ stateOverride }) {
+  const { login } = useAuth();
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -19,44 +20,72 @@ function Login() {
     setIsError("");
     setMessage("");
 
+    const pendingRedirect = sessionStorage.getItem("pendingCheckoutRedirect");
+
+    console.log("DEBUG-CHECKOUT: pendingRedirect:", pendingRedirect);
+
     try {
-      const response = await axios.post("http://localhost:8080/api/auth/login", {
-        email: email,
-        password: password,
-      });
+      const response = await axios.post(
+        "http://35.171.131.177:8080/api/auth/login",
+        {
+          email,
+          password,
+        }
+      );
 
       if (response.status === 200 && response.data.success === true) {
-
         const token = response.data.token;
         const userData = response.data.data;
 
-        if (token && userData && userData.rol) {
-          localStorage.setItem('authToken', token);
-          localStorage.setItem('userData', JSON.stringify(userData));
-          setMessage(response.data.message || '¡Inicio de sesión exitoso!');
-
-          let redirectPath = '/';
-          if (userData.rol === ROL_ADMIN) redirectPath = '/Administrador/Stock';
-          if (userData.rol === ROL_CLIENTE) redirectPath = '/';
-
-          setTimeout(() => navigate(redirectPath), 1000);
-
-        } else {
-          setIsError('No se recibió el token o la información de rol.');
+        if (!token || !userData || !userData.rol) {
+          setIsError("No se recibió la información del usuario.");
+          return;
         }
 
+        // ✅ Login permitido
+        login(userData, token);
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("userData", JSON.stringify(userData));
+
+        let redirectPath = "/";
+
+        // 🔐 PRIORIDAD ABSOLUTA: COMPRA
+        if (pendingRedirect) {
+
+          redirectPath = pendingRedirect;
+
+          // Limpiar intención
+          sessionStorage.removeItem("pendingCheckoutRedirect");
+          sessionStorage.removeItem("requireClientRole");
+
+        } else if (userData.rol === ROL_ADMIN) {
+          redirectPath = "/Administrador/stock";
+        } else if (userData.rol === ROL_CLIENTE) {
+          redirectPath = "/";
+        }
+
+        setMessage(response.data.message || "¡Inicio de sesión exitoso!");
+        navigate(redirectPath, { replace: true });
       } else {
-        setIsError(response.data.message || 'No se pudo iniciar sesión.');
+        setIsError(response.data.message || "No se pudo iniciar sesión.");
       }
-
     } catch (err) {
-      if (err.response?.data?.message) setIsError(err.response.data.message);
-      else if (err.response?.status === 401) setIsError("Credenciales inválidas. Intente de nuevo.");
-      else if (err.response?.status === 404) setIsError("El email proporcionado no está registrado.");
-      else if (err.response?.status === 500) setIsError("Error del servidor. Intente más tarde.");
-      else setIsError(err.response?.data?.message || "Error de conexión. Intente más tarde.");
+      if (err.response?.status === 401 && err.response?.data?.notVerified) {
+        setIsError("Debes verificar tu cuenta primero. Redirigiendo...");
+        setTimeout(() => {
+          navigate("/email-verify", { state: { email: email, tipo: "verify" } });
+        }, 2000);
+      } else if (err.response?.status === 401) {
+        setIsError("Credenciales inválidas.");
+      } else if (err.response?.status === 404) {
+        setIsError("El email no está registrado.");
+      } else if (err.response?.status === 500) {
+        setIsError("Error del servidor.");
+      } else {
+        setIsError("Error de conexión.")
+      };
 
-      console.error("error detallado:", err);
+      console.error("Error login:", err);
     }
   }
 
@@ -101,11 +130,12 @@ function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          maxLength={20}
         />
 
         <div className={styles.opciones}>
           <p>
-            <Link to="/recuperarContraseña">¿Olvidó su Contraseña?</Link>
+            <Link to="/reset-password">¿Olvidó su Contraseña?</Link>
           </p>
         </div>
 
@@ -119,7 +149,10 @@ function Login() {
 
         <div className={styles.registro}>
           <p className={styles.noTienesCuenta}>¿No tienes cuenta?</p>
-          <Link to="/RegistrarUsuarios" className={styles.btnRegistrarse}>
+          <Link
+            to="/RegistrarUsuarios"
+            className={styles.btnRegistrarse}
+          >
             Regístrate
           </Link>
         </div>

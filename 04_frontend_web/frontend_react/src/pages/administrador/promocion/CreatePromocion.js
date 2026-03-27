@@ -5,6 +5,7 @@ import {createPromocion} from "../../../services/administrador/PromocionService"
 import MenuAdmin from "../../../layouts/administrador/menuAdmin";
 import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
+import "../../../styles/administrador/formularios-admin.css"
 
 export default function CreatePromocion() {
     
@@ -24,7 +25,7 @@ export default function CreatePromocion() {
 
 
     const [loading, setLoad] = useState(false);
-    const [ setSuccess] = useState(false);
+    const [success,setSuccess] = useState(false);
     
     const handleCreatePromocion = async (data) => {
         setLoad(true); // paso 1: activar "cargando"
@@ -56,6 +57,10 @@ export default function CreatePromocion() {
         await handleCreatePromocion(promocion); // manda datos al backend
     }
 
+    {success && (
+        console.log("promocion creada con éxito.")
+    )}
+
   return (
 
 <div className="main-content">
@@ -78,63 +83,68 @@ export default function CreatePromocion() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
             <div className="col">
-                <label className="form-label">Nombre de promoción</label>
+                <label className="form-label required">Nombre de promoción</label>
                 <input type="text" 
                 name="nombrePromocion" 
                 placeholder="Ingresa nombre de la promoción"
-                className="form-control" 
+                className="form-control"
+                required 
                 value={nombrePromocion} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Código</label>
+                <label className="form-label required">Código</label>
                 <input type="text" 
                 name="codigoPromocion" 
                 placeholder="Ingresa el codigo de la promoción"
-                className="form-control" 
+                className="form-control"
+                required 
                 value={codigoPromocion} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Porcentaje</label>
+                <label className="form-label required">Porcentaje</label>
                 <input type="number" 
                 name="descuento" 
                 placeholder="Ingresa el procentaje del descuento "
                 className="form-control" 
+                required
                 value={descuento} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Descripción</label>
+                <label className="form-label required">Descripción</label>
                 <input type="text" 
                 name="descripcion" 
                 placeholder="Ingresa la descripción de la promoción"
-                className="form-control" 
+                className="form-control"
+                required 
                 value={descripcion} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Fecha de fin</label>
+                <label className="form-label required">Fecha de fin</label>
                 <input type="date" 
                 name="fechaFin" 
                 placeholder="Ingresa la fecha de finalización"
                 className="form-control" 
+                required
                 value={fechaFin} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Estado de la Promoción</label>
-                <select name="estadoPromocion" value={estadoPromocion} onChange={(e)=>onInputChange(e)} className="form-select">
+                <label className="form-label required">Estado de la Promoción</label>
+                <select name="estadoPromocion" value={estadoPromocion} onChange={(e)=>onInputChange(e)} className="form-select" required>
                 <option value="">-- Selecciona una opción --</option>
                 {opcionesEstado.map((estado) => (
                 <option key={estado} value={estado}>
@@ -148,8 +158,9 @@ export default function CreatePromocion() {
 
 <div className="row row-cols-1">
 {/* esto es para enviar el formulario*/} 
+                
             <button type="submit" className="btn btn-outline-primary" disabled={loading}>
-            {loading ? "Guardando..." : "Submit"}
+            {loading ? "Guardando..." : "Guardar"}
             </button>
 
             {/* esto es para cancelar el formulario*/} 

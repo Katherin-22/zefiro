@@ -45,13 +45,18 @@ CREATE TABLE Usuario (
   idRol INT NOT NULL,
   idTipoDeDocumento INT NOT NULL,
   idestado_usuario INT NOT NULL,
+  created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  reset_otp VARCHAR(255) NULL,
+  reset_otp_expire_at TIMESTAMP NULL,
+  updated_at TIMESTAMP NULL,
+  verify_otp VARCHAR(255) NULL,
+  verify_otp_expire_at TIMESTAMP NULL,
   
   PRIMARY KEY(idUsuario),
-  FOREIGN KEY (idRol) REFERENCES rol( idRol),
+  FOREIGN KEY (idRol) REFERENCES rol(idRol),
   FOREIGN KEY (idTipoDeDocumento) REFERENCES tipo_de_documento(idTipoDeDocumento),
   FOREIGN KEY (idestado_usuario) REFERENCES estado_usuario(idestado_usuario)
-  
-) ;
+);
 -- -----------------------------------------------------
 -- MÓDULO DE PROMOCIONES Y DESCUENTOS            			1.1
 -- -----------------------------------------------------
@@ -178,13 +183,14 @@ CREATE TABLE Imagen(
     FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE
 );
 
-CREATE TABLE Banner (
+CREATE TABLE banner (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255),
     descripcion VARCHAR(500),
-    imagenUrl VARCHAR(255),
-    fileName VARCHAR(255),
-    url VARCHAR(500)
+    file_name VARCHAR(255),
+    url VARCHAR(500),
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabla Mensajes del inbox
@@ -204,11 +210,27 @@ CREATE TABLE mensajes (
 -- Tabla carrito
 CREATE TABLE Carrito (
   idCarrito INT AUTO_INCREMENT NOT NULL ,
-  fechaCreacion VARCHAR(45) NOT NULL,
-  idUsuario INT,
-  
+  fechaCreacion DATETIME NOT NULL ,
+  estadoCarrito ENUM('Activo','Procesado','Cancelado') NOT NULL DEFAULT 'Activo',
+  idUsuario INT NOT NULL ,
   PRIMARY KEY (idCarrito),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
+) ;
+
+-- Tabla DetalleCarrito 
+CREATE TABLE DetalleCarrito (
+  idDetalleCarrito INT AUTO_INCREMENT NOT NULL,
+  idCarrito INT NOT NULL,
+  idStock  INT NOT NULL,
+  cantidad INT NOT NULL CHECK (cantidad > 0),
+  precioUnitario DOUBLE NOT NULL,
+  idPromocionAplicada INT NULL,            
+  porcentajeDescuento INT NULL, 
+  
+  PRIMARY KEY (idDetalleCarrito),
+  FOREIGN KEY (idCarrito) REFERENCES Carrito(idCarrito),
+  FOREIGN KEY (idStock) REFERENCES Stock(idStock),
+  FOREIGN KEY (idPromocionAplicada) REFERENCES Promocion(idPromocion) 
 ) ;
 
 -- Tabla MetodoPago
@@ -219,21 +241,35 @@ CREATE TABLE MetodoPago (
     PRIMARY KEY (idMetodoPago)
 );
 
--- Tabla DetalleCarrito 
-CREATE TABLE DetalleCarrito (
-  idProducto INT NOT NULL,
-  idCarrito INT NOT NULL,
-  cantidad INT NOT NULL,
-  idUsuario INT NOT NULL,
-  
-  PRIMARY KEY (idProducto,idCarrito),
-  FOREIGN KEY (idProducto) REFERENCES producto(idProducto),
-  FOREIGN KEY (idCarrito) REFERENCES Carrito(idCarrito)
-) ;
+-- Esta tabla guarda lo que tú envías al sistema de pagos: monto, moneda, descripción.
+
+CREATE TABLE SolicitudPago (
+	idSolicitudPago INT AUTO_INCREMENT NOT NULL,
+	amount BIGINT NULL,
+    currency VARCHAR(10) NOT NULL,
+    description VARCHAR(200) NULL,
+	idUsuario INT NOT NULL,
+    
+	PRIMARY KEY (idSolicitudPago),
+	FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)    
+);
+
+CREATE TABLE RespuestaPago (
+    id VARCHAR(255) NOT NULL,          
+    amount BIGINT NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    status VARCHAR(200) NOT NULL,
+    clientSecret VARCHAR(200) NOT NULL,
+	idUsuario INT NOT NULL,    
+    
+	PRIMARY KEY (id),
+	FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)        
+);
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
 -- -----------------------------------------------------
+
 
 -- Tabla Pedido
 CREATE TABLE Pedido (
@@ -241,7 +277,9 @@ CREATE TABLE Pedido (
   fechaPedido DATE NOT NULL, 
   idUsuario INT NOT NULL,
   idCarrito INT NOT NULL,
-  idPromocion INT NOT NULL,
+  idPromocion INT  NULL,
+  estado enum('Pendiente','Procesando','Entregado')default 'Pendiente',
+  total_final DECIMAL(10,2) NOT NULL DEFAULT 0,
   idMetodoPago INT NOT NULL,
   
   PRIMARY KEY(idPedido),
@@ -255,22 +293,15 @@ CREATE TABLE Pedido (
 CREATE TABLE DetallePedido (
   idDetallePedido INT AUTO_INCREMENT NOT NULL,
   idPedido INT NOT NULL,
-  talla INT NOT NULL, 
+  idStock INT NOT NULL, 
   cantidad INT NOT NULL,
   precioUnitario DOUBLE NOT NULL,
-
+  subtotal DECIMAL(10,2) NOT NULL DEFAULT 0 ,
   PRIMARY KEY(idDetallePedido),
-  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido)
+  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido),
+  FOREIGN KEY (idStock) REFERENCES Stock(idStock)
 ) ;
 
-CREATE TABLE DetallePedido_has_Pedido(
-  idDetallePedido INT NOT NULL,
-  idPedido INT NOT NULL,
-  
-  PRIMARY KEY(idDetallePedido, idPedido),
-  FOREIGN KEY (idDetallePedido) REFERENCES DetallePedido(idDetallePedido),
-  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido)
-);
 -- -----------------------------------------------------
 -- MÓDULO DE GESTION DE COMPRAS									PARTE 1.2
 -- -----------------------------------------------------
@@ -305,30 +336,6 @@ CREATE TABLE DetallesComprobanteDeVenta (
   FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
 
 ) ;
--- -----------------------------------------------------
--- MÓDULO DE GESTIÓN DE PEDIDOS 							PARTE 1.2
--- -----------------------------------------------------
--- Tabla estadoPedido
-CREATE TABLE EstadoPedido (
-  idEstadoPedido INT AUTO_INCREMENT NOT NULL,
-  nombreEstado VARCHAR(45) NOT NULL,
-  
-  PRIMARY KEY (idEstadoPedido)
-) ;
-
--- Tabla seguimientoPedido
-CREATE TABLE SeguimientoPedido (
-  idSeguimiento INT NOT NULL AUTO_INCREMENT,
-  fechaEstado DATE NOT NULL,
-  comentario VARCHAR(45) NULL,
-  idPedido INT,
-  idEstadoPedido INT,
-  
-  PRIMARY KEY (idSeguimiento),
-  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido),
-  FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido)
-) ;
-
 
 -- Tabla devoluciones_Cambios
 CREATE TABLE devoluciones_Cambios (
@@ -362,3 +369,24 @@ CREATE TABLE Favoritos (
   -- Un usuario no puede agregar el mismo producto dos veces a favoritos
   UNIQUE KEY unique_usuario_producto (idUsuario, idProducto)
 );
+
+-- Tabla de Comentarios para productos
+CREATE TABLE ComentarioProducto (
+  idComentario INT AUTO_INCREMENT NOT NULL,
+  idProducto INT NOT NULL,
+  idUsuario INT NOT NULL,
+  comentario TEXT NOT NULL,
+  calificacion INT NOT NULL CHECK (calificacion >= 1 AND calificacion <= 5),
+  fechaComentario TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  estado ENUM('Activo', 'Eliminado') DEFAULT 'Activo',
+  
+  PRIMARY KEY (idComentario),
+  FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE,
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE,
+  
+  -- Un usuario solo puede comentar una vez por producto
+  UNIQUE KEY unique_usuario_producto (idUsuario, idProducto)
+);
+
+-- Índice para búsquedas más rápidas
+CREATE INDEX idx_comentario_producto ON ComentarioProducto(idProducto, estado, fechaComentario);

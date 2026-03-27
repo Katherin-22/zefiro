@@ -10,6 +10,7 @@ import {useGetPromociones} from "../../../hooks/promocion/useGetPromocion";
 import MenuAdmin from "../../../layouts/administrador/menuAdmin";
 import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
+import "../../../styles/administrador/formularios-admin.css"
 
 export default function CreateProducto() {
 // navigate=useNavigate():Sirve para moverte entre páginas desde el código 
@@ -18,7 +19,7 @@ export default function CreateProducto() {
     let navigate=useNavigate();
 
     const [loading, setLoad] = useState(false);
-    const [ setSuccess] = useState(false);
+    const [success,setSuccess] = useState(false);
 
         const [producto,setproducto]=useState({ 
         nombreProducto:"",
@@ -49,13 +50,13 @@ export default function CreateProducto() {
         setSuccess(true);        // paso 3: si todo ok → marcar éxito
         navigate("/ver_producto")
         } catch (error) {
-        console.error("Error al crear la categoria:", error);
+        console.error("Error al crear el producto:", error);
 
         // Verifica si el backend envió un mensaje
         if (error.response && error.response.data && error.response.data.errorMessage) {
         alert("⚠️ " + error.response.data.errorMessage);
         } else {
-        alert("⚠️ Error desconocido al crear la categoria");
+        alert("⚠️ Error desconocido al crear el producto.");
         }
         setSuccess(false);      // si falla → marcar como no exitoso
         } finally {
@@ -71,6 +72,10 @@ export default function CreateProducto() {
         e.preventDefault();
         await handleCreateProducto(producto); // manda datos al backend
     }
+
+    {success && (
+        console.log("producto creado con éxito.")
+    )}
 
   return (
 
@@ -94,8 +99,8 @@ export default function CreateProducto() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
             <div className="col">
-                <label className="form-label">Categoria</label>
-                <select name="idCategoria" value={producto.idCategoria} onChange={(e)=>onInputChange(e)} className="form-select">
+                <label className="form-label required">Categoria</label>
+                <select name="idCategoria" value={producto.idCategoria} onChange={(e)=>onInputChange(e)} className="form-select" required>
                 <option value="">-- Selecciona una opción --</option>
                 {categorias.map((categoria) => (
                 <option key={categoria.idCategoria} value={categoria.idCategoria}>
@@ -106,30 +111,32 @@ export default function CreateProducto() {
             </div>
 
             <div className="col">
-                <label className="form-label">Código de referencia</label>
+                <label className="form-label required">Código de referencia</label>
                 <input type="text" 
                 name="codigoReferencia" 
                 placeholder="Ingresa nombre del producto"
-                className="form-control" 
+                className="form-control"
+                required 
                 value={codigoReferencia} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Nombre del producto</label>
+                <label className="form-label required">Nombre del producto</label>
                 <input type="text" 
                 name="nombreProducto" 
                 placeholder="Ingresa nombre del producto"
-                className="form-control" 
+                className="form-control"
+                required 
                 value={nombreProducto} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Marca</label>
-                <select name="idMarca" value={producto.idMarca} onChange={(e)=>onInputChange(e)} className="form-select">
+                <label className="form-label required">Marca</label>
+                <select name="idMarca" value={producto.idMarca} onChange={(e)=>onInputChange(e)} className="form-select" required>
                 <option value="">-- Selecciona una opción --</option>
                 {marcas.map((marca) => (
                 <option key={marca.idMarca} value={marca.idMarca}>
@@ -140,30 +147,32 @@ export default function CreateProducto() {
             </div>
 
             <div className="col">
-                <label className="form-label">Descripción</label>
+                <label className="form-label required">Descripción</label>
                 <textarea 
                 name="descripcion"
                 placeholder="Ingresa una descripción del producto"
                 className="form-control" 
+                required
                 value={descripcion} 
                 onChange={(e)=>onInputChange(e)}
                 ></textarea>
             </div>
  
             <div className="col">
-                <label className="form-label">Precio</label>
+                <label className="form-label required">Precio</label>
                 <input type="number" 
                 name="precio" 
                 placeholder="Ingresa el precio del producto"
-                className="form-control" 
+                className="form-control"
+                required 
                 value={precio} 
                 onChange={(e)=>onInputChange(e)}
                 />
             </div>
 
             <div className="col">
-                <label className="form-label">Material</label>
-                <select name="idMaterial" value={producto.idMaterial} onChange={(e)=>onInputChange(e)} className="form-select">
+                <label className="form-label required">Material</label>
+                <select name="idMaterial" value={producto.idMaterial} onChange={(e)=>onInputChange(e)} className="form-select" required>
                 <option value="">-- Selecciona una opción --</option>
                 {materiales.map((material) => (
                 <option key={material.idMaterial} value={material.idMaterial}>
@@ -175,8 +184,8 @@ export default function CreateProducto() {
 
 
             <div className="col">
-                <label className="form-label">Sexo Biologico</label>
-                <select name="idPublico" value={producto.idPublico} onChange={(e)=>onInputChange(e)} className="form-select">
+                <label className="form-label required">Sexo Biologico</label>
+                <select name="idPublico" value={producto.idPublico} onChange={(e)=>onInputChange(e)} className="form-select" required>
                 <option value="">-- Selecciona una opción --</option>
                 {tipoPublicos.map((publico) => (
                 <option key={publico.idPublico} value={publico.idPublico}>
@@ -187,8 +196,8 @@ export default function CreateProducto() {
             </div>
 
             <div className="col">
-                <label className="form-label">Estado del Producto</label>
-                <select name="estadoProducto" value={estadoProducto} onChange={(e)=>onInputChange(e)} className="form-select">
+                <label className="form-label required">Estado del Producto</label>
+                <select name="estadoProducto" value={estadoProducto} onChange={(e)=>onInputChange(e)} className="form-select" required>
                 <option value="">-- Selecciona una opción --</option>
                 {estadoProductos.map((estado) => (
                 <option key={estado} value={estado}>
@@ -216,7 +225,7 @@ export default function CreateProducto() {
 <div className="row row-cols-1">
 {/* esto es para enviar el formulario*/} 
             <button type="submit" className="btn btn-outline-primary" disabled={loading}>
-            {loading ? "Guardando..." : "Submit"}
+            {loading ? "Guardando..." : "Guardar"}
             </button>
 
 

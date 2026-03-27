@@ -600,3 +600,45 @@
     outline: 2px solid var(--sidebar-primary);
     outline-offset: 2px;
 }
+
+/* ===== VISIBILIDAD SEGÚN DISPOSITIVO ===== */
+.admin-desktop-only {
+  display: block;
+}
+
+.admin-mobile-only {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  .admin-desktop-only {
+    display: none;
+  }
+  
+  .admin-mobile-only {
+    display: block;
+  }
+}
+
+/* Asegurar que los menús estén siempre por encima */
+#admin-sidebar,
+#admin-mobile-nav {
+  z-index: 9999 !important;
+}
+
+/* Ajuste para el contenido principal en desktop */
+body.has-admin-sidebar {
+  margin-left: 260px;
+  transition: margin-left 0.35s ease;
+}
+
+body.has-admin-sidebar.sidebar-closed {
+  margin-left: 70px;
+}
+
+@media (max-width: 767.98px) {
+  body.has-admin-sidebar {
+    margin-left: 0;
+    padding-bottom: 60px; /* Espacio para el menú móvil */
+  }
+}

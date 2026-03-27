@@ -24,5 +24,3 @@ export const updatePromocion = async (idPromocion, promocionData) => {
 export const deletePromocion = async (idPromocion) => {
     return await api_url.delete(`/promocion/${idPromocion}`);
 };
-
-

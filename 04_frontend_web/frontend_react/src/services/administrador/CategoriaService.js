@@ -24,7 +24,3 @@ export const updateCategoria = async (idCategoria, categoriaData) => {
 export const deleteCategoria = async (idCategoria) => {
     return await api_url.delete(`/categoria/${idCategoria}`);
 };
-
-
-
-

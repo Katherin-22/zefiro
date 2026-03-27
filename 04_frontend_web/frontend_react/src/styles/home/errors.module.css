@@ -1,0 +1,98 @@
+/* src/styles/home/favoritos.css */
+:root {
+  /* Colores originales en HEX */
+  --primary-color: #E0B253;
+  --secondary-color: #000000;
+  --bg-body-dark: #000000;
+  --bg-body-light: #ffffff;
+  --text-light: #e4e9f7;
+  --text-dark: #000000;
+  --hover-color: #c89c3f;
+  
+  /* Colores en RGBA */
+  --primary-color-rgba: rgba(224, 178, 83, 1);
+  --secondary-color-rgba: rgba(0, 0, 0, 1);
+  --bg-body-dark-rgba: rgba(0, 0, 0, 1);
+  --bg-body-light-rgba: rgba(255, 255, 255, 1);
+  --text-light-rgba: rgba(228, 233, 247, 1);
+  --text-dark-rgba: rgba(0, 0, 0, 1);
+  --hover-color-rgba: rgba(200, 156, 63, 1);
+  
+  /* También versión semitransparente (opcional) */
+  --primary-color-transparent: rgba(224, 178, 83, 0.8);
+  --secondary-color-transparent: rgba(0, 0, 0, 0.8);
+  --hover-color-transparent: rgba(200, 156, 63, 0.8);
+  
+  /* Transiciones */
+  --tran-03: all 0.3s ease;
+  --tran-04: all 0.4s ease;
+  --tran-05: all 0.5s ease;
+}
+
+/* styles/home/errors.module.css */
+.accessDeniedContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--primary-color-transparent);
+}
+
+.accessDeniedContent {
+  text-align: center;
+  padding: 3rem;
+   background: rgba(255, 255, 255, 0.7) !important; /* Negro con 80% transparencia */
+  border-radius: 25px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.errorCode {
+  font-size: 6rem;
+  color: #dc3545;
+  margin: 0;
+}
+
+.errorTitle {
+  font-size: 2rem;
+  color: #333;
+  margin: 1rem 0;
+}
+
+.errorMessage {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btnPrimary {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color-transparent);
+  color: white;
+  text-decoration: none;
+  border-radius: 15px;
+  transition: var(--tran-05);
+   box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.btnPrimary:hover{
+    background: var(--secondary-color-transparent);
+}
+
+.btnSecondary {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color-transparent);
+  color: var(--text-light);
+  text-decoration: none;
+  border-radius: 15px;
+  transition: var(--tran-05);
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.btnSecondary:hover{
+    background: var(--secondary-color-transparent);
+}

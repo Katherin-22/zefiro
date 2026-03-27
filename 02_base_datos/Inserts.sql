@@ -1,4 +1,4 @@
--- DML: Insert - Insertar registros de las tablas:
+								-- DML: Insert - Insertar registros de las tablas:
 -- -----------------------------------------------------
 -- MÓDULO DE GESTIÓN DE USUARIOS
 -- -----------------------------------------------------
@@ -47,9 +47,12 @@ VALUES
 -- si vas a sacar de la base de datos no copiar y pegar la contraseña si no se debe tener la contraseña sin encriptar
 -- =================================================================================================================================== 
 
--- contraseña : sebas789
-(10000012, 'sebastian', 'martinez', 'lopez', 'Calle 9 #45-67', '3006547891', '$2a$10$WFBZmXWRz/J6BePxjfskT.FzkPDMc9j0CdyhmPATDqs.cILwWlWoi', 'sebastian.martinez@example.com', 1, 2, 1)
-;
+-- PARA ADMINISTRADOR, CLAVE: sebas789
+(10000012, 'sebastian', 'martinez', 'lopez', 'Calle 9 #45-67', '3006547891', '$2a$10$WFBZmXWRz/J6BePxjfskT.FzkPDMc9j0CdyhmPATDqs.cILwWlWoi', 'sebastian.martinez@example.com', 1, 2, 1),
+
+-- PARA usuario, CLAVE: maria123
+
+(10000004, 'Maria', 'Compradora', 'lopez', 'Calle 9 #45-67' , '3006547891', '$2a$10$nSHeqNV6nYOfQK1f4hap1uhFWgKkydfxNn0tTgOTjztcrG4L3aY6W', 'mariacompradora@example.com', 1, 1, 1);
 
 -- -----------------------------------------------------
 -- MÓDULO DE PROMOCIONES Y DESCUENTOS
@@ -353,57 +356,46 @@ VALUES
 (1, 3, 15, 2, 19);  -- Dorado, Mediano
 
 -- -----------------------------------------------------
--- MÓDULO DE GESTION DE COMPRAS
+-- MÓDULO DE GESTION DE COMPRAS								PARTE 1.1
 -- -----------------------------------------------------
 -- Tabla carrito
-INSERT INTO Carrito (fechaCreacion, idUsuario) 
+INSERT INTO Carrito (fechaCreacion, idUsuario)
 VALUES
-("2025-11-02", 4),
-("2025-12-03", 5),
-("2025-04-03", 6),
-("2025-01-04", 7),
-("2025-02-04", 8),
-("2025-04-05", 9),
-("2025-02-05", 10),
-("2025-03-01", 11),
-("2025-10-01", 12),
-("2025-08-01", 13);
+("2025-11-02 10:00:00", 4),
+("2025-12-03 11:20:00", 5),
+("2025-04-03 09:30:00", 6),
+("2025-01-04 14:15:00", 7),
+("2025-02-04 16:40:00", 8),
+("2025-04-05 12:10:00", 9),
+("2025-02-05 18:55:00", 10),
+("2025-03-01 08:05:00", 11),
+("2025-10-01 20:30:00", 12),
+("2025-08-01 07:50:00", 13),
+("2025-08-01 07:50:00", 15);
 
--- Tabla MetodoPago (MÁS MÉTODOS DE PAGO)
-INSERT INTO MetodoPago (nombreMetodoPago) VALUES
-("PSE"),
-("Tarjeta de Crédito"),
-("Tarjeta de Débito"),
-("Efectivo"),
-("Transferencia Bancaria");
 
--- Tabla DetalleCarrito (MÁS DETALLES DE CARRITO)
-INSERT INTO DetalleCarrito (idProducto, idCarrito, cantidad, idUsuario) 
+-- Tabla MetodoPago
+INSERT INTO MetodoPago (nombreMetodoPago)
+ VALUES
+("PSE");
+
+-- Tabla DetalleCarrito 
+INSERT INTO DetalleCarrito ( idCarrito, idStock, cantidad, precioUnitario, idPromocionAplicada, porcentajeDescuento) 
 VALUES
-(1, 1, 2, 4),
-(2, 2, 3, 5),
-(1, 3, 1, 6),
-(2, 4, 2, 7),
-(1, 5, 2, 8),
-(1, 6, 3, 9),
-(2, 7, 1, 10),
-(1, 8, 2, 11),
-(2, 9, 3, 12),
-(1, 10, 2, 13),
-(3, 1, 1, 4),
-(4, 2, 2, 5),
-(5, 3, 1, 6),
-(6, 4, 3, 7),
-(7, 5, 2, 8),
-(8, 6, 1, 9),
-(9, 7, 2, 10),
-(10, 8, 1, 11),
-(11, 9, 1, 12),
-(12, 10, 2, 13);
-
+(1, 1, 2, 4.00, 1, 15),
+(2, 2, 3, 5.00, 1, 15),
+(1, 3, 1, 6.00, 2, 30),
+(2, 1, 2, 7.00, 1, 15),
+(1, 2, 2, 8.00, 1, 15),
+(1, 3, 3, 9.00, 2, 30),
+(2, 1, 1, 10.00, 1, 15),
+(1, 2, 2, 11.00, 1, 15),
+(2, 3, 3, 12.00, 2, 30),
+(1, 1, 2, 13.00, 1, 15),
+(11, 1, 2, 13.00, 1, 15);
 
 -- -----------------------------------------------------
--- MÓDULO DE GESTIÓN DE PEDIDOS
+-- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
 -- -----------------------------------------------------
 
 -- Tabla Pedido
@@ -421,32 +413,19 @@ INSERT INTO Pedido (fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago
 ("2025-07-05", 13, 10, 2, 1);
 
 -- Tabla detallePedido
-INSERT INTO DetallePedido (idPedido , talla, cantidad, precioUnitario) 
+INSERT INTO DetallePedido (idPedido ,idStock ,cantidad, precioUnitario) 
 VALUES
-(1, 38, 2, 75000),
-(2, 42, 1, 235000),
-(3, 40, 3, 320000),
-(4, 36, 1, 120000),
-(5, 37, 2, 28000),
-(6, 43, 1, 30000),
-(7, 39, 2, 225000),
-(8, 38, 1, 89000),
-(9, 41, 1, 175000),
-(10, 44, 2, 105000);
+(1,1, 2, 75000),
+(2,2, 1, 235000),
+(3,3, 3, 320000),
+(4,4, 1, 120000),
+(5,5, 2, 28000),
+(6,6, 1, 30000),
+(7,7, 2, 225000),
+(8,8, 1, 89000),
+(9,9, 1, 175000),
+(10,10,  2, 105000);
 
-
-INSERT INTO DetallePedido_has_Pedido
-VALUES
-(1,1),
-(2,2),
-(3,3),
-(4,4),
-(5,5),
-(6,6),
-(7,7),
-(8,8),
-(9,9),
-(10,10);
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTION DE COMPRAS
@@ -490,29 +469,6 @@ VALUES
 -- -----------------------------------------------------
 
 -- Tabla estadoPedido
-INSERT INTO EstadoPedido (nombreEstado)
-VALUES 
-("En terminal de origen"),
-("En transporte"),
-("En terminal destino"),
-("En reparto"),
-("Entregado"),
-("Cancelado"),
-("Devuelto");
-
--- Tabla seguimientoPedido
-INSERT INTO SeguimientoPedido (fechaEstado, comentario, idPedido, idEstadoPedido)
-VALUES
-("2025-06-25", "Pedido recibido", 1, 7),
-("2025-06-26", "Confirmado por el sistema", 2, 6),
-("2025-06-26", "Cocinando", 3, 3),
-("2025-06-27", "Va en camino", 4, 4),
-("2025-06-27", "Cliente recibió el pedido", 5, 5),
-("2025-06-27", "Cancelado por cliente", 6, 4),
-("2025-06-28", "Producto defectuoso", 7, 3),
-("2025-06-28", "Se cambió la fecha", 8, 2),
-("2025-06-28", "Problema con tarjeta", 9, 1),
-("2025-06-29", "Esperando recogida", 10, 7);
 
 -- Tabla DevolucionCambio
 INSERT INTO devoluciones_Cambios 

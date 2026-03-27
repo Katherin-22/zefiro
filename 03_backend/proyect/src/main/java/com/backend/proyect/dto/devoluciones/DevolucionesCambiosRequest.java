@@ -10,6 +10,8 @@ public class DevolucionesCambiosRequest {
 
 
     private Integer idUsuario;
+    private Integer idProducto;
+    private Integer idPedido;
 
     // Getters y Setters
     public String getMotivo() {
@@ -57,5 +59,13 @@ public class DevolucionesCambiosRequest {
     public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;
     }
+
+    public Integer getIdProducto() { return idProducto; }
+
+    public void setIdProducto(Integer idProducto) {this.idProducto = idProducto;}
+
+    public Integer getIdPedido() { return idPedido;}
+
+    public void setIdPedido(Integer idPedido) { this.idPedido = idPedido; }
 
 }

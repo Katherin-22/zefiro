@@ -5,6 +5,7 @@ import { createColor } from "../../../services/administrador/ColorService";
 import MenuAdmin from "../../../layouts/administrador/menuAdmin";
 import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
+import "../../../styles/administrador/formularios-admin.css"
 
 export default function CreateColor() {
 // navigate=useNavigate():Sirve para moverte entre páginas desde el código 
@@ -20,7 +21,7 @@ export default function CreateColor() {
     const { nombreColor } = colores;    
 
     const [loading, setLoad] = useState(false);
-    const [ setSuccess] = useState(false)
+    const [success,setSuccess] = useState(false);
 
     const handleCreateColores = async (data) => {
         setLoad(true); // paso 1: activar "cargando"
@@ -53,6 +54,10 @@ export default function CreateColor() {
         
     }
 
+    {success && (
+        console.log("color creado con éxito.")
+    )}
+
   return (
 
 <div className="main-content">
@@ -75,11 +80,12 @@ export default function CreateColor() {
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
             <div className="col">
-                <label className="form-label">Nombre Color</label>
+                <label className="form-label required">Nombre Color</label>
                 <input type="text" 
                 name="nombreColor" 
                 placeholder="Ingresa el nombre del color"
                 className="form-control" 
+                required
                 value={nombreColor} 
                 onChange={(e)=>onInputChange(e)}
                 />
@@ -90,7 +96,7 @@ export default function CreateColor() {
 <div className="row row-cols-1">
 {/* esto es para enviar el formulario*/} 
             <button type="submit" className="btn btn-outline-primary" disabled={loading}>
-            {loading ? "Guardando..." : "Submit"}
+            {loading ? "Guardando..." : "Guardar"}
             </button>
 
 

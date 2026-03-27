@@ -38,13 +38,13 @@ public class UsuarioPrincipal implements UserDetails {
     public boolean isAccountNonExpired() { return true; }
 
     @Override
-    public boolean isAccountNonLocked() { return true; }
+    public boolean isAccountNonLocked() { return usuario.getEstado_usuario().getIdestado_usuario() == 1; }
 
     @Override
     public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() { return usuario.getIsAccountVerified(); }
 
     // Método de acceso para obtener la entidad Usuario si es necesario en el controlador.
     public Usuario getUsuario() { return usuario; }

@@ -7,13 +7,13 @@ export const createProducto = async (productoData) => {
 
 // Obtener todos los productos
 export const getProductos = async () => {
-    return await api_url.get("/productos");
+    return await api_url.get("/publico/productos");
 };
 
 // Obtener los productos activos
-export const getProductosActivos = async () => {
-    return await api_url.get("/publico/productos_activos");
-};
+//export const getProductosActivos = async () => {
+//    return await api_url.get("/publico/productos_activos");
+//};
 
 // Obtener un stock por ID
 export const getProductoId  = async (idProducto) => {
@@ -34,4 +34,3 @@ export const updateProducto = async (idProducto, stockData) => {
 export const deleteProducto = async (idProducto) => {
     return await api_url.delete(`/producto/${idProducto}`);
 };
-

@@ -2,7 +2,6 @@ package com.backend.proyect.dto.promociones;
 
 import java.time.LocalDate;
 
-import com.backend.proyect.model.promociones.Promocion;
 import com.backend.proyect.model.promociones.Promocion.EstadoPromocion;
 
 public class PromocionDTO {
