@@ -12,22 +12,24 @@ import { useFavoritos } from "../../hooks/favorito/useFavorito";
 import useAuth from "../../hooks/token/useAuth";
 import { getStockByProducto, deleteStock } from "../../services/administrador/StockService";
 import { useCart } from "../../components/carrito/CarritoContext.jsx";
+import { useResponsive } from "../../hooks/responsive/responsive";
 
-// Definir la URL base para las imágenes (igual que en CreateImagen)
+// Definir la URL base para las imágenes
 const BASE_URL = "http://35.171.131.177:8080";
 
 const ProductoGen = () => {
     const { stock } = useGetStock();
     const { codigoReferencia, idProducto } = useParams();
     const navigate = useNavigate();
+    const { isMobile } = useResponsive();
 
     // Auth
     const { isAuthenticated, userData } = useAuth();
     const userId = userData?.idUsuario || userData?.id;
 
     // Determinar si es admin o cliente basado en el rol
-    const esAdmin = userData?.rol === 2; // Asumiendo que rol 2 = admin
-    const esCliente = userData?.rol === 1; // Asumiendo que rol 1 = cliente
+    const esAdmin = userData?.rol === 2;
+    const esCliente = userData?.rol === 1;
 
     // Carrito Context
     const { addToCart, loading: cartLoading, error: cartError, setError: setCartError, setShowCartMenu } = useCart();
@@ -92,7 +94,7 @@ const ProductoGen = () => {
 
             try {
                 setCargandoEstadisticas(true);
-                const response = await api_url.get(`/comentarios/producto/${producto.idProducto}/estadisticas`);
+                const response = await api_url.get(`/api/comentarios/producto/${producto.idProducto}/estadisticas`);
                 if (response.data) {
                     setEstadisticasComentarios({
                         promedioCalificacion: response.data.promedioCalificacion || 0,
@@ -123,7 +125,7 @@ const ProductoGen = () => {
     }, [producto]);
 
     // ============================
-    // 3️⃣ Cargar IMÁGENES del producto (CORREGIDO)
+    // 3️⃣ Cargar IMÁGENES del producto
     // ============================
     useEffect(() => {
         if (!producto) return;
@@ -133,7 +135,6 @@ const ProductoGen = () => {
                 const response = await getImagenById(producto.idProducto);
                 if (response.data && response.data.length > 0) {
                     setImagenesProducto(response.data);
-                    // Aseguramos que la URL no tenga doble slash
                     const urlImagen = response.data[0].urlImagen.startsWith('/') 
                         ? response.data[0].urlImagen 
                         : `/${response.data[0].urlImagen}`;
@@ -214,7 +215,6 @@ const ProductoGen = () => {
                 setVerificandoStock(true);
                 setMensajeStock("Verificando stock...");
 
-                // Buscar en stockEspecifico la combinación exacta
                 const colorId = parseInt(colorSeleccionado);
                 const colorNombre = colores.find(c => c.idColor === colorId)?.nombreColor;
 
@@ -241,7 +241,6 @@ const ProductoGen = () => {
                         setCantidad(0);
                     }
                 } else {
-                    // Si no está en stockEspecifico, consultar API directamente
                     try {
                         const response = await api_url.get(`/publico/stock/producto/${producto.idProducto}/color/${colorSeleccionado}/talla/${tallaSeleccionada}`);
                         if (response.data && response.data.stockActual !== undefined) {
@@ -287,7 +286,6 @@ const ProductoGen = () => {
     // ============================
     useEffect(() => {
         const verificarEstadoFavorito = async () => {
-            // Solo verificar si es cliente autenticado
             if (!isAuthenticated || !userId || esAdmin || !producto?.idProducto) {
                 setEsFavorito(false);
                 return;
@@ -317,7 +315,6 @@ const ProductoGen = () => {
         const colorId = parseInt(colorSeleccionado);
         const colorNombre = colores.find(c => c.idColor === colorId)?.nombreColor;
 
-        // Buscar en stockEspecifico
         const stockEncontrado = stockEspecifico.find(s => {
             const coincideColor = s.idColor ? s.idColor === colorId : s.nombreColor?.toLowerCase() === colorNombre?.toLowerCase();
             const coincideTalla = s.nombre?.toLowerCase() === tallaSeleccionada.toLowerCase();
@@ -420,7 +417,7 @@ const ProductoGen = () => {
     };
 
     // ============================
-    // 1️⃣3️⃣ Función para manejar carrito (AGREGAR AL CARRITO)
+    // 1️⃣3️⃣ Función para manejar carrito
     // ============================
     const handleAddToCart = async () => {
         setCartError(null);
@@ -445,22 +442,18 @@ const ProductoGen = () => {
             return;
         }
 
-        // Validar autenticación
         if (!isAuthenticated || !userId) {
             alert("Por favor inicia sesión para agregar productos al carrito");
             navigate('/loginpage');
             return;
         }
 
-        // Obtener idStock
         const idStock = obtenerIdStockSeleccionado();
         if (!idStock) {
             setCartError("No se pudo identificar el stock del producto. Intenta nuevamente.");
-            console.error("No se encontró idStock para la combinación:", { colorSeleccionado, tallaSeleccionada });
             return;
         }
 
-        // Preparar producto para el carrito
         const productoParaCarrito = {
             idStock: idStock,
             nombreProducto: producto.nombreProducto,
@@ -471,14 +464,11 @@ const ProductoGen = () => {
             color: obtenerColorSeleccionado()
         };
 
-        // Usar la función addToCart del contexto
         const success = await addToCart(productoParaCarrito, cantidad);
 
         if (success) {
             setShowCartMenu(true);
             alert(`✅ ${cantidad} unidad(es) de ${producto.nombreProducto} agregada(s) al carrito`);
-
-            // Disparar evento para actualizar el contador del carrito en el header
             window.dispatchEvent(new CustomEvent('carritoActualizado', {
                 detail: { action: 'agregar', cantidad }
             }));
@@ -486,13 +476,24 @@ const ProductoGen = () => {
     };
 
     // ============================
-    // 🆕 Actualizar estadísticas de comentarios
+    // 1️⃣4️⃣ Función para volver al catálogo según dispositivo
+    // ============================
+    const handleVolverCatalogo = () => {
+        if (isMobile) {
+            navigate("/home/catalogo");
+        } else {
+            navigate("/Catalogo");
+        }
+    };
+
+    // ============================
+    // Actualizar estadísticas de comentarios
     // ============================
     const actualizarEstadisticas = async () => {
         if (!producto?.idProducto) return;
 
         try {
-            const response = await api_url.get(`/comentarios/producto/${producto.idProducto}/estadisticas`);
+            const response = await api_url.get(`/api/comentarios/producto/${producto.idProducto}/estadisticas`);
             if (response.data) {
                 setEstadisticasComentarios({
                     promedioCalificacion: response.data.promedioCalificacion || 0,
@@ -520,21 +521,16 @@ const ProductoGen = () => {
         setImagenPrincipal(nuevaImagenUrl);
     };
 
-    // Calcular precio total
     const totalPrice = producto?.precio ? producto.precio * cantidad : 0;
 
     if (!producto) {
         return <h2 className="text-center mt-5" id="producto-no-encontrado">Producto no encontrado</h2>;
     }
 
-    // Verificar si estamos en modo administrador (si hay idProducto en params)
     const esModoAdmin = !!idProducto;
 
-    // ============================
-    // RENDER DEL BOTÓN DE FAVORITOS (con validación de rol)
-    // ============================
+    // Render del botón de favoritos
     const renderBotonFavorito = () => {
-        // Si es admin, mostrar botón deshabilitado (aunque no debería llegar aquí)
         if (esAdmin) {
             return (
                 <button
@@ -549,7 +545,6 @@ const ProductoGen = () => {
             );
         }
 
-        // Si no está autenticado
         if (!isAuthenticated) {
             return (
                 <button
@@ -564,24 +559,7 @@ const ProductoGen = () => {
             );
         }
 
-        // Si es cliente pero está verificando
-        if (verificandoFavorito) {
-            return (
-                <button
-                    className="btn producto-btn-favorito btn-outline-danger"
-                    disabled
-                    id="producto-btn-favorito"
-                >
-                    <div className="spinner-border spinner-border-sm me-2" role="status">
-                        <span className="visually-hidden">Cargando...</span>
-                    </div>
-                    Verificando...
-                </button>
-            );
-        }
-
-        // Si es cliente y está cargando
-        if (loadingFavoritos) {
+        if (verificandoFavorito || loadingFavoritos) {
             return (
                 <button
                     className="btn producto-btn-favorito btn-outline-danger"
@@ -596,7 +574,6 @@ const ProductoGen = () => {
             );
         }
 
-        // Si es cliente, mostrar botón normal de favoritos
         return (
             <button
                 className={`btn producto-btn-favorito ${esFavorito ? "btn-danger" : "btn-outline-danger"}`}
@@ -610,9 +587,7 @@ const ProductoGen = () => {
         );
     };
 
-    // ============================
-    // RENDER DE LAS ESTADÍSTICAS DE COMENTARIOS
-    // ============================
+    // Render de estadísticas de comentarios
     const renderEstadisticasComentarios = () => {
         if (cargandoEstadisticas) {
             return (
@@ -658,7 +633,6 @@ const ProductoGen = () => {
             <div className="producto-body-background" id="producto-body-background">
                 <div className="container-fluid" id="producto-main-container">
 
-                    {/* HEADER PARA MODO ADMINISTRADOR */}
                     {esModoAdmin && (
                         <div className="header mb-4">
                             <div className="row custom-header">
@@ -678,7 +652,6 @@ const ProductoGen = () => {
                             <div className="producto-card-detalle shadow-sm" id="producto-card-detalle">
                                 <div className="producto-card-body-detalle" id="producto-card-body-detalle">
 
-                                    {/* TABLA DE STOCK PARA ADMINISTRADOR */}
                                     {esModoAdmin && !loadingStock && stockEspecifico.length > 0 && (
                                         <div className="row mb-5">
                                             <div className="col">
@@ -724,7 +697,6 @@ const ProductoGen = () => {
                                         </div>
                                     )}
 
-                                    {/* INFO PRINCIPAL */}
                                     <div className="row producto-info-principal" id="producto-info-principal">
                                         <div className="col-md-6 producto-col-imagen" id="producto-col-imagen">
                                             <div className="producto-imagen-container" id="producto-imagen-container">
@@ -736,7 +708,6 @@ const ProductoGen = () => {
                                                     style={{ cursor: 'pointer' }}
                                                     id="producto-imagen-principal"
                                                     onError={(e) => {
-                                                        console.error("Error cargando imagen principal:", imagenPrincipal);
                                                         e.target.src = "/imagenes_prueba/default.jpg";
                                                     }}
                                                 />
@@ -746,7 +717,6 @@ const ProductoGen = () => {
                                                 <div className="producto-miniaturas-container mt-3" id="producto-miniaturas-container">
                                                     <div className="row g-2 justify-content-center" id="producto-miniaturas-row">
                                                         {imagenesProducto.map((imagen, index) => {
-                                                            // Construir URL correctamente (igual que en CreateImagen)
                                                             const urlImagen = imagen.urlImagen.startsWith('/') 
                                                                 ? imagen.urlImagen 
                                                                 : `/${imagen.urlImagen}`;
@@ -762,7 +732,6 @@ const ProductoGen = () => {
                                                                         style={{ cursor: 'pointer', width: '60px', height: '60px', objectFit: 'cover' }}
                                                                         id={`producto-miniatura-${index}`}
                                                                         onError={(e) => {
-                                                                            console.error(`Error cargando miniatura: ${imagenUrl}`);
                                                                             e.target.src = "/imagenes_prueba/default.jpg";
                                                                         }}
                                                                     />
@@ -788,7 +757,7 @@ const ProductoGen = () => {
                                                             Precio: <span className="producto-precio-valor" id="producto-precio-valor">${producto.precio?.toLocaleString()}</span>
                                                         </p>
 
-                                                        {/* VALORACIÓN DE COMENTARIOS */}
+                                                        {renderEstadisticasComentarios()}
 
                                                         <p className="producto-descripcion-detalle" id="producto-descripcion-detalle">
                                                             <span id="producto-descripcion-valor">{producto.descripcion}</span>
@@ -821,7 +790,6 @@ const ProductoGen = () => {
                                         </div>
                                     </div>
 
-                                    {/* SELECTORES COLORES Y TALLAS */}
                                     <div className="row producto-selectores-fila mt-4" id="producto-selectores-fila">
                                         <h2 className="producto-subtitulo-selectores" id="producto-subtitulo-selectores">Selecciona tus opciones</h2>
                                         <div className="col-md-6" id="producto-selector-color-col">
@@ -868,7 +836,6 @@ const ProductoGen = () => {
                                             </select>
                                         </div>
 
-                                        {/* MOSTRAR STOCK DISPONIBLE */}
                                         {colorSeleccionado && tallaSeleccionada && (
                                             <div className="col-12 mt-3" id="producto-stock-info-col">
                                                 <div className={`alert ${stockDisponible > 0 ? 'alert-info' : 'alert-danger'} d-flex align-items-center`} role="alert" id="producto-stock-alert">
@@ -898,7 +865,6 @@ const ProductoGen = () => {
                                         )}
                                     </div>
 
-                                    {/* SELECTOR DE CANTIDAD CON VERIFICACIÓN DE STOCK */}
                                     <div className="row producto-cantidad-fila mt-4" id="producto-cantidad-fila">
                                         <div className="col-md-6 offset-md-3">
                                             <div className="card" id="cant-card">
@@ -957,16 +923,13 @@ const ProductoGen = () => {
                                         </div>
                                     </div>
 
-                                    {/* MENSAJE DE ERROR DEL CARRITO */}
                                     {cartError && (
                                         <div className="alert alert-danger mt-3" id="producto-cart-error-alert">
                                             {cartError}
                                         </div>
                                     )}
 
-                                    {/* BOTONES DE ACCIÓN - MODIFICADO: Botón de favoritos solo para rol 1 */}
                                     <div className="row producto-botones-fila justify-content-center mt-4" id="producto-botones-fila">
-                                        {/* SOLO MOSTRAR BOTÓN DE FAVORITOS SI ES ROL 1 (CLIENTE) */}
                                         {userData?.rol === 1 && (
                                             <div className="col-auto" id="producto-boton-favorito-col">
                                                 {renderBotonFavorito()}
@@ -998,14 +961,17 @@ const ProductoGen = () => {
                                         </div>
 
                                         <div className="col-auto" id="producto-boton-volver-col">
-                                            <Link to="/Catalogo" className="btn producto-btn-volver btn-outline-secondary" id="producto-btn-volver">
+                                            <button 
+                                                onClick={handleVolverCatalogo} 
+                                                className="btn producto-btn-volver btn-outline-secondary" 
+                                                id="producto-btn-volver"
+                                            >
                                                 <i className="bi bi-arrow-left producto-icono-volver me-2" id="producto-icono-volver"></i>
                                                 Volver al catálogo
-                                            </Link>
+                                            </button>
                                         </div>
                                     </div>
 
-                                    {/* ENLACE A FAVORITOS - Solo para clientes (rol 1) */}
                                     {isAuthenticated && userData?.rol === 1 && !esModoAdmin && (
                                         <div className="row mt-3" id="producto-enlace-favoritos-fila">
                                             <div className="col-12 text-center" id="producto-enlace-favoritos-col">
@@ -1017,7 +983,6 @@ const ProductoGen = () => {
                                         </div>
                                     )}
 
-                                    {/* SECCIÓN DE COMENTARIOS */}
                                     {!esModoAdmin && (
                                         <div className="row mt-5" id="producto-seccion-comentarios-fila">
                                             <div className="col-12" id="producto-seccion-comentarios-col">
@@ -1036,7 +1001,6 @@ const ProductoGen = () => {
                 </div>
             </div>
 
-            {/* MODAL PARA VER IMAGEN */}
             {imagenModal && (
                 <div className="modal-overlay" onClick={cerrarModalImagen} id="producto-modal-overlay">
                     <div className="modal-content" onClick={(e) => e.stopPropagation()} id="producto-modal-content">
@@ -1051,7 +1015,6 @@ const ProductoGen = () => {
                                 className="modal-image"
                                 id="producto-modal-image"
                                 onError={(e) => {
-                                    console.error("Error cargando imagen modal:", imagenModal.imagen);
                                     e.target.src = "/imagenes_prueba/default.jpg";
                                 }}
                             />

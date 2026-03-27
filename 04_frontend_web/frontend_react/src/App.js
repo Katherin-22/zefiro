@@ -13,6 +13,9 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./components/carrito/CarritoContext";
 
+import { ToastContainer } from 'react-toastify'; // <---
+import 'react-toastify/dist/ReactToastify.css';
+
 
 /*--- esto es para el manejo de rutas ---*/
 function App() {
@@ -21,6 +24,18 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <AppRoutes />
+          <ToastContainer 
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark" 
+          />
         </CartProvider>
       </AuthProvider>
     </Router>

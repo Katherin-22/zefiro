@@ -3,7 +3,7 @@ import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useFiltro } from "../../utils/FiltroContextx";
 import { useCart } from "../../components/carrito/CarritoContext";
 import { useResponsive } from "../../hooks/responsive/responsive";
-import useAuth from "../../hooks/token/useAuth";
+import { useAuth } from "../../context/AuthContext";
 import "../../styles/home/menuHome.css";
 import "../../styles/home/menuMobile.css";
 

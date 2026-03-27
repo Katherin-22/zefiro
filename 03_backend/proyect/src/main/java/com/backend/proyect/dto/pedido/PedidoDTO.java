@@ -9,7 +9,7 @@ public class PedidoDTO {
     private Integer idCarrito;
     private Integer idPromocion;
     private Integer idMetodoPago;
-    private String estado;
+    private String estadoPedido;
     private Double total_final;
 
     //constructores
@@ -64,12 +64,12 @@ public class PedidoDTO {
         this.idMetodoPago = idMetodoPago;
     }
 
-    public String getEstado () {
-        return estado;
+    public String getEstadoPedido () {
+        return estadoPedido;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setEstadoPedido(String estadoPedido) {
+        this.estadoPedido = estadoPedido;
     }
 
     public Double getTotal_final() {
