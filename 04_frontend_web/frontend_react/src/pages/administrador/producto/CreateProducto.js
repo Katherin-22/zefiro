@@ -10,6 +10,7 @@ import {useGetPromociones} from "../../../hooks/promocion/useGetPromocion";
 import MenuAdmin from "../../../layouts/administrador/menuAdmin";
 import "../../../styles/administrador/inventario.css";
 import "../../../styles/administrador/gestion_producto.css";
+import "../../../styles/administrador/formularios-admin.css"
 
 export default function CreateProducto() {
 // navigate=useNavigate():Sirve para moverte entre páginas desde el código 
@@ -49,13 +50,13 @@ export default function CreateProducto() {
         setSuccess(true);        // paso 3: si todo ok → marcar éxito
         navigate("/ver_producto")
         } catch (error) {
-        console.error("Error al crear la categoria:", error);
+        console.error("Error al crear el producto:", error);
 
         // Verifica si el backend envió un mensaje
         if (error.response && error.response.data && error.response.data.errorMessage) {
         alert("⚠️ " + error.response.data.errorMessage);
         } else {
-        alert("⚠️ Error desconocido al crear la categoria");
+        alert("⚠️ Error desconocido al crear el producto.");
         }
         setSuccess(false);      // si falla → marcar como no exitoso
         } finally {
@@ -224,7 +225,7 @@ export default function CreateProducto() {
 <div className="row row-cols-1">
 {/* esto es para enviar el formulario*/} 
             <button type="submit" className="btn btn-outline-primary" disabled={loading}>
-            {loading ? "Guardando..." : "Submit"}
+            {loading ? "Guardando..." : "Guardar"}
             </button>
 
 

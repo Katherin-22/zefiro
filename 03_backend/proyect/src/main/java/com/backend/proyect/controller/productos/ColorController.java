@@ -23,7 +23,7 @@ public class ColorController {
     // tipoProductoRepository este se pone en los return
     private ColorRepository colorRepository;
 
-    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
+    //@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @PostMapping("/color")
     Color newColor(@RequestBody Color newColor) {
         return colorRepository.save(newColor);
@@ -40,7 +40,7 @@ public class ColorController {
                 .orElseThrow(() -> new ResourceNotFoundException("Color", idColor));
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
+    //@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @PutMapping("/color/{idColor}")
     Color updateColor(@RequestBody Color updateColor, @PathVariable Integer idColor) {
         return colorRepository.findById(idColor)
@@ -51,7 +51,7 @@ public class ColorController {
                 }).orElseThrow(() -> new ResourceNotFoundException("Color", idColor));
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
+    //@PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @DeleteMapping("/color/{idColor}")
     String deleteColor(@PathVariable Integer idColor) {
         if (!colorRepository.existsById(idColor)) {

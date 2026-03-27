@@ -74,6 +74,7 @@
     border-radius: 25px;
 }
 
+
 /* Hover effects */
 #navBarHome-calzado-btn:hover,
 #navBarHome-bolsos-btn:hover,
@@ -143,6 +144,8 @@
     color: var(--primary-color);
     transition: var(--tran-04);
 }
+
+
 
 /* ===== RESPONSIVE: OCULTAR DESKTOP EN MÓVIL ===== */
 @media (max-width: 767.98px) {
@@ -474,3 +477,4 @@
     min-width: 250px;
   }
 }
+

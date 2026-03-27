@@ -4,19 +4,21 @@ import { Link, useNavigate } from "react-router-dom";
 import MenuHome from "../../layouts/home/menuHome";
 import Footer from "../../layouts/home/footer";
 import { useFavoritos } from "../../hooks/favorito/useFavorito";
-import useAuth from "../../hooks/token/useAuth";  // Cambia esta línea
+import useAuth from "../../hooks/token/useAuth";
 import { useGetStock } from "../../hooks/stock/useGetStock";
 import { getImagenById } from "../../services/administrador/ImagenService.js";
+import { useResponsive } from "../../hooks/responsive/responsive";
 import "../../styles/home/favoritos.css";
+
+// URL base para imágenes
+const BASE_URL = "http://35.171.131.177:8080";
 
 const FavoritosPage = () => {
   const navigate = useNavigate();
   const { stock } = useGetStock();
+  const { isMobile } = useResponsive();
   
-  // USA TU HOOK useAuth (NO AuthContext)
-  const { isAuthenticated, userData } = useAuth();  // Cambia esto
-  
-  // Obtén el userId de userData
+  const { isAuthenticated, userData } = useAuth();
   const userId = userData?.idUsuario;
   
   console.log('Favoritos - isAuthenticated:', isAuthenticated);
@@ -51,7 +53,6 @@ const FavoritosPage = () => {
       }
       
       try {
-        // Obtener productos favoritos del backend
         const productos = await obtenerProductosFavoritos(userId);
         setProductosFavoritos(productos);
         setContador(productos.length);
@@ -63,9 +64,11 @@ const FavoritosPage = () => {
             try {
               const response = await getImagenById(producto.idProducto);
               if (response.data && response.data.length > 0) {
-                imagenes[producto.idProducto] = `http://localhost:8080${response.data[0].urlImagen}`;
+                const urlImagen = response.data[0].urlImagen.startsWith('/') 
+                  ? response.data[0].urlImagen 
+                  : `/${response.data[0].urlImagen}`;
+                imagenes[producto.idProducto] = `${BASE_URL}${urlImagen}`;
               } else {
-                // Buscar imagen en el stock local
                 const productoStock = stock.find(p => p.idProducto === producto.idProducto);
                 imagenes[producto.idProducto] = productoStock?.imagen || "/imagenes_prueba/default.jpg";
               }
@@ -117,11 +120,9 @@ const FavoritosPage = () => {
     try {
       await eliminarFavorito(userId, idProducto);
       
-      // Verificar que realmente se eliminó
       const sigueSiendoFavorito = await verificarProductoEnFavoritos(userId, idProducto);
       
       if (!sigueSiendoFavorito) {
-        // Actualizar lista local
         setProductosFavoritos(prev => prev.filter(p => p.idProducto !== idProducto));
         setContador(prev => Math.max(0, prev - 1));
         console.log("Producto eliminado de favoritos");
@@ -146,7 +147,6 @@ const FavoritosPage = () => {
       setEliminandoTodos(true);
       await eliminarTodosFavoritos(userId);
       
-      // Verificar que se eliminaron todos
       const nuevaCantidad = await contarFavoritosUsuario(userId);
       
       if (nuevaCantidad === 0) {
@@ -172,27 +172,40 @@ const FavoritosPage = () => {
       return imagenesProductos[producto.idProducto];
     }
     
-    // Buscar en el stock local
     const productoStock = stock.find(p => p.idProducto === producto.idProducto);
     return productoStock?.imagen || producto.imagen || "/imagenes_prueba/default.jpg";
   };
 
   // ============================
-  // 6. OBTENER URL DEL PRODUCTO
+  // 6. OBTENER URL DEL PRODUCTO (según dispositivo)
   // ============================
   const obtenerUrlProducto = (producto) => {
-    // Buscar en el stock local por idProducto
     const productoStock = stock.find(p => p.idProducto === producto.idProducto);
+    
     if (productoStock?.codigoReferencia) {
       return `/home/${productoStock.codigoReferencia}`;
     }
     
-    // Si no se encuentra por id, usar el id como fallback
     return `/producto/${producto.idProducto}`;
   };
 
   // ============================
-  // 7. RENDERIZADO PARA NO AUTENTICADO
+  // 7. FUNCIÓN PARA NAVEGAR AL CATÁLOGO (según dispositivo)
+  // ============================
+  const handleIrCatalogo = () => {
+    if (isMobile) {
+      navigate("/home/catalogo");
+    } else {
+      navigate("/Catalogo");
+    }
+  };
+
+  const handleIrInicio = () => {
+    navigate("/");
+  };
+
+  // ============================
+  // 8. RENDERIZADO PARA NO AUTENTICADO
   // ============================
   if (!isAuthenticated) {
     return (
@@ -208,14 +221,14 @@ const FavoritosPage = () => {
               </p>
               <div className="mt-4">
                 <button 
-                  onClick={() => navigate('/loginpage')}  // Cambia a tu ruta de login
+                  onClick={() => navigate('/loginpage')}
                   className="btn btn-danger btn-lg me-3"
                 >
                   <i className="bi bi-box-arrow-in-right me-2"></i>
                   Iniciar Sesión
                 </button>
                 <button 
-                  onClick={() => navigate('/register')}  // Cambia a tu ruta de registro
+                  onClick={() => navigate('/registrarUsuarios')}
                   className="btn btn-outline-light btn-lg"
                 >
                   <i className="bi bi-person-plus me-2"></i>
@@ -231,7 +244,7 @@ const FavoritosPage = () => {
   }
 
   // ============================
-  // 8. RENDERIZADO DE CARGA
+  // 9. RENDERIZADO DE CARGA
   // ============================
   if (loadingFavoritos) {
     return (
@@ -253,7 +266,7 @@ const FavoritosPage = () => {
   }
 
   // ============================
-  // 9. RENDERIZADO DE ERROR
+  // 10. RENDERIZADO DE ERROR
   // ============================
   if (error) {
     return (
@@ -271,7 +284,7 @@ const FavoritosPage = () => {
                 <i className="bi bi-arrow-clockwise me-2"></i>
                 Reintentar
               </button>
-              <button onClick={() => navigate('/catalogo')} className="btn btn-outline-secondary">
+              <button onClick={handleIrCatalogo} className="btn btn-outline-secondary">
                 <i className="bi bi-arrow-left me-2"></i>
                 Volver al catálogo
               </button>
@@ -324,7 +337,7 @@ const FavoritosPage = () => {
             )}
             
             <button 
-              onClick={() => navigate('/catalogo')}
+              onClick={handleIrCatalogo}
               className="btn btn-outline-light ms-2"
             >
               <i className="bi bi-arrow-left me-2"></i>
@@ -345,14 +358,14 @@ const FavoritosPage = () => {
                 </p>
                 <div className="mt-4">
                   <button 
-                    onClick={() => navigate('/catalogo')}
+                    onClick={handleIrCatalogo}
                     className="btn btn-danger btn-lg me-3"
                   >
                     <i className="bi bi-bag me-2"></i>
                     Explorar Catálogo
                   </button>
                   <button 
-                    onClick={() => navigate('/')}
+                    onClick={handleIrInicio}
                     className="btn btn-outline-light btn-lg"
                   >
                     <i className="bi bi-house me-2"></i>
@@ -407,17 +420,8 @@ const FavoritosPage = () => {
                       <span className="h5 mb-0 text-primary favorito-precio">
                         ${producto.precio?.toLocaleString() || '0'}
                       </span>
-                      
-                      <Link 
-                        to={obtenerUrlProducto(producto)}
-                        className="btn btn-outline-primary btn-sm"
-                      >
-                        <i className="bi bi-eye me-1"></i>
-                        Ver Detalles
-                      </Link>
                     </div>
                     
-                    {/* INFORMACIÓN ADICIONAL */}
                     <div className="mt-2">
                       {producto.nombreCategoria && (
                         <small className="badge bg-secondary me-1">
@@ -438,7 +442,6 @@ const FavoritosPage = () => {
                       )}
                     </div>
                     
-                    {/* FECHA DE AGREGADO (si está disponible) */}
                     {producto.fechaAgregado && (
                       <div className="mt-2">
                         <small className="text-muted">
@@ -480,8 +483,7 @@ const FavoritosPage = () => {
           </div>
         )}
       </div>
-      
-      <Footer />
+
     </div>
   );
 };

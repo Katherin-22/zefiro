@@ -45,13 +45,18 @@ CREATE TABLE Usuario (
   idRol INT NOT NULL,
   idTipoDeDocumento INT NOT NULL,
   idestado_usuario INT NOT NULL,
+  created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  reset_otp VARCHAR(255) NULL,
+  reset_otp_expire_at TIMESTAMP NULL,
+  updated_at TIMESTAMP NULL,
+  verify_otp VARCHAR(255) NULL,
+  verify_otp_expire_at TIMESTAMP NULL,
   
   PRIMARY KEY(idUsuario),
-  FOREIGN KEY (idRol) REFERENCES rol( idRol),
+  FOREIGN KEY (idRol) REFERENCES rol(idRol),
   FOREIGN KEY (idTipoDeDocumento) REFERENCES tipo_de_documento(idTipoDeDocumento),
   FOREIGN KEY (idestado_usuario) REFERENCES estado_usuario(idestado_usuario)
-  
-) ;
+);
 -- -----------------------------------------------------
 -- MÓDULO DE PROMOCIONES Y DESCUENTOS            			1.1
 -- -----------------------------------------------------
@@ -178,13 +183,14 @@ CREATE TABLE Imagen(
     FOREIGN KEY (idProducto) REFERENCES Producto(idProducto) ON DELETE CASCADE
 );
 
-CREATE TABLE Banner (
+CREATE TABLE banner (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255),
     descripcion VARCHAR(500),
-    imagenUrl VARCHAR(255),
-    fileName VARCHAR(255),
-    url VARCHAR(500)
+    file_name VARCHAR(255),
+    url VARCHAR(500),
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabla Mensajes del inbox
@@ -263,13 +269,7 @@ CREATE TABLE RespuestaPago (
 -- -----------------------------------------------------
 -- MÓDULO DE GESTIÓN DE PEDIDOS											PARTE 1.1
 -- -----------------------------------------------------
--- Tabla estadoPedido
-CREATE TABLE EstadoPedido (
-  idEstadoPedido INT AUTO_INCREMENT NOT NULL,
-  nombreEstado VARCHAR(45) NOT NULL,
-  
-  PRIMARY KEY (idEstadoPedido)
-) ;
+
 
 -- Tabla Pedido
 CREATE TABLE Pedido (
@@ -278,16 +278,15 @@ CREATE TABLE Pedido (
   idUsuario INT NOT NULL,
   idCarrito INT NOT NULL,
   idPromocion INT  NULL,
+  estado enum('Pendiente','Procesando','Entregado')default 'Pendiente',
+  total_final DECIMAL(10,2) NOT NULL DEFAULT 0,
   idMetodoPago INT NOT NULL,
-  idEstadoPedido INT NOT NULL,
-  total_final DECIMAL(10,2) NOT NULL,
   
   PRIMARY KEY(idPedido),
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
   FOREIGN KEY (idCarrito) REFERENCES Carrito (idCarrito),
   FOREIGN KEY (idPromocion) REFERENCES Promocion (idPromocion),
-  FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago),
-  FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido) 
+  FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago)
 ) ;
 
 -- Tabla detallePedido
@@ -297,20 +296,11 @@ CREATE TABLE DetallePedido (
   idStock INT NOT NULL, 
   cantidad INT NOT NULL,
   precioUnitario DOUBLE NOT NULL,
-  subtotal DECIMAL(10,2) NOT NULL ,
+  subtotal DECIMAL(10,2) NOT NULL DEFAULT 0 ,
   PRIMARY KEY(idDetallePedido),
   FOREIGN KEY (idPedido) REFERENCES pedido(idPedido),
   FOREIGN KEY (idStock) REFERENCES Stock(idStock)
 ) ;
-
-CREATE TABLE DetallePedido_has_Pedido(
-  idDetallePedido INT NOT NULL,
-  idPedido INT NOT NULL,
-  
-  PRIMARY KEY(idDetallePedido, idPedido),
-  FOREIGN KEY (idDetallePedido) REFERENCES DetallePedido(idDetallePedido),
-  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido)
-);
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTION DE COMPRAS									PARTE 1.2
@@ -345,24 +335,6 @@ CREATE TABLE DetallesComprobanteDeVenta (
   FOREIGN KEY (idDetallePedido) REFERENCES DetallePedido (idDetallePedido),
   FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
 
-) ;
-
--- -----------------------------------------------------
--- MÓDULO DE GESTIÓN DE PEDIDOS 							PARTE 1.2
--- -----------------------------------------------------
-
-
--- Tabla seguimientoPedido
-CREATE TABLE SeguimientoPedido (
-  idSeguimiento INT NOT NULL AUTO_INCREMENT,
-  fechaEstado DATE NOT NULL,
-  comentario VARCHAR(45) NULL,
-  idPedido INT,
-  idEstadoPedido INT,
-  
-  PRIMARY KEY (idSeguimiento),
-  FOREIGN KEY (idPedido) REFERENCES pedido(idPedido),
-  FOREIGN KEY (idEstadoPedido) REFERENCES EstadoPedido(idEstadoPedido)
 ) ;
 
 -- Tabla devoluciones_Cambios

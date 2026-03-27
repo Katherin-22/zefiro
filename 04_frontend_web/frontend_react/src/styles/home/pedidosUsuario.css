@@ -1,0 +1,352 @@
+/* ============================================
+   MODAL DE DEVOLUCIÓN - ESTILOS PERSONALIZADOS
+   ============================================ */
+:root {
+  /* Colores originales en HEX */
+  --primary-color: #E0B253;
+  --secondary-color: #000000;
+  --bg-body-dark: #000000;
+  --bg-body-light: #ffffff;
+  --text-light: #ffffff;
+  --text-dark: #000000;
+  --hover-color: #c89c3f;
+  
+  /* Colores en RGBA */
+  --primary-color-rgba: rgba(224, 178, 83, 1);
+  --secondary-color-rgba: rgba(0, 0, 0, 1);
+  --bg-body-dark-rgba: rgba(0, 0, 0, 1);
+  --bg-body-light-rgba: rgba(255, 255, 255, 1);
+  --text-light-rgba: rgba(228, 233, 247, 1);
+  --text-dark-rgba: rgba(0, 0, 0, 1);
+  --hover-color-rgba: rgba(200, 156, 63, 1);
+  
+  /* También versión semitransparente  */
+  --primary-color-transparent: rgba(224, 178, 83, 0.8);
+  --secondary-color-transparent: rgba(0, 0, 0, 0.8);
+  --hover-color-transparent: rgba(224, 178, 83, 0.2);
+  
+  /* Transiciones */
+  --tran-03: all 0.3s ease;
+  --tran-04: all 0.4s ease;
+  --tran-05: all 0.5s ease;
+}
+
+/* Overlay del modal (fondo oscuro) */
+.admin2-theme .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+    animation: modalFadeIn 0.3s ease;
+}
+
+/* Contenedor principal del modal */
+.admin2-theme .modal-container {
+    background:var(--bg-body-light);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalSlideUp 0.4s ease;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Encabezado del modal */
+.admin2-theme .modal-header {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px 25px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(10px);
+    border-radius: 20px 20px 0 0;
+}
+
+.admin2-theme .modal-header h3 {
+    color: var(--text-dark);
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Botón de cerrar */
+.admin2-theme .close-btn {
+    background: var(--bg-body-dark-rgba);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.admin2-theme .close-btn:hover {
+    background: var(--primary-color-rgba);
+    transform: rotate(90deg);
+    border-color: white;
+}
+
+/* Formulario */
+.admin2-theme .modal-form {
+    padding: 25px;
+}
+
+/* Grupos de formulario */
+.admin2-theme .form-group {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.admin2-theme .form-group.full-width {
+    width: 100%;
+}
+
+.admin2-theme .field {
+    flex: 1;
+    min-width: 200px;
+}
+
+.admin2-theme label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+    font-weight: bol4;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.admin2-theme input,
+.admin2-theme select,
+.admin2-theme textarea {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    color: var(--primary-color);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.admin2-theme input:focus,
+.admin2-theme select:focus,
+.admin2-theme textarea:focus {
+    outline: none;
+    border: 2px solid var(--primary-color) !important;
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.admin2-theme input::placeholder,
+.admin2-theme textarea::placeholder {
+    color: var(--text-dark);
+}
+
+.admin2-theme select option {
+    background: #3498db;
+    color: white;
+}
+
+/* Info preseleccionada */
+.admin2-theme .info-preseleccion {
+    background: transparent !important;
+    border: 2px solid var(--primary-color) !important;
+    color: white !important;
+    margin-bottom: 25px !important;
+    display: none;
+}
+
+.admin2-theme .info-preseleccion strong {
+    color: var(--primary-color) !important;
+}
+
+.admin2-theme .info-preseleccion p {
+    color: white !important;
+}
+
+.admin2-theme .info-preseleccion p:last-child strong {
+    color: var(--text-dark) !important;
+    font-size: 1.1rem;
+    
+}
+
+/* Mensajes de error y éxito */
+.admin2-theme .error-text {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff6b6b;
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid #ff6b6b;
+    margin: 15px 0;
+    text-align: center;
+    font-weight: 500;
+    animation: shake 0.5s ease;
+}
+
+.admin2-theme .success-text {
+    background: rgba(0, 255, 0, 0.2);
+    color: #00ff88;
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid #00ff88;
+    margin: 15px 0;
+    text-align: center;
+    font-weight: 500;
+    animation: pulse 1s ease;
+}
+
+/* Footer del modal */
+.admin2-theme .modal-footer {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px 25px;
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    position: sticky;
+    bottom: 0;
+    backdrop-filter: blur(10px);
+    margin-top: 20px;
+    border-radius: 0 0 20px 20px;
+}
+
+.admin2-theme .btn-cancelar,
+.admin2-theme .btn-guardar {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.admin2-theme .btn-cancelar {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.admin2-theme .btn-cancelar:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: white;
+}
+
+.admin2-theme .btn-guardar {
+    background: var(--primary-color);
+    color: var(--text-light);
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 5px 15px var(--primary-color-transparent);
+}
+
+.admin2-theme .btn-guardar:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 100px var(--secondary-color-transparent);
+}
+
+.admin2-theme .btn-guardar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Animaciones */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Scroll personalizado */
+.admin2-theme .modal-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.admin2-theme .modal-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.admin2-theme .modal-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+.admin2-theme .modal-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin2-theme .modal-container {
+        width: 95%;
+        margin: 10px;
+    }
+
+    .admin2-theme .form-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .admin2-theme .field {
+        min-width: 100%;
+    }
+
+    .admin2-theme .modal-footer {
+        flex-direction: column;
+    }
+
+    .admin2-theme .btn-cancelar,
+    .admin2-theme .btn-guardar {
+        width: 100%;
+    }
+}

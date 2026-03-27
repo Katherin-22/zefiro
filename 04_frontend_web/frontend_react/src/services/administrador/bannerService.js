@@ -24,3 +24,13 @@ export const updateBanner = async (id, bannerData) => {
   const res = await api_url.put(`/banners/${id}`, bannerData);
   return res.data;
 };
+
+export const deleteBanner = async (id) => {
+    try {
+        const response = await axios.delete(`${API_URL}/${id}`);
+        return response;
+    } catch (error) {
+        console.error('Error al eliminar el banner:', error);
+        throw error;
+    }
+};

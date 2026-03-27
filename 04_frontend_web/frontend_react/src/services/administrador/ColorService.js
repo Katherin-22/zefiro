@@ -24,6 +24,3 @@ export const updateColor = async (idColor, ColorData) => {
 export const deleteColor = async (idColor) => {
     return await api_url.delete(`/color/${idColor}`);
 };
-
-
-

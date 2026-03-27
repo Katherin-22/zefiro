@@ -1,0 +1,101 @@
+.email-verify-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    position: relative;
+    background-image:linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url("../../assets/ModuloUsuarios/RecuperarContrasena/img/img3.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;}
+
+/* Link del Logo superior izquierdo */
+.auth-logo-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1.5rem; /* p-4 */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* gap-2 */
+    text-decoration: none;
+}
+
+.authify-text {
+    font-size: 1.5rem; /* fs-4 */
+    font-weight: 600; /* fw-semibold */
+    color: #f8f9fa; /* text-light */
+}
+
+/* Tarjeta Blanca */
+.auth-card {
+    background-color: white;
+    padding: 3rem; /* p-5 */
+    border-radius: 1rem; /* rounded-4 */
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); /* shadow de Bootstrap */
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+}
+
+.auth-card h4 {
+    font-weight: 700; /* fw-bold */
+    margin-bottom: 0.5rem; /* mb-2 */
+    color: #212529;
+}
+
+.auth-card p {
+    margin-bottom: 1.5rem; /* mb-4 */
+    color: #6c757d;
+}
+
+/* Contenedor de los 6 inputs */
+.otp-inputs-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem; /* gap-2 */
+    margin-bottom: 1.5rem; /* mb-4 */
+}
+
+/* Cada cuadrito de número */
+.otp-input {
+    width: 45px;
+    height: 55px;
+    text-align: center;
+    font-size: 1.5rem; /* fs-4 */
+    font-weight: 600;
+    border: 1px solid #ced4da; /* Estilo form-control */
+    border-radius: 8px;
+    background-color: #fff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.otp-input:focus {
+    border-color: #6a5af9;
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(106, 90, 249, 0.25);
+}
+
+/* Botón de verificación */
+.btn-auth {
+    background-color: #E0B253; /* btn-primary */
+    color: white;
+    border: none;
+    padding: 0.75rem; /* py-2 aprox */
+    border-radius: 0.375rem;
+    width: 100%;
+    font-weight: 600; /* fw-semibold */
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out, opacity 0.15s;
+}
+
+.btn-auth:hover {
+    background-color: #C49A3D;
+}
+
+.btn-auth:disabled {
+    background-color: #E0B253;
+    opacity: 0.65; /* disabled */
+    cursor: not-allowed;
+}
+

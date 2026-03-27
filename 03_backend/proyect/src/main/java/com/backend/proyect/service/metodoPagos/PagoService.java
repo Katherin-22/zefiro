@@ -13,7 +13,7 @@ import com.stripe.param.PaymentIntentCreateParams;
 public class PagoService {
     @Autowired  // 1. INYECTA CarritoService
     private CarritoService carritoService;
-    
+
     public PaymentIntent createPayment (SolicitudPago request) throws Exception {
 
         Usuario usuario = request.getUsuario(); // 👈 AQUÍ
@@ -28,18 +28,18 @@ public class PagoService {
 
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
 
-            .setAmount(montoStripe)
-            .setCurrency(request.getCurrency())
-            .setDescription(request.getDescription())
-            .putMetadata("name", usuario.getNombreUsuario()) // ✔ name
-            .putMetadata("userId", usuario.getIdUsuario().toString())
-            .putMetadata("email", usuario.getCorreoElectronico())            
-            .setAutomaticPaymentMethods(
-                PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
-                    .setEnabled(true)
-                    .build()
-            )
-            .build();
+                .setAmount(montoStripe)
+                .setCurrency(request.getCurrency())
+                .setDescription(request.getDescription())
+                .putMetadata("name", usuario.getNombreUsuario()) // ✔ name
+                .putMetadata("userId", usuario.getIdUsuario().toString())
+                .putMetadata("email", usuario.getCorreoElectronico())
+                .setAutomaticPaymentMethods(
+                        PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
+                                .setEnabled(true)
+                                .build()
+                )
+                .build();
         return PaymentIntent.create(params);
     }
 }

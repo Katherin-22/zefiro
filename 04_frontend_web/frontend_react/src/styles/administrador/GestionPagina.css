@@ -1,0 +1,67 @@
+
+:root {
+  /* Colores originales en HEX */
+  --primary-color: #E0B253;
+  --secondary-color: #000000;
+  --bg-body-dark: #000000;
+  --bg-body-light: #ffffff;
+  --text-light: #ffffff;
+  --text-dark: #000000;
+  --hover-color: #c89c3f;
+  
+  /* Colores en RGBA */
+  --primary-color-rgba: rgba(224, 178, 83, 1);
+  --secondary-color-rgba: rgba(0, 0, 0, 1);
+  --bg-body-dark-rgba: rgba(0, 0, 0, 1);
+  --bg-body-light-rgba: rgba(255, 255, 255, 1);
+  --text-light-rgba: rgba(228, 233, 247, 1);
+  --text-dark-rgba: rgba(0, 0, 0, 1);
+  --hover-color-rgba: rgba(200, 156, 63, 1);
+  
+  /* También versión semitransparente  */
+  --primary-color-transparent: rgba(224, 178, 83, 0.8);
+  --secondary-color-transparent: rgba(0, 0, 0, 0.8);
+  --hover-color-transparent: rgba(200, 156, 63, 0.8);
+  
+  /* Transiciones */
+  --tran-03: all 0.3s ease;
+  --tran-04: all 0.4s ease;
+  --tran-05: all 0.5s ease;
+}
+
+.container-fluid-gestPag{
+    width: 82%;
+    margin: 0;
+    height: auto;
+    overflow-x: hidden; 
+    max-width: 100%; 
+}
+
+.h2-pagGes{
+    background: var(--primary-color);
+    padding: 25px;
+    border-radius: 25px 25px 0 0;
+     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    color: var(--text-light);
+    font-weight: bold;
+}
+
+.btn-addB{
+    background: var(--primary-color) !important;
+    border: 1px solid var(--primary-color) !important;
+}
+
+.btn-addB:hover{
+    background: transparent !important;
+    color: var(--text-dark);
+    transform: scale(1.05);
+    animation: var(--tran-03);
+}
+
+/*===============       Responsive      =============================0*/
+   @media (min-width: 480px) and (max-width: 768px) {
+    .container-fluid-gestPag{
+    width: 100%;
+}
+
+   }

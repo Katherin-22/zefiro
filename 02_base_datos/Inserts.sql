@@ -413,32 +413,19 @@ INSERT INTO Pedido (fechaPedido, idUsuario, idCarrito, idPromocion, idMetodoPago
 ("2025-07-05", 13, 10, 2, 1);
 
 -- Tabla detallePedido
-INSERT INTO DetallePedido (idPedido , talla, cantidad, precioUnitario) 
+INSERT INTO DetallePedido (idPedido ,idStock ,cantidad, precioUnitario) 
 VALUES
-(1, 38, 2, 75000),
-(2, 42, 1, 235000),
-(3, 40, 3, 320000),
-(4, 36, 1, 120000),
-(5, 37, 2, 28000),
-(6, 43, 1, 30000),
-(7, 39, 2, 225000),
-(8, 38, 1, 89000),
-(9, 41, 1, 175000),
-(10, 44, 2, 105000);
+(1,1, 2, 75000),
+(2,2, 1, 235000),
+(3,3, 3, 320000),
+(4,4, 1, 120000),
+(5,5, 2, 28000),
+(6,6, 1, 30000),
+(7,7, 2, 225000),
+(8,8, 1, 89000),
+(9,9, 1, 175000),
+(10,10,  2, 105000);
 
-
-INSERT INTO DetallePedido_has_Pedido
-VALUES
-(1,1),
-(2,2),
-(3,3),
-(4,4),
-(5,5),
-(6,6),
-(7,7),
-(8,8),
-(9,9),
-(10,10);
 
 -- -----------------------------------------------------
 -- MÓDULO DE GESTION DE COMPRAS
@@ -482,29 +469,6 @@ VALUES
 -- -----------------------------------------------------
 
 -- Tabla estadoPedido
-INSERT INTO EstadoPedido (nombreEstado)
-VALUES 
-("En terminal de origen"),
-("En transporte"),
-("En terminal destino"),
-("En reparto"),
-("Entregado"),
-("Cancelado"),
-("Devuelto");
-
--- Tabla seguimientoPedido
-INSERT INTO SeguimientoPedido (fechaEstado, comentario, idPedido, idEstadoPedido)
-VALUES
-("2025-06-25", "Pedido recibido", 1, 7),
-("2025-06-26", "Confirmado por el sistema", 2, 6),
-("2025-06-26", "Cocinando", 3, 3),
-("2025-06-27", "Va en camino", 4, 4),
-("2025-06-27", "Cliente recibió el pedido", 5, 5),
-("2025-06-27", "Cancelado por cliente", 6, 4),
-("2025-06-28", "Producto defectuoso", 7, 3),
-("2025-06-28", "Se cambió la fecha", 8, 2),
-("2025-06-28", "Problema con tarjeta", 9, 1),
-("2025-06-29", "Esperando recogida", 10, 7);
 
 -- Tabla DevolucionCambio
 INSERT INTO devoluciones_Cambios 

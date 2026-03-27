@@ -1,6 +1,6 @@
 package com.backend.proyect.dto.carrito;
 
-public class DetalleCarritoRequest {
+public class    DetalleCarritoRequest {
 
     private Integer cantidad;
     private Double precioUnitario;

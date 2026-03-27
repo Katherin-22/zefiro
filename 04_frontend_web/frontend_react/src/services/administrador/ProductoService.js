@@ -34,4 +34,3 @@ export const updateProducto = async (idProducto, stockData) => {
 export const deleteProducto = async (idProducto) => {
     return await api_url.delete(`/producto/${idProducto}`);
 };
-

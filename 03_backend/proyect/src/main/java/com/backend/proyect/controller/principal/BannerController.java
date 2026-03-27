@@ -14,11 +14,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/banners")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8080"})
+@CrossOrigin(origins = {"http://35.171.131.177:3000", "http://35.171.131.177:8080"})
 public class BannerController {
 
     @Value("${upload.path}")
@@ -83,6 +84,42 @@ public class BannerController {
         List<Banner> banners = bannerRepository.findAll();
         System.out.println("📊 Banners encontrados: " + banners.size());
         return ResponseEntity.ok(banners);
+    }
+
+    // 🔹 Eliminar banner por ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        try {
+            Optional<Banner> bannerOptional = bannerRepository.findById(id);
+
+            if (!bannerOptional.isPresent()) {
+                System.out.println("❌ Banner no encontrado - ID: " + id);
+                return ResponseEntity.notFound().build();
+            }
+
+            Banner banner = bannerOptional.get();
+            String fileName = banner.getFileName();
+
+            // Eliminar archivo físico si existe
+            if (fileName != null && !fileName.isEmpty()) {
+                Path filePath = Paths.get(uploadPath, fileName);
+                Files.deleteIfExists(filePath);
+                System.out.println("🗑️ Archivo eliminado: " + fileName);
+            }
+
+            // Eliminar registro de la base de datos
+            bannerRepository.deleteById(id);
+            System.out.println("✅ Banner eliminado - ID: " + id);
+
+            return ResponseEntity.ok().build();
+
+        } catch (IOException e) {
+            System.out.println("❌ Error al eliminar archivo físico: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error al eliminar archivo físico");
+        } catch (Exception e) {
+            System.out.println("❌ Error al eliminar banner: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error al eliminar banner");
+        }
     }
 
     // 🔹 Endpoint para probar

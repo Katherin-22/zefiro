@@ -1,9 +1,13 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import Galeria from "../../components/iniciosesion/Collage";
 import Login from "../../components/iniciosesion/Login";
 import "../../styles/gestionusuarios/formulario final.css"; // para controlar la posición
 
 const LoginPage = () => {
+
+  const location = useLocation(); // Obtener location aquí
+
   return (
     <div className="login-page">
       {/* Fondo del collage */}
@@ -13,7 +17,7 @@ const LoginPage = () => {
 
       {/* Formulario superpuesto */}
       <div className="overlay-login">
-        <Login />
+        <Login stateOverride={location.state} />
       </div>
     </div>
   );

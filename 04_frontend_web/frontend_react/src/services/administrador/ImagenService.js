@@ -45,6 +45,3 @@ export const updateImagen = async (idProducto, idImagen, file) => {
 export const deleteImagen = async (idImagen) => {
     return await api_url.delete(`/imagen/${idImagen}`);
 };
-
-
-

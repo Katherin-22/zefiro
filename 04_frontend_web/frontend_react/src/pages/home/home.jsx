@@ -1,5 +1,5 @@
 // pages/home/home.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import MenuHome from "../../layouts/home/menuHome";
 import Footer from "../../layouts/home/footer";
 import { useGetStock } from "../../hooks/stock/useGetStock";
@@ -11,39 +11,14 @@ import useAuth from "../../hooks/token/useAuth";
 import BannerCarousel from "../../hooks/carrrousel/carrousel.js";
 
 export default function Home() {
-    // ========== DEBUG INICIAL ==========
-    console.log("=== 🏠 HOME.JSX INICIADO ===");
-    console.log("📅 Hora:", new Date().toISOString());
-    // ===================================
+    // ========== CONTROL DE RENDERS ==========
+    const initializationRef = useRef(false);
+    // ========================================
 
-    const { stock, loading, error } = useGetStock();
+    // ========== HOOKS BÁSICOS ==========
     const navigate = useNavigate();
-
-    // Estados para los banners
-    const [banners, setBanners] = useState([]);
-    const [loadingBanners, setLoadingBanners] = useState(false);
-    const [bannerError, setBannerError] = useState("");
-
-    // Usa tu hook useAuth
+    const { stock, loading, error } = useGetStock();
     const { isAuthenticated, userData } = useAuth();
-
-    // Obtén el userId de userData
-    const userId = userData?.idUsuario;
-
-    console.log('Home - isAuthenticated:', isAuthenticated);
-    console.log('Home - userData:', userData);
-    console.log('Home - userId:', userId);
-
-    const [zapatos, setZapatos] = useState([]);
-    const [bolsos, setBolsos] = useState([]);
-    const [imagenesProductos, setImagenesProductos] = useState({});
-
-    // Estados para favoritos
-    const [estadosFavoritos, setEstadosFavoritos] = useState({});
-    const [cargandoFavoritos, setCargandoFavoritos] = useState({});
-    const [contadorFavoritos, setContadorFavoritos] = useState(0);
-
-    // Hooks
     const {
         agregarFavorito,
         eliminarFavorito,
@@ -51,116 +26,213 @@ export default function Home() {
         contarFavoritosUsuario,
         loading: loadingFavoritosGlobal
     } = useFavoritos();
+    
+    const userId = userData?.idUsuario;
 
-    // ============================
-    // CARGAR BANNERS - IDÉNTICO A GESTIÓN
-    // ============================
+    // ========== ESTADOS ==========
+    const [banners, setBanners] = useState([]);
+    const [loadingBanners, setLoadingBanners] = useState(true);
+    const [bannerError, setBannerError] = useState("");
+    const [zapatos, setZapatos] = useState([]);
+    const [bolsos, setBolsos] = useState([]);
+    const [imagenesProductos, setImagenesProductos] = useState({});
+    const [estadosFavoritos, setEstadosFavoritos] = useState({});
+    const [cargandoFavoritos, setCargandoFavoritos] = useState({});
+    const [contadorFavoritos, setContadorFavoritos] = useState(0);
+
+    // ========== INICIALIZACIÓN ÚNICA ==========
     useEffect(() => {
-        console.log("🔄 useEffect de banners EJECUTADO");
-        console.log("📊 Estado inicial banners:", banners);
-
-        // EXACTAMENTE IGUAL que en GestionPagina.js
-        fetch("http://localhost:8080/api/banners")
-            .then((res) => {
-                console.log("📡 Fetch completado - Status:", res.status, res.statusText);
-                console.log("📡 Headers:", Object.fromEntries(res.headers.entries()));
-                return res.json();
-            })
-            .then((data) => {
-                console.log("✅ Banners recibidos:", data);
-                console.log("📊 Tipo de datos:", typeof data);
-                console.log("📊 Es array?:", Array.isArray(data));
-                console.log("📊 Cantidad de banners:", data ? data.length : 0);
-
-                setBanners(data || []);
-            })
-            .catch((err) => {
-                console.error("❌ Error cargando banners:", err);
-                console.error("❌ Stack trace:", err.stack);
-                setBannerError("Error: " + err.message);
-            });
-    }, []);
-
-    // ============================
-    // 1. CARGAR CONTADOR DE FAVORITOS
-    // ============================
-    useEffect(() => {
-        const cargarContadorFavoritos = async () => {
-            if (!userId) {
-                setContadorFavoritos(0);
-                return;
-            }
-
+        // Evitar cualquier inicialización múltiple
+        if (initializationRef.current) return;
+        initializationRef.current = true;
+        
+        console.log("=== 🏠 HOME.JSX INICIALIZADO UNA VEZ ===");
+        
+        // Función principal que carga TODO de una sola vez
+        const inicializarTodo = async () => {
             try {
-                const cantidad = await contarFavoritosUsuario(userId);
-                setContadorFavoritos(cantidad);
+                console.log("🔄 Iniciando carga completa de la página...");
+                
+                // 1. Cargar banners (en paralelo con otros procesos)
+                cargarBanners();
+                
+                // 2. Si hay usuario, cargar contador de favoritos
+                if (userId) {
+                    try {
+                        const cantidad = await contarFavoritosUsuario(userId);
+                        setContadorFavoritos(cantidad);
+                        console.log("✅ Contador favoritos cargado:", cantidad);
+                    } catch (error) {
+                        console.error("Error cargando contador favoritos:", error);
+                    }
+                }
+                
             } catch (error) {
-                console.error("Error cargando contador de favoritos:", error);
+                console.error("Error en inicialización:", error);
             }
         };
+        
+        inicializarTodo();
+    }, []); // Dependencias vacías - SOLO UNA VEZ
 
-        cargarContadorFavoritos();
-    }, [userId, contarFavoritosUsuario]);
-
-    // ============================
-    // 2. VERIFICAR FAVORITOS DE TODOS LOS PRODUCTOS
-    // ============================
-    useEffect(() => {
-        const verificarFavoritosProductos = async () => {
-            if (!userId || !stock.length) {
-                // Inicializar todos como false si no hay usuario
-                const iniciales = {};
-                stock.forEach(producto => {
-                    if (producto.idProducto) {
-                        iniciales[producto.idProducto] = false;
+    // ========== CARGAR BANNERS (función separada) ==========
+    const cargarBanners = async () => {
+        console.log("🔄 Cargando banners...");
+        
+        try {
+            // Intentar endpoint principal
+            const response = await fetch('http://35.171.131.177:8080/api/banners');
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log("✅ Banners cargados:", data);
+                setBanners(data);
+                setBannerError("");
+            } else if (response.status === 403) {
+                // Intentar endpoint público
+                try {
+                    const publicResponse = await fetch('http://35.171.131.177:8080/api/banners/public');
+                    if (publicResponse.ok) {
+                        const publicData = await publicResponse.json();
+                        console.log("✅ Banners públicos cargados:", publicData);
+                        setBanners(publicData);
+                        setBannerError("");
+                    } else {
+                        throw new Error("Endpoint público falló");
                     }
-                });
-                setEstadosFavoritos(iniciales);
-                return;
+                } catch {
+                    // Fallback a datos mock
+                    console.log("🔄 Usando datos mock de banners");
+                    setBanners([
+                        { id: 1, titulo: 'Bienvenido a Zefiro', imagen: 'https://via.placeholder.com/1920x600/3498db/ffffff?text=Zefiro', urlDestino: '/catalogo', activo: true },
+                        { id: 2, titulo: 'Nueva Colección', imagen: 'https://via.placeholder.com/1920x600/e74c3c/ffffff?text=Nueva+Colección', urlDestino: '/catalogo', activo: true },
+                        { id: 3, titulo: 'Ofertas Especiales', imagen: 'https://via.placeholder.com/1920x600/2ecc71/ffffff?text=Ofertas', urlDestino: '/catalogo', activo: true }
+                    ]);
+                    setBannerError("Usando banners de ejemplo");
+                }
+            } else {
+                throw new Error(`Error ${response.status}`);
             }
+        } catch (error) {
+            console.error("❌ Error cargando banners:", error);
+            setBannerError("Error al cargar banners");
+            setBanners([
+                { id: 1, titulo: 'Bienvenido a Zefiro', imagen: 'https://via.placeholder.com/1920x600/3498db/ffffff?text=Zefiro', urlDestino: '/catalogo', activo: true }
+            ]);
+        } finally {
+            setLoadingBanners(false);
+            console.log("🏁 Carga de banners completada");
+        }
+    };
 
+    // ========== PROCESAR STOCK CUANDO LLEGA ==========
+    useEffect(() => {
+        if (!stock || stock.length === 0) return;
+        
+        console.log("🔄 Procesando stock...");
+        
+        const procesarProductos = async () => {
+            // Filtrar productos
+            const zapatosTemp = [];
+            const bolsosTemp = [];
+            const idsProcesados = new Set();
+            
+            for (const producto of stock) {
+                if (!producto.idProducto || idsProcesados.has(producto.idProducto)) continue;
+                idsProcesados.add(producto.idProducto);
+                
+                const tipo = producto.nombreTipoProducto?.toLowerCase() || '';
+                const nombre = producto.nombreProducto?.toLowerCase() || '';
+                
+                // Clasificar producto
+                if (tipo.includes('zapato') || tipo.includes('calzado') || 
+                    nombre.includes('zapato') || nombre.includes('tenis') || nombre.includes('deportivo')) {
+                    if (zapatosTemp.length < 4) {
+                        zapatosTemp.push(producto);
+                    }
+                } else if (tipo.includes('bolso') || nombre.includes('bolso') || 
+                           nombre.includes('mochila') || nombre.includes('cartera')) {
+                    if (bolsosTemp.length < 4) {
+                        bolsosTemp.push(producto);
+                    }
+                }
+            }
+            
+            setZapatos(zapatosTemp);
+            setBolsos(bolsosTemp);
+            
+            // Cargar imágenes en paralelo
+            const productosParaImagenes = [...zapatosTemp, ...bolsosTemp];
+            const imagenesTemp = {};
+            
+            await Promise.all(productosParaImagenes.map(async (producto) => {
+                try {
+                    const response = await getImagenById(producto.idProducto);
+                    if (response.data && response.data.length > 0) {
+                        imagenesTemp[producto.idProducto] = `http://35.171.131.177:8080${response.data[0].urlImagen}`;
+                    } else {
+                        imagenesTemp[producto.idProducto] = producto.imagen || "/imagenes_prueba/default.jpg";
+                    }
+                } catch {
+                    imagenesTemp[producto.idProducto] = producto.imagen || "/imagenes_prueba/default.jpg";
+                }
+            }));
+            
+            setImagenesProductos(imagenesTemp);
+            console.log("✅ Productos e imágenes cargados");
+        };
+        
+        procesarProductos();
+    }, [stock]); // Solo cuando stock cambia
+
+    // ========== VERIFICAR FAVORITOS DE PRODUCTOS ==========
+    useEffect(() => {
+        if (!userId || !zapatos.length || !bolsos.length) return;
+        
+        const verificarFavoritos = async () => {
+            console.log("🔄 Verificando favoritos...");
+            const todosProductos = [...zapatos, ...bolsos];
             const nuevosEstados = {};
             const nuevoCargando = {};
-
+            
             // Inicializar estados
-            stock.forEach(producto => {
+            todosProductos.forEach(producto => {
                 if (producto.idProducto) {
                     nuevosEstados[producto.idProducto] = false;
                     nuevoCargando[producto.idProducto] = true;
                 }
             });
-
+            
             setEstadosFavoritos(nuevosEstados);
             setCargandoFavoritos(nuevoCargando);
-
-            // Verificar cada producto
-            for (const producto of stock) {
-                if (!producto.idProducto) continue;
-
+            
+            // Verificar todos en paralelo
+            await Promise.all(todosProductos.map(async (producto) => {
+                if (!producto.idProducto) return;
+                
                 try {
                     const esFavorito = await verificarProductoEnFavoritos(userId, producto.idProducto);
-
                     setEstadosFavoritos(prev => ({
                         ...prev,
                         [producto.idProducto]: esFavorito
                     }));
                 } catch (error) {
-                    console.error(`Error verificando favorito del producto ${producto.idProducto}:`, error);
+                    console.error(`Error verificando producto ${producto.idProducto}:`, error);
                 } finally {
                     setCargandoFavoritos(prev => ({
                         ...prev,
                         [producto.idProducto]: false
                     }));
                 }
-            }
+            }));
+            
+            console.log("✅ Verificación de favoritos completada");
         };
+        
+        verificarFavoritos();
+    }, [userId, zapatos, bolsos]); // Solo cuando cambian los productos o el usuario
 
-        verificarFavoritosProductos();
-    }, [userId, stock, verificarProductoEnFavoritos]);
-
-    // ============================
-    // 3. MANEJAR CLIC EN CORAZÓN
-    // ============================
+    // ========== MANEJAR CLIC EN FAVORITO ==========
     const handleFavoritoClick = async (producto) => {
         if (!isAuthenticated || !userId) {
             alert("Por favor inicia sesión para agregar productos a favoritos");
@@ -174,119 +246,27 @@ export default function Home() {
         const esFavoritoActual = estadosFavoritos[productoId];
 
         try {
-            // Marcar como cargando
-            setCargandoFavoritos(prev => ({
-                ...prev,
-                [productoId]: true
-            }));
+            setCargandoFavoritos(prev => ({ ...prev, [productoId]: true }));
 
             if (esFavoritoActual) {
-                // Eliminar de favoritos
                 await eliminarFavorito(userId, productoId);
-                setEstadosFavoritos(prev => ({
-                    ...prev,
-                    [productoId]: false
-                }));
+                setEstadosFavoritos(prev => ({ ...prev, [productoId]: false }));
                 setContadorFavoritos(prev => Math.max(0, prev - 1));
             } else {
-                // Agregar a favoritos
                 const requestData = { idProducto: productoId };
                 await agregarFavorito(userId, requestData);
-                setEstadosFavoritos(prev => ({
-                    ...prev,
-                    [productoId]: true
-                }));
+                setEstadosFavoritos(prev => ({ ...prev, [productoId]: true }));
                 setContadorFavoritos(prev => prev + 1);
             }
         } catch (error) {
             console.error("Error al cambiar estado de favorito:", error);
             alert(error.message || "Error al actualizar favoritos");
         } finally {
-            setCargandoFavoritos(prev => ({
-                ...prev,
-                [productoId]: false
-            }));
+            setCargandoFavoritos(prev => ({ ...prev, [productoId]: false }));
         }
     };
 
-    // Función para cargar imágenes de un producto
-    const cargarImagenProducto = async (idProducto) => {
-        try {
-            const response = await getImagenById(idProducto);
-            if (response.data && response.data.length > 0) {
-                return `http://localhost:8080${response.data[0].urlImagen}`;
-            }
-            return null;
-        } catch (error) {
-            console.error("Error al cargar imagen del producto:", error);
-            return null;
-        }
-    };
-
-    // Filtrar productos y cargar sus imágenes
-    useEffect(() => {
-        const filtrarYCargarImagenes = async () => {
-            if (stock && stock.length > 0) {
-                // Filtrar zapatos
-                const zapatosFiltrados = stock.filter(producto => {
-                    const tipo = producto.nombreTipoProducto?.toLowerCase() || '';
-                    const nombre = producto.nombreProducto?.toLowerCase() || '';
-
-                    const esZapato = tipo.includes('zapato') ||
-                        tipo.includes('calzado') ||
-                        nombre.includes('zapato') ||
-                        nombre.includes('tenis') ||
-                        nombre.includes('deportivo');
-
-                    return esZapato;
-                }).slice(0, 4);
-
-                // Filtrar bolsos
-                const bolsosFiltrados = stock.filter(producto => {
-                    const tipo = producto.nombreTipoProducto?.toLowerCase() || '';
-                    const nombre = producto.nombreProducto?.toLowerCase() || '';
-
-                    const esBolso = tipo.includes('bolso') ||
-                        nombre.includes('bolso') ||
-                        nombre.includes('mochila') ||
-                        nombre.includes('cartera');
-
-                    return esBolso;
-                }).slice(0, 4);
-
-                // Cargar imágenes para todos los productos
-                const todasImagenes = {};
-
-                // Cargar imágenes de zapatos
-                for (const zapato of zapatosFiltrados) {
-                    if (zapato.idProducto && !todasImagenes[zapato.idProducto]) {
-                        const imagenUrl = await cargarImagenProducto(zapato.idProducto);
-                        todasImagenes[zapato.idProducto] = imagenUrl || zapato.imagen || "/imagenes_prueba/default.jpg";
-                    }
-                }
-
-                // Cargar imágenes de bolsos
-                for (const bolso of bolsosFiltrados) {
-                    if (bolso.idProducto && !todasImagenes[bolso.idProducto]) {
-                        const imagenUrl = await cargarImagenProducto(bolso.idProducto);
-                        todasImagenes[bolso.idProducto] = imagenUrl || bolso.imagen || "/imagenes_prueba/default.jpg";
-                    }
-                }
-
-                setImagenesProductos(todasImagenes);
-                setZapatos(zapatosFiltrados);
-                setBolsos(bolsosFiltrados);
-            } else {
-                setZapatos([]);
-                setBolsos([]);
-                setImagenesProductos({});
-            }
-        };
-
-        filtrarYCargarImagenes();
-    }, [stock]);
-
-    // Función para obtener la imagen de un producto
+    // ========== FUNCIÓN AUXILIAR ==========
     const obtenerImagenProducto = (producto) => {
         if (producto.idProducto && imagenesProductos[producto.idProducto]) {
             return imagenesProductos[producto.idProducto];
@@ -294,7 +274,7 @@ export default function Home() {
         return producto.imagen || "/imagenes_prueba/default.jpg";
     };
 
-    // Componente de tarjeta de producto
+    // ========== COMPONENTE PRODUCTO CARD ==========
     const ProductoCard = ({ producto, tipo, index }) => {
         const productoId = producto.idProducto;
         const esFavorito = estadosFavoritos[productoId] || false;
@@ -308,28 +288,28 @@ export default function Home() {
                     id={`home-${tipo}-card-container-${index + 1}`}>
 
                     {/* BOTÓN DE FAVORITOS */}
-                    <button
-                        className="btn btn-link text-decoration-none position-absolute top-0 end-0 p-3"
-                        onClick={() => handleFavoritoClick(producto)}
-                        disabled={cargando || loadingFavoritosGlobal}
-                        aria-label={esFavorito ? "Quitar de favoritos" : "Agregar a favoritos"}
-                        style={{ zIndex: 2 }}
-                        id={`home-${tipo}-favorite-btn-${index + 1}`}
-                        title={!isAuthenticated ? "Inicia sesión para agregar a favoritos" : (esFavorito ? "Quitar de favoritos" : "Agregar a favoritos")}
-                    >
-                        {cargando ? (
-                            <div className="spinner-border spinner-border-sm text-danger" role="status">
-                                <span className="visually-hidden">Cargando...</span>
-                            </div>
-                        ) : (
-                            <i className={`bi ${esFavorito ? 'bi-heart-fill text-danger' : 'bi-heart text-white'}`}
-                                style={{
-                                    fontSize: '1.5rem',
-                                    filter: esFavorito ? 'none' : 'drop-shadow(0px 0px 2px rgba(0,0,0,0.5))',
-                                    opacity: !isAuthenticated ? 0.5 : 1
-                                }}></i>
-                        )}
-                    </button>
+                        <button
+                            className="btn btn-link text-decoration-none position-absolute top-0 end-0 p-3"
+                            onClick={() => handleFavoritoClick(producto)}
+                            disabled={cargando || loadingFavoritosGlobal}
+                            aria-label={esFavorito ? "Quitar de favoritos" : "Agregar a favoritos"}
+                            style={{ zIndex: 2 }}
+                            id={`home-${tipo}-favorite-btn-${index + 1}`}
+                            title={!isAuthenticated ? "Inicia sesión para agregar a favoritos" : (esFavorito ? "Quitar de favoritos" : "Agregar a favoritos")}
+                        >
+                            {cargando ? (
+                                <div className="spinner-border spinner-border-sm text-danger" role="status">
+                                    <span className="visually-hidden">Cargando...</span>
+                                </div>
+                            ) : (
+                                <i className={`bi ${esFavorito ? 'bi-heart-fill text-danger' : 'bi-heart text-white'}`}
+                                    style={{
+                                        fontSize: '1.5rem',
+                                        filter: esFavorito ? 'none' : 'drop-shadow(0px 0px 2px rgba(0,0,0,0.5))',
+                                        opacity: !isAuthenticated ? 0.5 : 1
+                                    }}></i>
+                            )}
+                        </button>
 
                     {/* IMAGEN DEL PRODUCTO */}
                     <div className="producto-imagen-container-home" id={`home-${tipo}-image-container-${index + 1}`}>
@@ -377,8 +357,7 @@ export default function Home() {
         );
     };
 
-
-    // Estados de carga y error
+    // ========== RENDERIZADO ==========
     if (loading) {
         return (
             <div className="allHome" id="home-container">
@@ -418,7 +397,7 @@ export default function Home() {
             <MenuHome />
             <div className="body-color" id="home-body">
 
-                {/* SECCIÓN DE BANNERS (CARRUSEL) */}
+                {/* SECCIÓN DE BANNERS */}
                 <div className="container-fluid mt-0 p-0">
                     {loadingBanners ? (
                         <div className="text-center py-5">
@@ -428,28 +407,23 @@ export default function Home() {
                             <p className="text-white mt-2">Cargando banners promocionales...</p>
                         </div>
                     ) : bannerError ? (
-                        <div className="alert alert-danger text-center m-3">
+                        <div className="alert alert-warning text-center m-3">
                             <i className="bi bi-exclamation-triangle me-2"></i>
-                            Error: {bannerError}
+                            {bannerError}
                         </div>
                     ) : banners.length > 0 ? (
-                        <>
-                            <BannerCarousel banners={banners} />
-                            <div className="text-center mt-2 text-white bg-dark bg-opacity-50 py-1">
-                              
-                            </div>
-                        </>
+                        <BannerCarousel banners={banners} />
                     ) : (
-                        <div className="alert alert-warning text-center m-3">
-                            <i className="bi bi-exclamation-circle me-2"></i>
+                        <div className="alert alert-info text-center m-3">
+                            <i className="bi bi-info-circle me-2"></i>
                             No hay banners para mostrar
                         </div>
                     )}
                 </div>
-
+        
                 {/* BANNER DE FAVORITOS */}
-                {isAuthenticated && (
-                    <div className="container-fluid py-3 bg-dark bg-opacity-50">
+                { isAuthenticated && (
+                    <div className="container-fluid container-fav py-3 bg-dark bg-opacity-50">
                         <div className="container">
                             <div className="row align-items-center">
                                 <div className="col-md-6">
@@ -539,7 +513,7 @@ export default function Home() {
                     </div>
 
                     {/* CALL TO ACTION PARA FAVORITOS */}
-                    {isAuthenticated && (
+                    {userData?.rol === 1 && isAuthenticated && (
                         <div className="row mt-5 mb-5">
                             <div className="col-12">
                                 <div className="card bg-dark text-center border-light">
@@ -560,7 +534,6 @@ export default function Home() {
                     )}
                 </div>
 
-                <Footer />
             </div>
         </div>
     );
