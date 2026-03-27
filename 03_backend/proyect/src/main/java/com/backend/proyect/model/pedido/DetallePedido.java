@@ -1,14 +1,12 @@
 package com.backend.proyect.model.pedido;
 
 import com.backend.proyect.model.productos.Stock;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 
 @AllArgsConstructor
@@ -16,7 +14,6 @@ import java.math.BigDecimal;
 @Data
 @Entity
 @Table(name = "DetallePedido")
-
 public class DetallePedido {
 
     @Id

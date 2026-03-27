@@ -20,7 +20,7 @@ const BannerForm = ({ onUpload }) => {
         formData.append("file", file);
 
         try {
-            const response = await fetch("http://35.171.131.177:8080/api/banners/upload", {
+            const response = await fetch("http://localhost:8080/api/banners/upload", {
                 method: "POST",
                 body: formData,
             });

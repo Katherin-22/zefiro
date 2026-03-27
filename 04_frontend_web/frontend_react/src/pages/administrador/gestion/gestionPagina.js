@@ -1,6 +1,7 @@
 import MenuAdmin from "../../../layouts/administrador/menuAdmin";
 import "../../../styles/administrador/gestion_producto.css";
 import "../../../styles/administrador/inventario.css";
+import "../../../styles/administrador/GestionPagina.css"
 
 import { useEffect, useState } from "react";
 import BannerForm from "../../../components/form/BannerForm.js";
@@ -73,15 +74,15 @@ const GestionPagina = () => {
     return (
         <div className="all">
             <MenuAdmin />
-            <div className="container-fluid" id='container-admin'>
-                <div className="main-content">
+            <div className="container-fluid container-fluid-gestPag" id='container-admin'>
+                <div className="main-content main-gestPag">
                     <div className="container py-4">
-                        <h2 className="text-center mb-4">Gestión de Banners</h2>
+                        <h2 className="text-center mb-4 h2-pagGes">Gestión de Banners</h2>
 
                         {/* Formulario para subir nuevos banners */}
                         <div className="card mb-4">
                             <div className="card-header bg-primary text-white">
-                                <h5 className="mb-0">Subir Nuevo Banner</h5>
+                                <h5 className="mb-0 ">Subir Nuevo Banner</h5>
                             </div>
                             <div className="card-body">
                                 <BannerForm onUpload={handleUpload} />

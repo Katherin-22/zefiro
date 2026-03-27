@@ -95,11 +95,13 @@ const MenuHome = () => {
   useEffect(() => {
     const path = location.pathname;
     if (path === '/') setActiveMobileNav('home');
-    else if (path === '/catalogo' || path.includes('/catalogo')) setActiveMobileNav('catalog');
+    else if (path === '/catalogo' || path.includes('/catalogo'))
+      setActiveMobileNav('catalog');
     else if (path === '/favoritos') setActiveMobileNav('favorites');
     else if (path === '/carrito') setActiveMobileNav('cart');
     else if (path.includes('/pedidos/')) setActiveMobileNav('orders');
-    else if (path.includes('/profile') || path === '/loginpage') setActiveMobileNav('profile');
+    else if (path.includes('/profile') || path === '/loginpage')
+      setActiveMobileNav('profile');
   }, [location]);
 
   const handleFiltro = (nuevoFiltro) => {
@@ -135,10 +137,18 @@ const MenuHome = () => {
 
   // Desktop Navbar
   const DesktopNavbar = () => (
-    <nav className="navbar fixed-top navbar-expand-lg" id="navBarHome" data-bs-theme="dark">
+    <nav
+      className="navbar fixed-top navbar-expand-lg"
+      id="navBarHome"
+      data-bs-theme="dark"
+    >
       <div className="container-fluid" id="navBarHome-container">
-
-        <Link className="navbar-brand" id="navBarHome-brand" to="/" onClick={() => setFiltro('todos')}>
+        <Link
+          className="navbar-brand"
+          id="navBarHome-brand"
+          to="/"
+          onClick={() => setFiltro('todos')}
+        >
           Zéfiro
         </Link>
 
@@ -152,12 +162,18 @@ const MenuHome = () => {
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
-          <span className="navbar-toggler-icon" id="navBarHome-toggler-icon"></span>
+          <span
+            className="navbar-toggler-icon"
+            id="navBarHome-toggler-icon"
+          ></span>
         </button>
 
         <div className="collapse navbar-collapse" id="navBarHome-content">
 
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0" id="navBarHome-mainMenu">
+          <ul
+            className="navbar-nav me-auto mb-2 mb-lg-0"
+            id="navBarHome-mainMenu"
+          >
             <li className="nav-item dropdown" id="navBarHome-calzado-dropdown">
               <button
                 className="nav-link dropdown-toggle btn btn-link"
@@ -169,11 +185,41 @@ const MenuHome = () => {
                 Calzado
               </button>
               <ul className="dropdown-menu" id="navBarHome-calzado-menu">
-                <li><button className="dropdown-item" onClick={() => handleFiltro('calzado')}>Todo el Calzado</button></li>
-                <li><hr className="dropdown-divider" /></li>
-                <li><button className="dropdown-item" onClick={() => handleFiltro('Mujer')}>Para Mujer</button></li>
-                <li><button className="dropdown-item" onClick={() => handleFiltro('Hombre')}>Para Hombre</button></li>
-                <li><button className="dropdown-item" onClick={() => handleFiltro('nino')}>Para Niño</button></li>
+                <li>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => handleFiltro('calzado')}
+                  >
+                    Todo el Calzado
+                  </button>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+                <li>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => handleFiltro('Mujer')}
+                  >
+                    Para Mujer
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => handleFiltro('Hombre')}
+                  >
+                    Para Hombre
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => handleFiltro('nino')}
+                  >
+                    Para Niño
+                  </button>
+                </li>
               </ul>
             </li>
 
@@ -212,26 +258,46 @@ const MenuHome = () => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <i className="bi bi-person-fill" id="navBarHome-profile-icon"></i>
+                <i
+                  className="bi bi-person-fill"
+                  id="navBarHome-profile-icon"
+                ></i>
                 {isAuthenticated && userName && (
                   <span className="ms-1 d-none d-md-inline">
                     {userName}
                   </span>
                 )}
               </button>
-              <ul className="dropdown-menu dropdown-menu-end" id="navBarHome-profile-menu">
+              <ul
+                className="dropdown-menu dropdown-menu-end"
+                id="navBarHome-profile-menu"
+              >
                 {!isAuthenticated ? (
                   // USUARIO NO AUTENTICADO - SOLO BOTÓN DE INICIAR SESIÓN
-                  <li><Link className="dropdown-item" to="/loginpage">Iniciar sesión</Link></li>
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      id="navBarHome-login"
+                      to="/loginpage"
+                    >
+                      Iniciar sesión
+                    </Link>
+                  </li>
                 ) : (
                   // USUARIO AUTENTICADO
                   <>
                     <li className="dropdown-header">
                       <small className="text-muted">Bienvenido</small>
-                      <div className="fw-bold">{userName || 'Usuario'}</div>
-                      <small className="text-muted">{userEmail || ''}</small>
+                      <div className="fw-bold">
+                        {userName || 'Usuario'}
+                      </div>
+                      <small className="text-muted">
+                        {userEmail || ''}
+                      </small>
                     </li>
-                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <hr className="dropdown-divider" />
+                    </li>
                     <li>
                       <Link
                         className="dropdown-item"
@@ -239,6 +305,16 @@ const MenuHome = () => {
                         to={`/perfilUsuario/${userId || ''}`}
                       >
                         <i className="bi bi-person me-2"></i>Perfil
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        className="dropdown-item"
+                        id="navBarHome-returns"
+
+                        to="/userdevoluciones"
+                      >
+                        <i className="bi-arrow-left-right"></i>Devoluciones
                       </Link>
                     </li>
                     <li>
@@ -253,39 +329,37 @@ const MenuHome = () => {
                       ) : (
                         <Link
                           className="dropdown-item"
-                          bi-arrow-left-right
+                          id="navBarHome-orders"
                           to="/loginpage"
                         >
-                          <i className="bi bi-box-seam me-2"></i>Inicia sesión para ver pedidos
+                          <i className="bi bi-box-seam me-2"></i>Inicia sesión
+                          para ver pedidos
                         </Link>
                       )}
                     </li>
-
-                    <li>
-                      <Link
-                        className="dropdown-item"
-                        to="/userdevoluciones"
-
-                        id="navBarHome-returns"
-                      >
-                        <i className="bi-arrow-left-right"></i>Devoluciones
-                      </Link>
-                    </li>
-
                     {/* Dashboard solo para administradores */}
                     {userData?.rol === 2 && (
-                      <li><Link className="dropdown-item" to="/Administrador/stock">
-                        <i className="bi bi-speedometer2 me-2"></i>Dashboard
-                      </Link></li>
+                      <li>
+                        <Link
+                          className="dropdown-item"
+                          id="navBarHome-dashboard"
+                          to="/Administrador/stock"
+                        >
+                          <i className="bi bi-speedometer2 me-2"></i>Dashboard
+                        </Link>
+                      </li>
                     )}
-                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <hr className="dropdown-divider" />
+                    </li>
                     <li>
                       <button
                         className="dropdown-item text-danger"
                         id="navBarHome-logout"
                         onClick={handleLogout}
                       >
-                        <i className="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+                        <i className="bi bi-box-arrow-right me-2"></i>Cerrar
+                        sesión
                       </button>
                     </li>
                   </>
@@ -294,18 +368,31 @@ const MenuHome = () => {
             </li>
 
             {/* FAVORITOS - Solo mostrar si está autenticado */}
-            {isAuthenticated && userData?.rol === 1 && (
+            {isAuthenticated ? (
               <li className="nav-item" id="navBarHome-favorites-item">
-                <Link className="nav-link" id="navBarHome-favorites-link" to="/favoritos">
-                  <i className="bi bi-heart-fill" id="navBarHome-favorites-icon"></i>
+                <Link
+                  className="nav-link"
+                  id="navBarHome-favorites-link"
+                  to="/favoritos"
+                >
+                  <i
+                    className="bi bi-heart-fill"
+                    id="navBarHome-favorites-icon"
+                  ></i>
                 </Link>
               </li>
-            )}
+            ) : null}
 
             <li className="nav-item" id="navBarHome-cart-item">
-              <Link className="nav-link" id="navBarHome-cart-link" to="/carrito">
+              <Link
+                className="nav-link"
+                id="navBarHome-cart-link"
+                to="/carrito"
+              >
                 <i className="bi bi-cart-fill" id="navBarHome-cart-icon"></i>
-                {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
+                {totalItems > 0 && (
+                  <span className="cart-badge">{totalItems}</span>
+                )}
               </Link>
             </li>
           </ul>
@@ -320,7 +407,11 @@ const MenuHome = () => {
       <>
         <nav className="mobile-top-nav" id="mobileTopNav">
           <div className="mobile-top-container">
-            <Link className="mobile-brand" to="/" onClick={() =>  handleFiltro('todos')}>
+            <Link
+              className="mobile-brand"
+              to="/"
+              onClick={() => handleFiltro('todos')}
+            >
               Zéfiro
             </Link>
 
@@ -337,7 +428,9 @@ const MenuHome = () => {
 
               <Link to="/carrito" className="mobile-cart-btn">
                 <i className="bi bi-cart-fill"></i>
-                {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
+                {totalItems > 0 &&
+                  <span className="cart-badge">{totalItems}</span>
+                }
               </Link>
             </div>
           </div>
@@ -365,15 +458,17 @@ const MenuHome = () => {
               <i className="bi bi-grid-3x3-gap"></i>
               <span>categorias</span>
             </Link>
-
-            <Link
-              to="/favoritos"
-              className={`mobile-nav-item ${activeMobileNav === 'favorites' ? 'active' : ''}`}
-              onClick={() => setActiveMobileNav('favorites')}
-            >
-              <i className="bi bi-heart"></i>
-              <span>Favoritos</span>
-            </Link>
+            {/* FAVORITOS - Solo para clientes autenticados (rol 1) */}
+            {isAuthenticated && (
+              <Link
+                to="/favoritos"
+                className={`mobile-nav-item ${activeMobileNav === 'favorites' ? 'active' : ''}`}
+                onClick={() => setActiveMobileNav('favorites')}
+              >
+                <i className="bi bi-heart"></i>
+                <span>Favoritos</span>
+              </Link>
+            )}
 
             {/* Link a pedidos con validación */}
             {userId ? (
@@ -392,12 +487,15 @@ const MenuHome = () => {
                 onClick={() => setActiveMobileNav('profile')}
               >
                 <i className="bi bi-person"></i>
-                <span>Perfil</span>
+                <span>Pedidos</span>
               </Link>
             )}
 
             {/* Más opciones (dropdown) */}
-            <div id="mobile-nav-more" className="admin-mobile-nav-item admin-mobile-dropdown">
+            <div
+              id="mobile-nav-more"
+              className="admin-mobile-nav-item admin-mobile-dropdown"
+            >
               <button
                 id="mobile-more-btn"
                 className="admin-mobile-dropdown-btn"
@@ -413,13 +511,18 @@ const MenuHome = () => {
 
               {!isAuthenticated ? (
                 // USUARIO NO AUTENTICADO
-                <div id="mobile-dropdown-menu" className="admin-mobile-dropdown-menu">
+                <div
+                  id="mobile-dropdown-menu"
+                  className="admin-mobile-dropdown-menu"
+                >
                   <Link
                     id="dropdown-pagina"
                     to="/loginpage"
                     className="dropdown-item"
                     onClick={() => {
-                      document.querySelector('.admin-mobile-dropdown')?.classList.remove('show');
+                      document
+                        .querySelector('.admin-mobile-dropdown')
+                        ?.classList.remove('show');
                     }}
                   >
                     <i className="bi bi-card-heading dropdown-icon"></i>
@@ -428,13 +531,31 @@ const MenuHome = () => {
                 </div>
               ) : (
                 // USUARIO AUTENTICADO
-                <div id="mobile-dropdown-menu" className="admin-mobile-dropdown-menu">
+                <div
+                  id="mobile-dropdown-menu"
+                  className="admin-mobile-dropdown-menu"
+                >
                   <Link
-                    id="dropdown-pagina"
-                    to={`/perfilUsuario/${userId || ''}`}
+                    id="dropdown-devoluciones"
+                    to="/mis-devoluciones"
                     className="dropdown-item"
                     onClick={() => {
-                      document.querySelector('.admin-mobile-dropdown')?.classList.remove('show');
+                      document
+                        .querySelector('.admin-mobile-dropdown')
+                        ?.classList.remove('show');
+                    }}
+                  >
+                    <i className="bi bi-arrow-return-left dropdown-icon"></i>
+                    <span className="dropdown-text">Mis Devoluciones</span>
+                  </Link>
+                  <Link
+                    id="dropdown-pagina"
+                    to={`/perfilUsuario/${userId || ""}`}
+                    className="dropdown-item"
+                    onClick={() => {
+                      document
+                        .querySelector(".admin-mobile-dropdown")
+                        ?.classList.remove("show");
                     }}
                   >
                     <i className="bi bi-card-heading dropdown-icon"></i>
@@ -444,10 +565,12 @@ const MenuHome = () => {
                   {userData?.rol === 2 && (
                     <Link
                       id="dropdown-devoluciones"
-                      to="/Administrador/stock"
+                      to="/Administrador/Dashboard"
                       className="dropdown-item"
                       onClick={() => {
-                        document.querySelector('.admin-mobile-dropdown')?.classList.remove('show');
+                        document
+                          .querySelector('.admin-mobile-dropdown')
+                          ?.classList.remove('show');
                       }}
                     >
                       <i className="bi bi-box-seam dropdown-icon"></i>
@@ -461,7 +584,9 @@ const MenuHome = () => {
                     className="dropdown-item logout"
                     onClick={(e) => {
                       e.preventDefault();
-                      document.querySelector('.admin-mobile-dropdown')?.classList.remove('show');
+                      document
+                        .querySelector('.admin-mobile-dropdown')
+                        ?.classList.remove('show');
                       handleLogout();
                     }}
                   >

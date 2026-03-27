@@ -1,7 +1,6 @@
-import MenuAdmin from '../../../layouts/administrador/menuAdmin';
-import '../../../styles/administrador/gestion_producto.css';
-import '../../../styles/administrador/inventario.css';
 import React, { useState, useEffect } from 'react';
+import MenuAdmin from '../../../layouts/administrador/menuAdmin';
+import styles from '../../../styles/administrador/gestionPedidos.module.css';
 import { getPedido, actualizarEstadoPedido } from "../../../services/administrador/pedidos";
 import { Link } from "react-router-dom";
 
@@ -98,7 +97,6 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
         console.log("📊 Datos:", response.data);
         
         if (response?.data) {
-            // Actualizar el estado local
             setPedidos(prevPedidos => 
                 prevPedidos.map(pedido => 
                     pedido.idPedido === idPedido 
@@ -113,7 +111,6 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
     } catch (error) {
         console.error("❌ Error:", error);
         
-        // Extraer mensaje de error
         let errorMsg = 'Error al actualizar el estado';
         if (error.response?.data) {
             errorMsg = typeof error.response.data === 'object' 
@@ -135,15 +132,6 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
         return pedido.estado === filtroEstado;
     });
 
-    // 📌 FUNCIONES PARA ACCIONES
-    const handleVerPedido = (idPedido) => {
-        console.log("Ver pedido:", idPedido);
-    };
-
-    const handleEditarPedido = (idPedido) => {
-        console.log("Editar pedido:", idPedido);
-    };
-
     // 📌 FUNCIÓN PARA SELECCIONAR TODOS
     const handleSelectAll = (e) => {
         const checkboxes = document.querySelectorAll('.check-item');
@@ -160,7 +148,7 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                 <div className="container-fluid" id='container-admin'>
                     <div className="main-content">
                         <div className="container text-center">
-                            <div className="spinner-border text-primary" role="status">
+                            <div className={styles.spinnerBorderSm} role="status">
                                 <span className="visually-hidden">Cargando...</span>
                             </div>
                             <p className="mt-2">Cargando pedidos...</p>
@@ -174,16 +162,16 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
     return (
         <div className="all">
             <MenuAdmin />
-            <div className="container-fluid" id='container-admin'>
+            <div className={`container-fluid ${styles.containerFluidGesPed}`} id='container-admin'>
                 <div className="main-content">
                     <div className="container">
                         <div className="row border-bottom pb-2 mb-4">
-                            <h2 className="text-center mb-4">Gestión Pedidos</h2>
+                            <h2 className={`text-center mb-4 ${styles.textGestPed}`}>Gestión Pedidos</h2>
                         </div>
 
                         {/* Mensaje de error global */}
                         {mensajeError && (
-                            <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                            <div className={`alert alert-dismissible fade show ${styles.alertDanger}`} role="alert">
                                 {mensajeError}
                                 <button 
                                     type="button" 
@@ -193,16 +181,9 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                             </div>
                         )}
 
-                        <div className="row row-cols-md g-4 mb-4">
+                        <div className={`row row-cols-md-3 g-4 mb-4 ${styles.rowEstado}`}>
                             <div className="col">
-                                <Link to="/Administrador/Gestion_Devoluciones" className="btn btn-outline-secondary w-100">
-                                    Gestión Devoluciones
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="row row-cols-md-3 g-4 mb-4">
-                            <div className="col">
+                                <h5>Mostrar por</h5>
                                 <select 
                                     name="estado_pedido" 
                                     id="estado_pedido" 
@@ -216,22 +197,19 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                                     <option value="Entregado">Entregado</option>
                                 </select>
                             </div>
-                            <div className="col">
-                                <p className="text-muted">
-                                    Mostrando <strong>{pedidosFiltrados.length}</strong> de <strong>{pedidos.length}</strong> pedidos
-                                </p>
-                            </div>
                         </div>
 
                         <div className="row">
                             <div className="col">
-                                <table className="table table-bordered">
-                                    <thead className="table-dark">
+                                <div className={styles.tableResponsive}>
+                                 <table className={`table ${styles.table}`}>
+                                    <thead>
                                         <tr>
                                             <th style={{ width: '40px' }}>
                                                 <input 
                                                     type="checkbox" 
                                                     id="checkAll" 
+                                                     className={styles.checkItem}
                                                     onChange={handleSelectAll}
                                                 />
                                             </th>
@@ -240,14 +218,13 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                                             <th>Estado</th>
                                             <th>Fecha</th>
                                             <th>Total</th>
-                                            <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {pedidosFiltrados.length > 0 ? (
                                             pedidosFiltrados.map((pedido) => (
                                                 <React.Fragment key={pedido.idPedido}>
-                                                    <tr className="table-primary fw-bold">
+                                                    <tr className={styles.tablePrimary}>
                                                         <td>
                                                             <input 
                                                                 type="checkbox" 
@@ -257,8 +234,9 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                                                         </td>
                                                         <td>
                                                             <button 
-                                                                className="btn btn-sm btn-outline-secondary me-2"
+                                                                className={`btn btn-sm ${styles.btnMostrarProd}`}
                                                                 onClick={() => toggleExpandir(pedido.idPedido)}
+                                                                data-tooltip={pedidosExpandidos[pedido.idPedido] ? "Ocultar productos" : "Ver productos"}
                                                             >
                                                                 {pedidosExpandidos[pedido.idPedido] ? '▼' : '►'}
                                                             </button>
@@ -267,7 +245,7 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                                                         <td>{pedido.nombreUsuario}</td>
                                                         <td>
                                                             <select 
-                                                                className="form-select form-select-sm"
+                                                                className={`form-select form-select-sm ${styles.formSelectEstadoPed}`}
                                                                 value={pedido.estadoPedido}
                                                                 onChange={(e) => handleCambiarEstado(pedido.idPedido, e.target.value)}
                                                                 disabled={actualizandoEstado === pedido.idPedido}
@@ -289,21 +267,7 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                                                             )}
                                                         </td>
                                                         <td>{new Date(pedido.fechaPedido).toLocaleDateString()}</td>
-                                                        <td>${pedido.totalFinal?.toFixed(2) || '0.00'}</td>
-                                                        <td>
-                                                            <button 
-                                                                className="btn btn-sm btn-info me-2"
-                                                                onClick={() => handleVerPedido(pedido.idPedido)}
-                                                            >
-                                                                Ver
-                                                            </button>
-                                                            <button 
-                                                                className="btn btn-sm btn-warning"
-                                                                onClick={() => handleEditarPedido(pedido.idPedido)}
-                                                            >
-                                                                Editar
-                                                            </button>
-                                                        </td>
+                                                        <td className="fw-bold">${pedido.totalFinal?.toFixed(2) || '0.00'}</td>
                                                     </tr>
                                                     
                                                     {pedidosExpandidos[pedido.idPedido] && (
@@ -325,13 +289,13 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                                                                             <tr key={`${pedido.idPedido}-${idx}`}>
                                                                                 <td>
                                                                                     <small>{producto.codigoReferencia}</small><br/>
-                                                                                    {producto.nombreProducto}
+                                                                                    <span className="fw-medium">{producto.nombreProducto}</span>
                                                                                 </td>
                                                                                 <td>{producto.nombreColor || 'N/A'}</td>
                                                                                 <td>{producto.nombre || 'N/A'}</td>
-                                                                                <td>{producto.cantidad}</td>
-                                                                                <td>${producto.precioUnitario?.toFixed(2)}</td>
-                                                                                <td>${(producto.cantidad * producto.precioUnitario).toFixed(2)}</td>
+                                                                                <td className="text-center">{producto.cantidad}</td>
+                                                                                <td className="text-end">${producto.precioUnitario?.toFixed(2)}</td>
+                                                                                <td className="text-end fw-bold">${(producto.cantidad * producto.precioUnitario).toFixed(2)}</td>
                                                                             </tr>
                                                                         ))}
                                                                     </tbody>
@@ -355,6 +319,7 @@ const handleCambiarEstado = async (idPedido, nuevoEstado) => {
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     );
 };
