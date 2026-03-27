@@ -432,6 +432,12 @@ function AppRoutes() {
             {/* ❌ Página no encontrada (404) */}
             <Route path="*" element={<div>Página no encontrada</div>} />
 
+            {/* ========== DEVOLUCIONES USUARIO ========== */}
+<Route path="/mis-devoluciones" element={
+   <ProtectedRoute>
+      <UserDevoluciones />
+   </ProtectedRoute>
+} />
          </Routes>
       </FiltroProvider>
    );

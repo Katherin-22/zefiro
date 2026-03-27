@@ -177,13 +177,13 @@ const DevolucionFormModal = ({ isOpen, onClose, onSave, devolucionToEdit, userRo
 
       if (devolucionToEdit) {
         await axios.put(
-          `http://35.171.131.177:8080/api/devoluciones/${formData.id}`, payload, {
+          `http://localhost:8080/api/devoluciones/${formData.id}`, payload, {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
         });
         setMessage("✅ Devolución actualizada correctamente.");
       } else {
         await axios.post(
-          "http://35.171.131.177:8080/api/devoluciones", payload, {
+          "http://localhost:8080/api/devoluciones", payload, {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
         });
         setMessage("✅ ¡Devolución creada exitosamente!");

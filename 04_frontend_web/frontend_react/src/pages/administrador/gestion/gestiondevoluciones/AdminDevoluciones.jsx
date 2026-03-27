@@ -1,13 +1,11 @@
 import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
-import { TrashIcon, UserPlusIcon, Search } from "lucide-react";
-// Importa el CSS Module
-import styles from "../../../../styles/gestionardevoluciones/adminDevoluciones.module.css";
+import { PencilIcon, TrashIcon, UserPlusIcon, Search } from "lucide-react";
+import "../../../../styles/gestionardevoluciones/adminDevoluciones.css";
 import DevolucionFormModal from "../../../../components/gestiondevoluciones/modals/DevolucionFormModal";
 import DeleteConfirmModal from "../../../../components/gestiondevoluciones/modals/DeleteConfirmModal";
 import '../../../../styles/administrador/inventario.css';
 import MenuAdmin from "../../../../layouts/administrador/menuAdmin";
-import api_url from "../../../../services/administrador/api";
 
 const AdminDevoluciones = () => {
   const [devoluciones, setDevoluciones] = useState([]);
@@ -15,7 +13,6 @@ const AdminDevoluciones = () => {
   const [devolucionToEdit, setDevolucionToEdit] = useState(null);
   const [devolucionToDelete, setDevolucionToDelete] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
 
@@ -24,13 +21,9 @@ const AdminDevoluciones = () => {
     setFetchError(null);
     try {
       const token = localStorage.getItem("authToken")?.replace(/"/g, "");
-      if (!token) { 
-        setFetchError("Token no encontrado."); 
-        setLoading(false); 
-        return; 
-      }
+      if (!token) { setFetchError("Token no encontrado."); setLoading(false); return; }
 
-      const response = await api_url.get("/api/devoluciones", {
+      const response = await axios.get("http://35.171.131.177:8080/api/devoluciones", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setDevoluciones(response.data);
@@ -39,144 +32,90 @@ const AdminDevoluciones = () => {
       console.error(err.response || err);
       setFetchError(`❌ Error al cargar datos: ${err.response?.statusText || 'No se pudo conectar con el servidor.'}`);
       setDevoluciones([]);
-    } finally { 
-      setLoading(false); 
-    }
+    } finally { setLoading(false); }
   };
 
-  useEffect(() => { 
-    fetchDevoluciones(); 
-  }, []);
-  
-  // 🕒 Debounce para la búsqueda
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-  
-  const handleSaveDevolucion = () => fetchDevoluciones();
+  useEffect(() => { fetchDevoluciones(); }, []);
+  const handleSaveDevolucion = () => {
+    fetchDevoluciones();
+    setIsModalOpen(false);
+    setDevolucionToEdit(null);
+  };
 
   const handleDeleteDevolucion = async () => {
     if (!devolucionToDelete) return;
     const devolucionId = devolucionToDelete.id_devolucion;
     try {
       const token = localStorage.getItem("authToken")?.replace(/"/g, "");
-      if (!token) { 
-        alert("Token no encontrado."); 
-        return; 
-      }
+      if (!token) { alert("Token no encontrado."); return; }
 
-      await api_url.delete(`/api/devoluciones/${devolucionId}`, { 
-        headers: { Authorization: `Bearer ${token}` } 
-      });
+      await axios.delete(`http://35.171.131.177:8080/api/devoluciones/${devolucionId}`, { headers: { Authorization: `Bearer ${token}` } });
       fetchDevoluciones();
       console.log(`Devolución ${devolucionId} eliminada correctamente.`);
 
     } catch (err) {
       console.error(err.response || err);
       alert(`Error al eliminar: ${err.response?.data?.message || 'No se pudo conectar con el servidor.'}`);
-    } finally { 
-      setDevolucionToDelete(null); 
-    }
+    } finally { setDevolucionToDelete(null); }
   };
 
-  // 🔎 Función para filtrar devoluciones
   const filteredDevoluciones = useMemo(() => {
-    if (!debouncedSearchTerm) return devoluciones;
-    const lower = debouncedSearchTerm.toLowerCase().trim();
-    
-    return devoluciones.filter(d => {
-      // Obtener nombre completo
-      const nombreCompleto = `${d.usuario?.nombre || ''} ${d.usuario?.primerApellido || ''}`.toLowerCase();
-      const motivo = String(d.motivo || '').toLowerCase();
-      const tipoSolicitud = String(d.tipoSolicitud || '').toLowerCase();
-      const estadoSolicitud = String(d.estadoSolicitud || '').toLowerCase();
-      const idDevolucion = String(d.id_devolucion || '').toLowerCase();
-      const idPedido = String(d.idPedido || '').toLowerCase();
-      
+    if (!searchTerm) return devoluciones;
+    const lower = searchTerm.toLowerCase();
+    return devoluciones.filter((d) => {
+
+      const nombreUsuario = d.nombreUsuario || '';
+      const apellidoUsuario = d.primerApellido || '';
+      const nombreCompleto = `${nombreUsuario} ${apellidoUsuario}`.toLowerCase();
+
       return (
+
         nombreCompleto.includes(lower) ||
-        motivo.includes(lower) ||
-        tipoSolicitud.includes(lower) ||
-        estadoSolicitud.includes(lower) ||
-        idDevolucion.includes(lower) ||
-        idPedido.includes(lower)
+        (d.motivo || '').toLowerCase().includes(lower) ||
+        (d.tipoSolicitud || '').toLowerCase().includes(lower) ||
+        (d.estadoSolicitud || '').toLowerCase().includes(lower) ||
+        (d.producto?.nombreProducto || '').toLowerCase().includes(lower) ||
+        String(d.pedido?.idPedido || '').includes(lower) ||
+        String(d.usuario?.idUsuario || '').includes(lower)
       );
     });
-  }, [devoluciones, debouncedSearchTerm]);
+  }, [devoluciones, searchTerm]);
 
-  // Función para limpiar la búsqueda
-  const handleClearSearch = () => {
-    setSearchTerm("");
-    setDebouncedSearchTerm("");
-  };
-
-  if (loading && devoluciones.length === 0) return (
-    <div className={styles.adminContainer}>
-      <p className={styles.loadingText}>Cargando devoluciones...</p>
-    </div>
-  );
-  
-  if (fetchError) return (
-    <div className={styles.adminContainer}>
-      <p className={styles.errorText}>{fetchError}</p>
-      <button className={styles.btnRecargar} onClick={fetchDevoluciones}>Recargar</button>
-    </div>
-  );
+  if (loading) return <div className="admin-container"><p className="loading-text">Cargando devoluciones...</p></div>;
+  if (fetchError) return <div className="admin-container"><p className="error-text">{fetchError}</p><button className="btn-recargar" onClick={fetchDevoluciones}>Recargar</button></div>;
 
   return (
-    <div className={styles.admin2Theme}>
+    <div className="admin2-theme">
       <nav>
         <MenuAdmin />
       </nav>
       <div className="container-fluid" id='container-admin'>
-        <div className={styles.adminContainer}>
-          <div className={styles.adminHeader}>
+        <div className="admin-container">
+          <div className="admin-header">
             <h2>Panel de Gestión de Devoluciones</h2>
             <p>Vista de Administrador: Control total sobre los registros de devoluciones y cambios.</p>
-            {debouncedSearchTerm && (
-              <div className={styles.searchInfo}>
-                Mostrando resultados para: <strong>"{debouncedSearchTerm}"</strong>
-                <button onClick={handleClearSearch} className={styles.clearSearch}>
-                  ✕
-                </button>
-              </div>
-            )}
           </div>
 
-          <div className={styles.adminActions}>
-            <button 
-              className={styles.btnCrear} 
-              onClick={() => { 
-                setDevolucionToEdit(null); 
-                setIsModalOpen(true); 
-              }}
-            >
+          <div className="admin-actions">
+            <button className="btn-crear" onClick={() => { setDevolucionToEdit(null); setIsModalOpen(true); }}>
               <UserPlusIcon size={18} /> Crear Nueva Devolución
             </button>
-            <div className={styles.searchBox}>
-              <Search className={styles.iconSearch} size={18} />
-              <input 
-                type="text" 
-                placeholder="Buscar por nombre, motivo, tipo, estado, ID devolución o pedido..." 
-                value={searchTerm} 
-                onChange={(e) => setSearchTerm(e.target.value)} 
-              />
+            <div className="search-box">
+              <Search className="icon-search" size={18} />
+              <input type="text" placeholder="Buscar por motivo, estado, o ID de usuario..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
           </div>
 
-          <div className={styles.tableContainer}>
-            <table className={styles.adminTable}>
+          <div className="table-container">
+            <table className="admin-table">
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Usuario</th>
-                  <th>Pedido ID</th>
-                  <th>Motivo</th>
+                  <th>Usuario </th>
+                  <th>Pedido</th>
+                  <th>Producto</th>
                   <th>Tipo Solicitud</th>
+                  <th>Motivo</th>
                   <th>Estado</th>
                   <th>Fecha Solicitud</th>
                   <th>Acciones</th>
@@ -186,70 +125,25 @@ const AdminDevoluciones = () => {
                 {filteredDevoluciones.length > 0 ? filteredDevoluciones.map(d => (
                   <tr key={d.id_devolucion}>
                     <td>{d.id_devolucion}</td>
+                    <td>{d.nombreUsuario} {d.primerApellido}</td>
+                    <td>#{d.idPedido}</td>
+                    <td>{d.nombreProducto || 'N/A'}</td>
+                    <td><span className={d.tipoSolicitud.toLowerCase() === 'cambio' ? 'tipo-cambio' : 'tipo-devolucion'}>{d.tipoSolicitud}</span></td>
+                    <td>{d.motivo.substring(0, 50) + (d.motivo.length > 50 ? '...' : '')}</td>
+                    <td><span className={`estado-${d.estadoSolicitud.toLowerCase().replace(' ', '-')}`}>{d.estadoSolicitud}</span></td>
+                    <td>{d.fechaSolicitud}</td>
                     <td>
-                      {`${d.usuario?.nombre || ''} ${d.usuario?.primerApellido || ''}`.trim() || 'N/A'}
-                    </td>
-                    <td>#{d.idPedido || 'N/A'}</td>
-                    <td title={d.motivo}>{d.motivo?.substring(0, 50) + (d.motivo?.length > 50 ? '...' : '')}</td>
-                    <td>
-                      <span className={d.tipoSolicitud?.toLowerCase() === 'cambio' ? styles.tipoCambio : styles.tipoDevolucion}>
-                        {d.tipoSolicitud}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={`${styles.estado} ${
-                        d.estadoSolicitud?.toLowerCase() === 'pendiente' ? styles.estadoPendiente :
-                        d.estadoSolicitud?.toLowerCase() === 'en proceso' ? styles.estadoProceso :
-                        d.estadoSolicitud?.toLowerCase() === 'aprobada' ? styles.estadoAprobada :
-                        d.estadoSolicitud?.toLowerCase() === 'rechazada' ? styles.estadoRechazada :
-                        d.estadoSolicitud?.toLowerCase() === 'completada' ? styles.estadoCompletada : ''
-                      }`}>
-                        {d.estadoSolicitud}
-                      </span>
-                    </td>
-                    <td>{d.fechaSolicitud ? new Date(d.fechaSolicitud).toLocaleDateString() : 'N/A'}</td>
-                    <td>
-                      <button 
-                        className={styles.btnEliminar} 
-                        onClick={() => setDevolucionToDelete(d)}
-                        title="Eliminar devolución"
-                      >
-                        <TrashIcon size={16} />
-                      </button>
+                      <button className="btn-editar" onClick={() => { setDevolucionToEdit(d); setIsModalOpen(true); }}><PencilIcon size={16} /></button>
+                      <button className="btn-eliminar" onClick={() => setDevolucionToDelete(d)}><TrashIcon size={16} /></button>
                     </td>
                   </tr>
-                )) : (
-                  <tr>
-                    <td colSpan="8" className={styles.noUsers}>
-                      {debouncedSearchTerm 
-                        ? `No se encontraron resultados para "${debouncedSearchTerm}"` 
-                        : "No hay devoluciones registradas."}
-                    </td>
-                  </tr>
-                )}
+                )) : <tr><td colSpan="9" className="no-users">No se encontraron devoluciones.</td></tr>}
               </tbody>
             </table>
           </div>
 
-          {/* Modal para crear/editar devolución */}
-          <DevolucionFormModal 
-            isOpen={isModalOpen} 
-            onClose={() => { 
-              setIsModalOpen(false); 
-              setDevolucionToEdit(null); 
-            }} 
-            onSave={handleSaveDevolucion} 
-            devolucionToEdit={devolucionToEdit} 
-            userRole="admin"
-          />
-          
-          {/* Modal para confirmar eliminación */}
-          <DeleteConfirmModal 
-            isOpen={!!devolucionToDelete} 
-            onClose={() => setDevolucionToDelete(null)} 
-            devolucionName={devolucionToDelete?.id_devolucion || ""} 
-            onConfirm={handleDeleteDevolucion} 
-          />
+          <DevolucionFormModal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setDevolucionToEdit(null); }} onSave={handleSaveDevolucion} devolucionToEdit={devolucionToEdit} userRole="admin" />
+          <DeleteConfirmModal isOpen={!!devolucionToDelete} onClose={() => setDevolucionToDelete(null)} devolucionName={devolucionToDelete?.id_devolucion || ""} onConfirm={handleDeleteDevolucion} />
         </div>
       </div>
     </div>
