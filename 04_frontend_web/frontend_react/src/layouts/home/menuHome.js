@@ -3,7 +3,7 @@ import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useFiltro } from "../../utils/FiltroContextx";
 import { useCart } from "../../components/carrito/CarritoContext";
 import { useResponsive } from "../../hooks/responsive/responsive";
-import useAuth from "../../hooks/token/useAuth";
+import { useAuth } from "../../context/AuthContext";
 import "../../styles/home/menuHome.css";
 import "../../styles/home/menuMobile.css";
 
@@ -304,12 +304,12 @@ const MenuHome = () => {
                       <Link
                         className="dropdown-item"
                         id="navBarHome-profile"
-                        to={`/perfilUsuario/${userId ||""}`}
+                        to={`/perfilUsuario/${userId || ""}`}
                       >
                         <i className="bi bi-person me-2"></i>Perfil
                       </Link>
                     </li>
-                                        <li>
+                    <li>
                       <Link
                         className="dropdown-item"
                         id="navBarHome-profile"
@@ -369,7 +369,7 @@ const MenuHome = () => {
             </li>
 
             {/* FAVORITOS - Solo mostrar si está autenticado */}
-            { isAuthenticated ? (
+            {isAuthenticated ? (
               <li className="nav-item" id="navBarHome-favorites-item">
                 <Link
                   className="nav-link"
@@ -460,7 +460,7 @@ const MenuHome = () => {
               <span>categorias</span>
             </Link>
             {/* FAVORITOS - Solo para clientes autenticados (rol 1) */}
-            { isAuthenticated && (
+            {isAuthenticated && (
               <Link
                 to="/favoritos"
                 className={`mobile-nav-item ${activeMobileNav === "favorites" ? "active" : ""}`}
@@ -536,6 +536,19 @@ const MenuHome = () => {
                   id="mobile-dropdown-menu"
                   className="admin-mobile-dropdown-menu"
                 >
+                  <Link
+                    id="dropdown-devoluciones"
+                    to="/mis-devoluciones"
+                    className="dropdown-item"
+                    onClick={() => {
+                      document
+                        .querySelector(".admin-mobile-dropdown")
+                        ?.classList.remove("show");
+                    }}
+                  >
+                    <i className="bi bi-arrow-return-left dropdown-icon"></i>
+                    <span className="dropdown-text">Mis Devoluciones</span>
+                  </Link>
                   <Link
                     id="dropdown-pagina"
                     to={`/perfilUsuario/${userId || ""}`}

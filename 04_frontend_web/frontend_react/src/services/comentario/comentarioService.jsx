@@ -203,7 +203,7 @@ class ComentarioService {
   async getEstadisticasProducto(idProducto) {
     try {
       try {
-        const response = await api_url.get(`/comentarios/producto/${idProducto}/estadisticas`);
+        const response = await api_url.get(`/api/comentarios/producto/${idProducto}/estadisticas`);
         return response.data;
       } catch (publicError) {
         const response = await api_url.get(`/api/comentarios/producto/${idProducto}/estadisticas`);

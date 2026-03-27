@@ -52,6 +52,10 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/banners/**").permitAll()
 
+                        .requestMatchers("/api/devoluciones/**").authenticated()
+
+                        .requestMatchers("/comentarios/**").permitAll()
+
                         .requestMatchers(
                                 "/categoria", "/categoria/*", "/promocion", "/stock/*",
                                 "/stock/variaciones/*", "/stock/*", "/producto/*/stock/*", "/promocion/*",

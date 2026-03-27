@@ -1,8 +1,10 @@
+// services/administrador/pedidos.js
 import api_url from "./api";
 
 export const getPedido = async () => {
     const authToken = localStorage.getItem('authToken'); 
-    return await api_url.get("/api/pedidos/detalles", {
+    // ✅ Cambiar a /api/pedidos en lugar de /api/pedidos/detalles
+    return await api_url.get("/api/pedidos", {
         headers: {
             'Authorization': `Bearer ${authToken}`  
         }
@@ -29,12 +31,10 @@ export const obtenerPedidosPorRangoFechas = async (fechaInicio, fechaFin) => {
     }
 };
 
-// ✅ SOLO ESTA FUNCIÓN ESTÁ CORREGIDA
 export const actualizarEstadoPedido = async (idPedido, nuevoEstado) => {
     try {
         console.log('Enviando PATCH a:', `/api/pedidos/${idPedido}/estado?estado=${nuevoEstado}`);
         
-        // Usar api_url correctamente (sin template strings en la instancia)
         const response = await api_url.patch(
             `/api/pedidos/${idPedido}/estado`,
             null,
@@ -53,8 +53,3 @@ export const actualizarEstadoPedido = async (idPedido, nuevoEstado) => {
         throw error;
     }
 };
-
-// ❌ Esta función está mal y deberías eliminarla o comentarla
-// export const actualizarEstadoPedidos = async (idPedido) => {
-//     return await api_url.get(`/api/pedidos/${idPedido}/estado`)  
-// };

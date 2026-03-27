@@ -1,22 +1,25 @@
 package com.backend.proyect.model.pedido;
 
 import com.backend.proyect.model.usuario.Usuario;
+import com.backend.proyect.model.carrito.Carrito;
 import com.backend.proyect.model.promociones.Promocion;
 import com.backend.proyect.model.metodoPagos.MetodoPago;
-import com.backend.proyect.model.carrito.Carrito;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Entity
 @Table(name = "Pedido")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Pedido {
+
+public class  Pedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,11 +29,12 @@ public class Pedido {
     @Column(name = "fechaPedido", nullable = false)
     private LocalDate fechaPedido;
 
+
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "idCarrito", nullable = false)
     private Carrito carrito;
 
@@ -43,8 +47,8 @@ public class Pedido {
     private MetodoPago metodoPago;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "estado", columnDefinition = "ENUM('Pendiente','Procesando','Entregado')")
-    private EstadoPedido estado;
+    @Column(name = "estadoPedido", columnDefinition = "ENUM('Pendiente','Procesando','Entregado')")
+    private EstadoPedido estadoPedido;
 
     @Column(name = "total_final", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalFinal;
@@ -54,11 +58,12 @@ public class Pedido {
         if (fechaPedido == null) {
             fechaPedido = LocalDate.now();
         }
-        if (estado == null) {
-            estado = EstadoPedido.Pendiente;
+        if (estadoPedido == null) {
+            estadoPedido = EstadoPedido.Pendiente;
         }
         if (totalFinal == null) {
             totalFinal = BigDecimal.ZERO;
         }
     }
+
 }

@@ -423,7 +423,7 @@ export default function Home() {
         
                 {/* BANNER DE FAVORITOS */}
                 { isAuthenticated && (
-                    <div className="container-fluid py-3 bg-dark bg-opacity-50">
+                    <div className="container-fluid container-fav py-3 bg-dark bg-opacity-50">
                         <div className="container">
                             <div className="row align-items-center">
                                 <div className="col-md-6">

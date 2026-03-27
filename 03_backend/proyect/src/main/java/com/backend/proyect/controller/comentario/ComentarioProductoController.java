@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/comentarios")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, allowCredentials = "true")
+@CrossOrigin(origins = "http://35.171.131.177:3000", maxAge = 3600, allowCredentials = "true")
 public class ComentarioProductoController {
     
     @Autowired

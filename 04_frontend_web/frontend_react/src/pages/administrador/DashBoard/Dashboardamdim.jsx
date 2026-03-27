@@ -2,11 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import MenuAdmin from '../../../layouts/administrador/menuAdmin';
 import api_url from "../../../services/administrador/api";
-import '../../../styles/administrador/inventario.css';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import PdfDashboard from './PDFesatadisticas.js';
-import "../../../styles/administrador/dashboard.css"
-
+import styles from "../../../styles/administrador/dashboard.module.css";
 
 // Servicios
 import { getPedido } from "../../../services/administrador/pedidos";
@@ -14,94 +12,99 @@ import { getPedido } from "../../../services/administrador/pedidos";
 const DashboardAdmin = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [generandoPDF, setGenerandoPDF] = useState(false);
-    // Estados para los datos
     const [pedidos, setPedidos] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
     const [productos, setProductos] = useState([]);
     
-    // Estados para filtros
     const [filtroFecha, setFiltroFecha] = useState({
-        inicio: new Date(new Date().setDate(1)).toISOString().split('T')[0], // Primer día del mes
-        fin: new Date().toISOString().split('T')[0] // Hoy
+        inicio: new Date(new Date().setDate(1)).toISOString().split('T')[0],
+        fin: new Date().toISOString().split('T')[0]
     });
     const [filtroEstado, setFiltroEstado] = useState('todos');
     const [filtroProducto, setFiltroProducto] = useState('todos');
     
-    // Lista de productos para el filtro
     const [listaProductos, setListaProductos] = useState([]);
 
-    // ============================================
-    // FUNCIÓN PARA AGRUPAR PEDIDOS
-    // ============================================
     const agruparPedidos = (datos) => {
-        return datos.reduce((acc, item) => {
+        const resultado = datos.reduce((acc, item) => {
+            const productosPedido = [];
+            
+            if (item.carrito && item.carrito.detalles && Array.isArray(item.carrito.detalles)) {
+                item.carrito.detalles.forEach(detalle => {
+                    if (detalle.stock && detalle.stock.producto) {
+                        productosPedido.push({
+                            nombreProducto: detalle.stock.producto.nombreProducto,
+                            nombreColor: detalle.stock.color?.nombreColor || 'N/A',
+                            nombre: detalle.stock.variacion?.nombre || 'N/A',
+                            cantidad: detalle.cantidad,
+                            precioUnitario: detalle.precioUnitario,
+                            codigoReferencia: detalle.stock.producto.codigoReferencia,
+                            idProducto: detalle.stock.producto.idProducto
+                        });
+                    }
+                });
+            }
+            
             const pedidoExistente = acc.find(p => p.idPedido === item.idPedido);
-             console.log('Estado del pedido:', item.estado); // Este es el log que quieres ver
             
             if (pedidoExistente) {
-                pedidoExistente.productos.push({
-                    nombreProducto: item.nombreProducto,
-                    nombreColor: item.nombreColor,
-                    nombre: item.nombre,
-                    cantidad: item.cantidad,
-                    precioUnitario: item.precioUnitario,
-                    codigoReferencia: item.codigoReferencia
-                });
+                pedidoExistente.productos.push(...productosPedido);
                 pedidoExistente.totalFinal = (pedidoExistente.totalFinal || 0) + 
-                    (item.cantidad * item.precioUnitario);
+                    productosPedido.reduce((sum, p) => sum + (p.cantidad * p.precioUnitario), 0);
             } else {
                 acc.push({
                     idPedido: item.idPedido,
                     fechaPedido: item.fechaPedido,
-                    nombreUsuario: item.nombreUsuario,
-                    estado: item.estado,
-                    totalFinal: item.cantidad * item.precioUnitario,
-                    productos: [{
-                        nombreProducto: item.nombreProducto,
-                        nombreColor: item.nombreColor,
-                        nombre: item.nombre,
-                        cantidad: item.cantidad,
-                        precioUnitario: item.precioUnitario,
-                        codigoReferencia: item.codigoReferencia
-                    }]
+                    nombreUsuario: item.usuario?.nombreUsuario || 'Usuario',
+                    estado: item.estadoPedido,
+                    totalFinal: productosPedido.reduce((sum, p) => sum + (p.cantidad * p.precioUnitario), 0),
+                    productos: productosPedido
                 });
             }
             return acc;
         }, []);
+        
+        return resultado;
     };
-
-    // ============================================
-    // CARGAR TODOS LOS DATOS
-    // ============================================
+    
+    const extraerProductosUnicos = (pedidosAgrupados) => {
+        const productosMap = new Map();
+        
+        pedidosAgrupados.forEach(pedido => {
+            if (pedido.productos && Array.isArray(pedido.productos)) {
+                pedido.productos.forEach(producto => {
+                    const key = producto.nombreProducto;
+                    if (!productosMap.has(key)) {
+                        productosMap.set(key, {
+                            nombre: producto.nombreProducto,
+                            codigo: producto.codigoReferencia,
+                            id: producto.idProducto
+                        });
+                    }
+                });
+            }
+        });
+        
+        return Array.from(productosMap.values());
+    };
+    
     useEffect(() => {
         const cargarDatos = async () => {
             try {
                 setLoading(true);
                 const token = localStorage.getItem("authToken")?.replace(/"/g, "");
 
-                // 1. Cargar pedidos (usando tu servicio existente)
                 const pedidosResponse = await getPedido();
+                
                 if (pedidosResponse?.data) {
                     const datosArray = Array.isArray(pedidosResponse.data) ? pedidosResponse.data : [pedidosResponse.data];
                     const pedidosAgrupados = agruparPedidos(datosArray);
                     setPedidos(pedidosAgrupados);
                     
-                    // Extraer productos únicos para el filtro
-                    const productosUnicos = [];
-                    datosArray.forEach(item => {
-                        if (item.nombreProducto && !productosUnicos.find(p => p.nombre === item.nombreProducto)) {
-                            productosUnicos.push({
-                                nombre: item.nombreProducto,
-                                codigo: item.codigoReferencia,
-                                id: item.idProducto
-                            });
-                        }
-                    });
-                    setListaProductos(productosUnicos);
+                    const productosVendidos = extraerProductosUnicos(pedidosAgrupados);
+                    setListaProductos(productosVendidos);
                 }
 
-                // 2. Cargar usuarios (con tu api_url)
                 if (token) {
                     const usuariosResponse = await api_url.get("/api/usuarios", {
                         headers: { 
@@ -110,13 +113,11 @@ const DashboardAdmin = () => {
                     });
                     
                     if (usuariosResponse.data) {
-                        // Filtrar solo usuarios con rol 1 (clientes)
                         const clientes = usuariosResponse.data.filter(u => u.rol?.idRol === 1);
                         setUsuarios(clientes);
                     }
                 }
 
-                // 3. Cargar productos (endpoint público)
                 const productosResponse = await api_url.get("/publico/productos");
                 if (productosResponse.data) {
                     setProductos(productosResponse.data);
@@ -133,38 +134,25 @@ const DashboardAdmin = () => {
         cargarDatos();
     }, []);
 
-    // ============================================
-    // FUNCIONES DE FILTRADO
-    // ============================================
-    
-    // Filtrar pedidos por fecha, estado y producto
     const pedidosFiltrados = pedidos.filter(pedido => {
-        // Filtro por fecha
         const fechaPedido = new Date(pedido.fechaPedido).toISOString().split('T')[0];
         const cumpleFecha = fechaPedido >= filtroFecha.inicio && fechaPedido <= filtroFecha.fin;
-        
-        // Filtro por estado
         const cumpleEstado = filtroEstado === 'todos' || pedido.estado === filtroEstado;
         
-        // Filtro por producto
         let cumpleProducto = true;
         if (filtroProducto !== 'todos') {
-            cumpleProducto = pedido.productos?.some(p => 
-                p.nombreProducto === filtroProducto || 
-                p.codigoReferencia === filtroProducto
-            );
+            cumpleProducto = pedido.productos?.some(p => p.nombreProducto === filtroProducto);
         }
         
         return cumpleFecha && cumpleEstado && cumpleProducto;
     });
 
-    // Productos más vendidos
     const productosMasVendidos = () => {
         const ventas = {};
         
         pedidosFiltrados.forEach(pedido => {
             pedido.productos?.forEach(producto => {
-                const key = producto.nombreProducto || producto.codigoReferencia;
+                const key = producto.nombreProducto;
                 if (!ventas[key]) {
                     ventas[key] = {
                         nombre: producto.nombreProducto,
@@ -183,7 +171,6 @@ const DashboardAdmin = () => {
         return Object.values(ventas).sort((a, b) => b.cantidad - a.cantidad);
     };
 
-    // Ventas por día
     const ventasPorDia = () => {
         const ventas = {};
         
@@ -202,12 +189,9 @@ const DashboardAdmin = () => {
             ventas[fecha].pedidos += 1;
         });
         
-        return Object.values(ventas).sort((a, b) => 
-            new Date(a.fecha) - new Date(b.fecha)
-        );
+        return Object.values(ventas).sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
     };
 
-    // Estadísticas por estado
     const statsPorEstado = () => {
         const stats = {
             Pendiente: 0,
@@ -224,7 +208,6 @@ const DashboardAdmin = () => {
         return stats;
     };
 
-    // Ventas por producto específico (si está seleccionado)
     const ventasProductoSeleccionado = () => {
         if (filtroProducto === 'todos') return null;
         
@@ -233,7 +216,7 @@ const DashboardAdmin = () => {
         
         pedidosFiltrados.forEach(pedido => {
             pedido.productos?.forEach(producto => {
-                if (producto.nombreProducto === filtroProducto || producto.codigoReferencia === filtroProducto) {
+                if (producto.nombreProducto === filtroProducto) {
                     cantidadTotal += producto.cantidad || 0;
                     ingresosTotal += (producto.cantidad * producto.precioUnitario) || 0;
                 }
@@ -243,10 +226,6 @@ const DashboardAdmin = () => {
         return { cantidadTotal, ingresosTotal };
     };
 
-    // ============================================
-    // CÁLCULOS DE ESTADÍSTICAS
-    // ============================================
-    
     const metricas = {
         totalPedidos: pedidosFiltrados.length,
         totalClientes: usuarios.length,
@@ -266,16 +245,12 @@ const DashboardAdmin = () => {
     const estadosStats = statsPorEstado();
     const productoEspecifico = ventasProductoSeleccionado();
 
-    // ============================================
-    // RENDERIZADO
-    // ============================================
-    
     if (loading) {
         return (
-            <div className="all">
+            <div className={styles.all}>
                 <MenuAdmin />
                 <div className="container-fluid" id='container-admin'>
-                    <div className="main-content">
+                    <div className={styles.mainContent}>
                         <div className="container text-center mt-5">
                             <div className="spinner-border text-primary" role="status">
                                 <span className="visually-hidden">Cargando...</span>
@@ -289,28 +264,25 @@ const DashboardAdmin = () => {
     }
 
     return (
-        <div className="all">
+        <div className={styles.all}>
             <MenuAdmin />
             <div className="container-fluid-dash" id='container-admin-dashboard'>
-                <div className="main-content-dash">
+                <div className={styles.mainContentDash}>
                     <div className="container-fluid p-4">
-                        {/* TÍTULO */}
-                        <div className="row mb-4 island-dash">
+                        <div className={`row mb-4 ${styles.islandDash}`}>
                             <div className="col">
-                                <h2 className=" tit text-center">
-                                    <i className=" bi bi-bar-chart-fill me-2"></i>
+                                <h2 className={`${styles.tit} text-center`}>
+                                    <i className="bi bi-bar-chart-fill me-2"></i>
                                     Dashboard Administrativo
                                 </h2>
-
-                                <p className="text-center text-muted ped">
+                                <p className={`text-center ${styles.ped}`}>
                                     {pedidosFiltrados.length} pedidos en el período seleccionado
                                 </p>
                             </div>
-
                         </div>
 
-                        <div className='row btn-down'>
-                          <div className="col-auto">
+                        <div className={`row ${styles.btnDown}`}>
+                            <div className="col-auto">
                                 <PDFDownloadLink
                                     document={
                                         <PdfDashboard
@@ -340,7 +312,6 @@ const DashboardAdmin = () => {
                             </div>  
                         </div>
 
-                        {/* FILTROS */}
                         <div className="row mb-4 g-3">
                             <div className="col-md-3">
                                 <label className="form-label">Fecha inicio</label>
@@ -373,22 +344,9 @@ const DashboardAdmin = () => {
                                     <option value="Entregado">Entregado</option>
                                 </select>
                             </div>
-                            <div className="col-md-3">
-                                <label className="form-label">Producto</label>
-                                <select 
-                                    className="form-select"
-                                    value={filtroProducto}
-                                    onChange={(e) => setFiltroProducto(e.target.value)}
-                                >
-                                    <option value="todos">Todos los productos</option>
-                                    {listaProductos.map((p, idx) => (
-                                        <option key={idx} value={p.nombre}>{p.nombre}</option>
-                                    ))}
-                                </select>
-                            </div>
+                        
                         </div>
 
-                        {/* INFO DEL PRODUCTO SELECCIONADO */}
                         {filtroProducto !== 'todos' && productoEspecifico && (
                             <div className="row mb-4">
                                 <div className="col-12">
@@ -411,7 +369,6 @@ const DashboardAdmin = () => {
                             </div>
                         )}
 
-                        {/* TARJETAS DE MÉTRICAS */}
                         <div className="row mb-4">
                             <div className="col-md-3 mb-3">
                                 <div className="card text-white bg-primary">
@@ -458,11 +415,10 @@ const DashboardAdmin = () => {
                             </div>
                         </div>
 
-                        {/* VENTAS DIARIAS */}
                         <div className="row mb-4">
                             <div className="col-md-8">
                                 <div className="card">
-                                    <div className="card-header bg-dark text-white">
+                                    <div className={`card-header ${styles.cardHeader}`}>
                                         <h5 className="mb-0">Ventas diarias</h5>
                                     </div>
                                     <div className="card-body">
@@ -500,7 +456,7 @@ const DashboardAdmin = () => {
                             
                             <div className="col-md-4">
                                 <div className="card">
-                                    <div className="card-header bg-dark text-white">
+                                    <div className={`card-header ${styles.cardHeader}`}>
                                         <h5 className="mb-0">Estados de pedidos</h5>
                                     </div>
                                     <div className="card-body">
@@ -529,11 +485,10 @@ const DashboardAdmin = () => {
                             </div>
                         </div>
 
-                        {/* PRODUCTOS MÁS VENDIDOS */}
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="card">
-                                    <div className="card-header bg-dark text-white">
+                                    <div className={`card-header ${styles.cardHeader}`}>
                                         <h5 className="mb-0">Top 5 productos más vendidos</h5>
                                     </div>
                                     <div className="card-body">
@@ -573,7 +528,7 @@ const DashboardAdmin = () => {
                             
                             <div className="col-md-6">
                                 <div className="card">
-                                    <div className="card-header bg-dark text-white">
+                                    <div className={`card-header ${styles.cardHeader}`}>
                                         <h5 className="mb-0">Últimos 5 pedidos</h5>
                                     </div>
                                     <div className="card-body">
@@ -618,11 +573,10 @@ const DashboardAdmin = () => {
                             </div>
                         </div>
 
-                        {/* LISTA DE CLIENTES */}
                         <div className="row mt-4">
                             <div className="col-12">
                                 <div className="card">
-                                    <div className="card-header bg-dark text-white">
+                                    <div className={`card-header ${styles.cardHeader}`}>
                                         <h5 className="mb-0">Clientes registrados</h5>
                                     </div>
                                     <div className="card-body">
@@ -660,7 +614,6 @@ const DashboardAdmin = () => {
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
